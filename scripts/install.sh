@@ -6,6 +6,65 @@ set -eu
 
 PHANTOM_MANIFEST_URL="${PHANTOM_MANIFEST_URL:-https://phantom.pm/releases/manifest.json}"
 PHANTOM_INSTALL_DIR="${PHANTOM_INSTALL_DIR:-$HOME/.local/bin}"
+PHANTOM_UPGRADE="${PHANTOM_UPGRADE:-0}"
+PHANTOM_COLOR="${PHANTOM_COLOR:-1}"
+
+show_banner() {
+  if [ "$PHANTOM_COLOR" = "1" ]; then
+    GREEN="$(printf '\033[0;32m')"
+    NC="$(printf '\033[0m')"
+  else
+    GREEN=""
+    NC=""
+  fi
+
+  log "${GREEN}░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█${NC}"
+  log "${GREEN}░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█${NC}"
+  log "${GREEN}░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀${NC}"
+  log ""
+  log "PHANTOM — The invisible force behind every great product."
+  log ""
+}
+
+parse_args() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --upgrade)
+        PHANTOM_UPGRADE="1"
+        ;;
+      --manifest-url)
+        shift
+        [ "$#" -gt 0 ] || fail "--manifest-url requires a value"
+        PHANTOM_MANIFEST_URL="$1"
+        ;;
+      --install-dir)
+        shift
+        [ "$#" -gt 0 ] || fail "--install-dir requires a value"
+        PHANTOM_INSTALL_DIR="$1"
+        ;;
+      --no-color)
+        PHANTOM_COLOR="0"
+        ;;
+      --help|-h)
+        cat <<'HELP'
+Usage: install.sh [options]
+
+Options:
+  --upgrade                 Upgrade existing PHANTOM installation in place
+  --manifest-url <url>      Override release manifest URL
+  --install-dir <path>      Override install directory (default: ~/.local/bin)
+  --no-color                Disable ANSI colors
+  --help                    Show this help output
+HELP
+        exit 0
+        ;;
+      *)
+        fail "unknown option: $1"
+        ;;
+    esac
+    shift
+  done
+}
 
 log() {
   printf '%s\n' "$1"
@@ -238,6 +297,9 @@ run_post_install_checks() {
 }
 
 main() {
+  parse_args "$@"
+  show_banner
+
   need_cmd curl
   need_cmd tar
   check_node
@@ -248,7 +310,11 @@ main() {
   platform="$(detect_platform)"
   manifest_path="$tmp_dir/manifest.json"
 
-  log "PHANTOM installer"
+  if [ "$PHANTOM_UPGRADE" = "1" ]; then
+    log "PHANTOM upgrade"
+  else
+    log "PHANTOM installer"
+  fi
   log "Detected platform: $platform"
 
   if ! fetch_manifest "$manifest_path"; then
@@ -298,7 +364,11 @@ main() {
   setup_path
   run_post_install_checks
 
-  log "PHANTOM install complete."
+  if [ "$PHANTOM_UPGRADE" = "1" ]; then
+    log "PHANTOM upgrade complete."
+  else
+    log "PHANTOM install complete."
+  fi
   log "Next command: phantom --help"
 }
 

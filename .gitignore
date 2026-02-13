@@ -35,6 +35,8 @@ launch/
 PLAN.md
 REPO_SETUP.md
 PHANTOM_AUDIT_AND_PLAN.md
+AGENTS.md
+SKILL.md
 
 # local release/test artifacts
 releases/local/

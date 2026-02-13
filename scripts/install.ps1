@@ -3,7 +3,8 @@
 
 param(
   [string]$ManifestUrl = "https://phantom.pm/releases/manifest.json",
-  [string]$InstallDir = "$HOME\.local\bin"
+  [string]$InstallDir = "$HOME\.local\bin",
+  [switch]$Upgrade
 )
 
 $ErrorActionPreference = "Stop"
@@ -18,6 +19,15 @@ function Write-Warn([string]$Message) {
 
 function Fail([string]$Message) {
   throw $Message
+}
+
+function Show-Banner {
+  Write-Host "░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█" -ForegroundColor Green
+  Write-Host "░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█" -ForegroundColor Green
+  Write-Host "░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀" -ForegroundColor Green
+  Write-Host ""
+  Write-Host "PHANTOM — The invisible force behind every great product."
+  Write-Host ""
 }
 
 function Check-Node {
@@ -170,7 +180,13 @@ function Install-FromManifest {
   }
 }
 
-Write-Info "PHANTOM installer"
+Show-Banner
+if ($Upgrade) {
+  Write-Info "PHANTOM upgrade"
+}
+else {
+  Write-Info "PHANTOM installer"
+}
 Check-Node
 
 try {

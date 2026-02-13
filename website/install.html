@@ -21,9 +21,12 @@
       <p class="eyebrow">Install</p>
       <h1>Install in one line</h1>
       <div class="install-block">
-        <code>curl -fsSL phantom.pm/install | sh</code>
+        <code>curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh</code>
       </div>
-      <p class="status-badge">Status: Beta (installer scripts implemented; hosted endpoint pending).</p>
+      <div class="install-block">
+        <code>curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh -s -- --upgrade</code>
+      </div>
+      <p class="status-badge">Status: Real (GitHub-hosted installer). Hosted `phantom.pm/install` endpoint is planned.</p>
     </section>
 
     <section class="panel">
@@ -31,6 +34,12 @@
       <pre>npm run build
 npm run release:local
 npm run installer:test-local</pre>
+    </section>
+
+    <section class="panel">
+      <h2>Upgrade agent/IDE integrations</h2>
+      <pre>curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/upgrade-agents.sh | sh
+curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/upgrade-agents.sh | sh -s -- codex cursor vscode claude-code</pre>
     </section>
 
     <section class="panel">

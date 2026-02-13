@@ -17,6 +17,7 @@
     "reality:check": "npm run build && node --test tests/reality-gate.test.mjs",
     "release:local": "npm run build && node scripts/release/build-local-install-artifacts.mjs",
     "installer:test-local": "npm run build && node scripts/release/test-local-installer.mjs",
+    "agents:upgrade": "sh scripts/upgrade-agents.sh",
     "clean": "rm -rf packages/*/dist"
   },
   "keywords": [
