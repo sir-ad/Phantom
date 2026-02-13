@@ -11,7 +11,6 @@
   ],
   "scripts": {
     "build": "npm run build --workspace=@phantom/core && npm run build --workspace=@phantom/mcp-server && npm run build --workspace=@phantom/modules && npm run build --workspace=@phantom/tui && npm run build --workspace=@phantom/cli",
-    "build:portable": "npm run build --prefix packages/core && npm run build --prefix packages/mcp-server && npm run build --prefix packages/modules && npm run build --prefix packages/tui && npm run build --prefix packages/cli",
     "build:github-dist": "node scripts/release/build-github-distribution.mjs",
     "dev": "npm run dev --workspace=packages/cli",
     "website:dev": "node scripts/serve-website.mjs",
@@ -23,8 +22,7 @@
     "release:local": "npm run build && node scripts/release/build-local-install-artifacts.mjs",
     "installer:test-local": "npm run build && node scripts/release/test-local-installer.mjs",
     "agents:upgrade": "sh scripts/upgrade-agents.sh",
-    "clean": "rm -rf packages/*/dist dist",
-    "prepare": "npm run build:portable && npm run build:github-dist"
+    "clean": "rm -rf packages/*/dist dist"
   },
   "keywords": [
     "product-management",
