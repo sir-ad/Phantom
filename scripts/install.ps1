@@ -4,7 +4,7 @@
 param(
   [string]$ManifestUrl = "https://raw.githubusercontent.com/sir-ad/Phantom/main/releases/manifest.json",
   [string]$InstallDir = "$HOME\.local\bin",
-  [string]$NpmFallbackPackage = "github:sir-ad/Phantom",
+  [string]$NpmFallbackPackage = "https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main",
   [switch]$Upgrade
 )
 

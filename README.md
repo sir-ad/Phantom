@@ -16,11 +16,11 @@
 # Recommended: GitHub-hosted installer
 curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
 
-# npm global install directly from GitHub
-npm install -g github:sir-ad/Phantom
+# npm global install directly from GitHub tarball
+npm install -g https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main
 
 # npx run without global install
-npx -y github:sir-ad/Phantom --help
+npx -y https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main --help
 ```
 
 ## Upgrade

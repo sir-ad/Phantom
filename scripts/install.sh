@@ -8,8 +8,8 @@ PHANTOM_MANIFEST_URL="${PHANTOM_MANIFEST_URL:-https://raw.githubusercontent.com/
 PHANTOM_INSTALL_DIR="${PHANTOM_INSTALL_DIR:-$HOME/.local/bin}"
 PHANTOM_UPGRADE="${PHANTOM_UPGRADE:-0}"
 PHANTOM_COLOR="${PHANTOM_COLOR:-1}"
-PHANTOM_NPM_FALLBACK_PACKAGE="${PHANTOM_NPM_FALLBACK_PACKAGE:-github:sir-ad/Phantom}"
-PHANTOM_NPX_FALLBACK_PACKAGE="${PHANTOM_NPX_FALLBACK_PACKAGE:-github:sir-ad/Phantom}"
+PHANTOM_NPM_FALLBACK_PACKAGE="${PHANTOM_NPM_FALLBACK_PACKAGE:-https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main}"
+PHANTOM_NPX_FALLBACK_PACKAGE="${PHANTOM_NPX_FALLBACK_PACKAGE:-https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main}"
 
 show_banner() {
   if [ "$PHANTOM_COLOR" = "1" ]; then
