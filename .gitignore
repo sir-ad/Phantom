@@ -6,9 +6,6 @@ node_modules/
 # keep planning/docs local only
 docs/
 launch/
-*.md
-*.markdown
-*.txt
 
 # local release/test artifacts
 releases/local/
