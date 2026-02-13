@@ -42,6 +42,7 @@ SKILL.md
 releases/local/
 releases/manifest.local.json
 packages/*/dist/
+dist/
 
 # logs and misc
 *.log

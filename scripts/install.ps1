@@ -1,9 +1,10 @@
 # PHANTOM installer (PowerShell)
-# Intended endpoint target: https://phantom.pm/install.ps1
+# Intended endpoint target: GitHub-hosted installer script
 
 param(
-  [string]$ManifestUrl = "https://phantom.pm/releases/manifest.json",
+  [string]$ManifestUrl = "https://raw.githubusercontent.com/sir-ad/Phantom/main/releases/manifest.json",
   [string]$InstallDir = "$HOME\.local\bin",
+  [string]$NpmFallbackPackage = "github:sir-ad/Phantom",
   [switch]$Upgrade
 )
 
@@ -41,12 +42,26 @@ function Check-Node {
 }
 
 function Install-NpmFallback {
+  $failed = $false
   try {
-    npm install -g @phantompm/cli
+    Write-Info "Falling back to npm install from GitHub ($NpmFallbackPackage)"
+    npm install -g $NpmFallbackPackage
     Write-Info "Installed via npm fallback. Run: phantom --version"
   }
   catch {
-    Fail "npm fallback install failed"
+    $failed = $true
+  }
+
+  if ($failed) {
+    Write-Warn "npm fallback install failed."
+    try {
+      npx --yes $NpmFallbackPackage --help | Out-Null
+      Write-Warn "Temporary usage without install: npx --yes $NpmFallbackPackage --help"
+    }
+    catch {
+      # no-op: keep primary failure below
+    }
+    Fail "fallback install failed"
   }
 }
 

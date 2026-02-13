@@ -13,8 +13,14 @@
 ## Install
 
 ```bash
-# Install PHANTOM CLI now
+# Recommended: GitHub-hosted installer
 curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
+
+# npm global install directly from GitHub
+npm install -g github:sir-ad/Phantom
+
+# npx run without global install
+npx -y github:sir-ad/Phantom --help
 ```
 
 ## Upgrade
@@ -66,6 +72,7 @@ phantom prd create "Auth System"
 | Runtime health command | Real |
 | Integration scan/connect/doctor | Beta |
 | MCP server tools and resources | Beta |
+| One-line GitHub installer (`curl .../scripts/install.sh`) | Real |
 | Hosted one-line endpoint `phantom.pm/install` | Planned |
 | Hosted module marketplace | Planned |
 

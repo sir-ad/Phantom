@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "version": "1.0.0",
+  "published_at": "2026-02-13T00:00:00.000Z",
+  "assets": [],
+  "fallback": {
+    "npm_package": "github:sir-ad/Phantom",
+    "npx_package": "github:sir-ad/Phantom",
+    "minimum_node": "18.0.0"
+  }
+}

@@ -92,7 +92,7 @@ exec node "$SCRIPT_DIR/lib/phantom-cli.cjs" "$@"
       },
     ],
     fallback: {
-      npm_package: '@phantompm/cli',
+      npm_package: 'github:sir-ad/Phantom',
       minimum_node: '18.0.0',
     },
   };

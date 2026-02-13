@@ -1,13 +1,15 @@
 #!/usr/bin/env sh
 # PHANTOM installer
-# Intended endpoint target: https://phantom.pm/install
+# Intended endpoint target: GitHub-hosted installer script
 
 set -eu
 
-PHANTOM_MANIFEST_URL="${PHANTOM_MANIFEST_URL:-https://phantom.pm/releases/manifest.json}"
+PHANTOM_MANIFEST_URL="${PHANTOM_MANIFEST_URL:-https://raw.githubusercontent.com/sir-ad/Phantom/main/releases/manifest.json}"
 PHANTOM_INSTALL_DIR="${PHANTOM_INSTALL_DIR:-$HOME/.local/bin}"
 PHANTOM_UPGRADE="${PHANTOM_UPGRADE:-0}"
 PHANTOM_COLOR="${PHANTOM_COLOR:-1}"
+PHANTOM_NPM_FALLBACK_PACKAGE="${PHANTOM_NPM_FALLBACK_PACKAGE:-github:sir-ad/Phantom}"
+PHANTOM_NPX_FALLBACK_PACKAGE="${PHANTOM_NPX_FALLBACK_PACKAGE:-github:sir-ad/Phantom}"
 
 show_banner() {
   if [ "$PHANTOM_COLOR" = "1" ]; then
@@ -269,12 +271,19 @@ setup_path() {
 
 fallback_npm() {
   if command -v npm >/dev/null 2>&1; then
-    warn "falling back to npm install"
-    npm install -g @phantompm/cli || fail "fallback npm install failed"
-    log "Installed via npm fallback. Run: phantom --version"
-    return
+    warn "falling back to npm install from GitHub ($PHANTOM_NPM_FALLBACK_PACKAGE)"
+    if npm install -g "$PHANTOM_NPM_FALLBACK_PACKAGE"; then
+      log "Installed via npm fallback. Run: phantom --version"
+      return
+    fi
+    warn "npm fallback install failed"
   fi
-  fail "npm unavailable and binary install path failed"
+
+  if command -v npx >/dev/null 2>&1; then
+    warn "global install failed. You can run PHANTOM without installing:"
+    warn "npx -y $PHANTOM_NPX_FALLBACK_PACKAGE --help"
+  fi
+  fail "binary install failed and npm fallback could not complete"
 }
 
 run_post_install_checks() {
