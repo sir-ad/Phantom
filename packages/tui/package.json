@@ -1,0 +1,29 @@
+{
+  "name": "@phantom/tui",
+  "version": "1.0.0",
+  "description": "Phantom Terminal UI - Matrix-themed TUI",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.tsx"
+  },
+  "dependencies": {
+    "@phantom/core": "*",
+    "ink": "^5.0.1",
+    "ink-text-input": "^6.0.0",
+    "ink-spinner": "^5.0.0",
+    "ink-select-input": "^6.0.0",
+    "ink-big-text": "^2.0.0",
+    "ink-gradient": "^3.0.0",
+    "ink-box": "^2.0.0",
+    "react": "^18.3.1",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3"
+  }
+}

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: PHANTOM Docs
+    url: https://github.com/sir-ad/phantom
+    about: Read the docs and roadmap before filing issues.

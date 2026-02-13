@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install PHANTOM</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-bg"></div>
+  <header class="top-nav">
+    <a href="/" class="brand">PHANTOM</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/docs">Docs</a>
+      <a href="/modules">Modules</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero hero-sm">
+      <p class="eyebrow">Install</p>
+      <h1>Install in one line</h1>
+      <div class="install-block">
+        <code>curl -fsSL phantom.pm/install | sh</code>
+      </div>
+      <p class="status-badge">Status: Beta (installer scripts implemented; hosted endpoint pending).</p>
+    </section>
+
+    <section class="panel">
+      <h2>Local testing (today)</h2>
+      <pre>npm run build
+npm run release:local
+npm run installer:test-local</pre>
+    </section>
+
+    <section class="panel">
+      <h2>Fallback install</h2>
+      <pre>npm install -g @phantompm/cli
+phantom --version
+phantom doctor</pre>
+    </section>
+  </main>
+</body>
+</html>

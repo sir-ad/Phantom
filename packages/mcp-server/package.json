@@ -1,0 +1,19 @@
+{
+  "name": "@phantom/mcp-server",
+  "version": "1.0.0",
+  "description": "Phantom MCP Core Server",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@phantom/core": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0"
+  }
+}

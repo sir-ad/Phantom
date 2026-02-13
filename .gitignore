@@ -1,0 +1,19 @@
+node_modules/
+.phantom/
+.tmp-*
+.claude/
+
+# keep planning/docs local only
+docs/
+launch/
+*.md
+*.markdown
+*.txt
+
+# local release/test artifacts
+releases/local/
+releases/manifest.local.json
+packages/*/dist/
+
+# logs and misc
+*.log

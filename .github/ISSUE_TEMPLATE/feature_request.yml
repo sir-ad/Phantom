@@ -1,0 +1,26 @@
+name: Feature Request
+description: Propose a new capability for PHANTOM
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / JTBD
+      description: What user problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe commands, workflows, outputs, and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and Status
+      description: Mark whether this should be Real, Beta, or Planned in docs.
+    validations:
+      required: true

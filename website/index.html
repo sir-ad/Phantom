@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PHANTOM | PM Operating System</title>
+  <meta name="description" content="The invisible force behind every great product. Open source PM operating system for the terminal age." />
+  <meta property="og:title" content="PHANTOM | PM Operating System" />
+  <meta property="og:description" content="Install PM superpowers in one line." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://phantom.pm" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-bg"></div>
+  <header class="top-nav">
+    <a href="/" class="brand">PHANTOM</a>
+    <nav>
+      <a href="/install">Install</a>
+      <a href="/docs">Docs</a>
+      <a href="/modules">Modules</a>
+      <a href="https://github.com/sir-ad/phantom" target="_blank" rel="noreferrer">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">PM Operating System</p>
+      <pre class="ascii" aria-hidden="true">░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
+░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
+░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀</pre>
+      <h1>The invisible force behind every great product.</h1>
+      <p class="sub">
+        Open source PM operating system for the terminal age.
+        Runs local-first. Connects to your tools. Turns requests into PM-grade execution.
+      </p>
+
+      <div class="install-block">
+        <code id="install-cmd">curl -fsSL phantom.pm/install | sh</code>
+        <button id="copy-btn" type="button">Copy</button>
+      </div>
+      <p id="copy-state" class="copy-state" aria-live="polite"></p>
+
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="/install">Install Now</a>
+        <a class="btn btn-secondary" href="https://github.com/sir-ad/phantom" target="_blank" rel="noreferrer">Star on GitHub</a>
+      </div>
+
+      <ul class="stats">
+        <li><strong>100%</strong> Local-first mode</li>
+        <li><strong>MCP</strong> Agent/IDE integrations</li>
+        <li><strong>CLI + TUI</strong> PM workflows</li>
+      </ul>
+    </section>
+
+    <section class="panel terminal">
+      <h2>Live Command Flow</h2>
+      <pre>$ phantom "Should we add social login?"
+[SWARM ACTIVATED] 7 agents deployed
+Strategist: competitor parity is high
+Analyst: signup drop-off suggests strong impact
+Builder: implementation effort 5 story points
+CONSENSUS: YES (84% confidence)</pre>
+      <p class="status-badge">Demo Mode: sample output for launch preview.</p>
+    </section>
+
+    <section class="features">
+      <article class="panel">
+        <h3>Context Engine <span class="tag real">Real</span></h3>
+        <p>Indexes code and docs locally with searchable context for PM decisions.</p>
+      </article>
+      <article class="panel">
+        <h3>Swarm Analysis <span class="tag beta">Beta</span></h3>
+        <p>Parallel agent perspectives with consensus scoring and recommendation output.</p>
+      </article>
+      <article class="panel">
+        <h3>MCP Core <span class="tag beta">Beta</span></h3>
+        <p>Tool contracts for context, PRD generation, swarm analysis, and PM→Dev bridge.</p>
+      </article>
+      <article class="panel">
+        <h3>One-Line Install <span class="tag beta">Beta</span></h3>
+        <p>Manifest-driven installer with checksum verification and npm fallback path.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>PHANTOM • Open source PM OS</p>
+  </footer>
+  <script src="./site.js" defer></script>
+</body>
+</html>

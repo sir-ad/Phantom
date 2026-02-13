@@ -1,0 +1,39 @@
+{
+  "name": "phantom",
+  "version": "1.0.0",
+  "description": "The invisible force behind every great product. Open source PM operating system for the terminal age.",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@phantom/core && npm run build --workspace=@phantom/mcp-server && npm run build --workspace=@phantom/modules && npm run build --workspace=@phantom/tui && npm run build --workspace=@phantom/cli",
+    "dev": "npm run dev --workspace=packages/cli",
+    "website:dev": "node scripts/serve-website.mjs",
+    "phantom": "node packages/cli/dist/index.js",
+    "typecheck": "npm run build",
+    "lint": "npm run typecheck",
+    "test": "npm run build && node --test tests/**/*.test.mjs",
+    "release:local": "npm run build && node scripts/release/build-local-install-artifacts.mjs",
+    "installer:test-local": "npm run build && node scripts/release/test-local-installer.mjs",
+    "clean": "rm -rf packages/*/dist"
+  },
+  "keywords": [
+    "product-management",
+    "ai",
+    "cli",
+    "tui",
+    "phantom",
+    "pm",
+    "agent",
+    "terminal"
+  ],
+  "author": "PhantomPM",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

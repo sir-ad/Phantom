@@ -1,0 +1,35 @@
+name: Bug Report
+description: Report a reproducible bug in PHANTOM
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction Steps
+      description: Include exact commands and inputs.
+      placeholder: |
+        1. npm run build
+        2. npm run phantom -- ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Node version, shell, PHANTOM_HOME, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Output
+      description: Paste relevant command output, especially `phantom doctor`.

@@ -1,0 +1,25 @@
+{
+  "name": "@phantom/core",
+  "version": "1.0.0",
+  "description": "Phantom Core Engine - Context, Modules, Agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.1.0",
+    "glob": "^11.0.0",
+    "chokidar": "^3.6.0",
+    "conf": "^13.0.1",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/crypto-js": "^4.2.2"
+  }
+}

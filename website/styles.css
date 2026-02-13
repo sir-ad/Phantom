@@ -1,0 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0d1117;
+  --bg-elev: #161b22;
+  --border: #2a323c;
+  --text: #e6edf3;
+  --muted: #95a0ab;
+  --green: #00ff41;
+  --blue: #00d4ff;
+  --orange: #ff6b35;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 15% 20%, #132026 0%, #0d1117 45%, #090d12 100%);
+  min-height: 100%;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(0, 255, 65, 0.07), transparent 30%),
+    linear-gradient(300deg, rgba(0, 212, 255, 0.07), transparent 30%);
+}
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+  background: rgba(13, 17, 23, 0.7);
+  position: sticky;
+  top: 0;
+}
+
+.top-nav nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.brand {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--green);
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.hero {
+  padding: 2rem 0 1.25rem;
+  animation: fade-up 0.45s ease;
+}
+
+.hero-sm {
+  padding-bottom: 0.25rem;
+}
+
+.eyebrow {
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.72rem;
+  margin-bottom: 0.3rem;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  margin: 0.5rem 0;
+  line-height: 1.08;
+}
+
+.sub {
+  color: var(--muted);
+  max-width: 720px;
+}
+
+.ascii {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--green);
+  opacity: 0.9;
+  margin: 0.6rem 0 1rem;
+}
+
+.install-block {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.install-block code,
+pre {
+  font-family: 'IBM Plex Mono', monospace;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  color: #befccf;
+  overflow: auto;
+}
+
+.install-block button {
+  border: 1px solid var(--green);
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--green);
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.copy-state {
+  min-height: 1.2rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+
+.hero-ctas {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.64rem 0.95rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #04200c;
+}
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.stats {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.stats li {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem;
+  color: var(--muted);
+}
+
+.stats strong {
+  color: var(--text);
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+  background: rgba(11, 16, 21, 0.73);
+  margin: 1rem 0;
+}
+
+.terminal pre {
+  margin-top: 0.5rem;
+}
+
+.status-badge {
+  color: var(--orange);
+  font-size: 0.9rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  padding: 0.14rem 0.35rem;
+  border-radius: 7px;
+  margin-left: 0.3rem;
+}
+
+.tag.real {
+  background: rgba(0, 255, 65, 0.15);
+  color: #8ef7ab;
+}
+
+.tag.beta {
+  background: rgba(0, 212, 255, 0.18);
+  color: #9ceeff;
+}
+
+.link-list {
+  padding-left: 1.2rem;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 1rem 0 2rem;
+}
+
+@media (max-width: 880px) {
+  .stats,
+  .features {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
