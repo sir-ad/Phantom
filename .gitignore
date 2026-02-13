@@ -2,10 +2,39 @@ node_modules/
 .phantom/
 .tmp-*
 .claude/
+.agent/
+.agents/
+.cline/
+.codebuddy/
+.commandcode/
+.continue/
+.crush/
+.cursor/
+.factory/
+.goose/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.windsurf/
+.zencoder/
 
 # keep planning/docs local only
 docs/
 launch/
+PLAN.md
+REPO_SETUP.md
+PHANTOM_AUDIT_AND_PLAN.md
 
 # local release/test artifacts
 releases/local/

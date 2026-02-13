@@ -1,16 +1,11 @@
 #!/usr/bin/env node
 
-// ░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
-// ░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
-// ░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀
-//
-// PHANTOM — The invisible force behind every great product.
-// Open source PM operating system for the terminal age.
-
+import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'fs';
+import { basename, join, resolve } from 'path';
 import { Command } from 'commander';
 import {
-  PHANTOM_VERSION,
   PHANTOM_ASCII,
+  PHANTOM_VERSION,
   TAGLINE,
   FRAMEWORKS,
   getConfig,
@@ -24,44 +19,48 @@ import {
   scanIntegrations as scanIntegrationTargets,
   connectIntegration as connectIntegrationTarget,
   doctorIntegrations,
-  type IntegrationScanResult,
-  type IntegrationDoctorResult,
   type IntegrationTarget,
+  analyzeScreenPath,
+  auditScreensPath,
+  generateRealDocumentation,
+  getRealNudges,
+  getRealProducts,
+  getRuntimeHealth,
+  runDeterministicSimulation,
 } from '@phantom/core';
-import {
-  PhantomMCPServer,
-  runStdioServer,
-} from '@phantom/mcp-server';
+import { PhantomMCPServer, runStdioServer } from '@phantom/mcp-server';
 import {
   theme,
+  box,
   runBootSequence,
   showFirstRunSetup,
-  renderDashboard,
-  getDefaultDashboardData,
-  renderHealthDashboard,
-  getDefaultHealthData,
   renderModuleInstall,
   renderModuleStore,
   renderSwarmResult,
-  runSwarmAnimation,
-  renderScreenAnalysis,
-  renderUXAudit,
-  getExampleScreenAnalysis,
-  getExampleUXAudit,
+  renderHealthDashboard,
   renderNudge,
-  renderAchievement,
-  renderStreak,
-  renderSimulation,
-  getExampleNudges,
-  renderToolPalette,
-  getDefaultToolCategories,
-  box,
-  gradientBar,
 } from '@phantom/tui';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, resolve, basename } from 'path';
 
 const program = new Command();
+
+function printJson(payload: unknown): void {
+  console.log(JSON.stringify(payload, null, 2));
+}
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+}
+
+function failNotImplemented(command: string): void {
+  console.error('');
+  console.error(theme.error(`  ${command} is not implemented in real runtime mode.`));
+  console.error(theme.secondary('  Use implemented commands: status, doctor, context, swarm, screen, health, docs, integrate, mcp.'));
+  console.error('');
+  process.exitCode = 1;
+}
 
 program
   .name('phantom')
@@ -69,7 +68,6 @@ program
   .version(PHANTOM_VERSION, '-v, --version')
   .action(async () => {
     const config = getConfig();
-
     if (config.isFirstRun()) {
       await runBootSequence();
       await showFirstRunSetup();
@@ -77,81 +75,36 @@ program
       return;
     }
 
+    const cfg = config.get();
+    const stats = getContextEngine().getStats();
+    const lines = [
+      '',
+      `  ${theme.secondary('Version:')} ${PHANTOM_VERSION}`,
+      `  ${theme.secondary('Active project:')} ${cfg.activeProject || 'none'}`,
+      `  ${theme.secondary('Context files:')} ${stats.totalFiles}`,
+      `  ${theme.secondary('Installed modules:')} ${cfg.installedModules.length}`,
+      `  ${theme.secondary('Integrations:')} ${cfg.integrations.length}`,
+      '',
+      `  ${theme.dim('Try: phantom --help')}`,
+      '',
+    ];
     console.log('');
     console.log(theme.green(PHANTOM_ASCII));
-    console.log('');
-    console.log(theme.dim(`  v${PHANTOM_VERSION} — ${TAGLINE}`));
-    console.log('');
-    console.log(renderDashboard(getDefaultDashboardData()));
+    console.log(box(lines.join('\n'), TAGLINE, 60));
   });
 
-// ─── CONTEXT ─────────────────────────────────────────────────
-const contextCommand = program
-  .command('context')
-  .description('Manage product context')
-  .action(() => {
-    const config = getConfig();
-    const project = config.getActiveProject();
-
-    if (!project) {
-      console.log('');
-      console.log(theme.warning('  No active project. Add context first:'));
-      console.log('');
-      console.log(`  ${theme.accent('phantom context add ./path-to-project')}`);
-      console.log('');
-      return;
-    }
-
-    console.log('');
-    console.log(theme.title('  PRODUCT CONTEXT'));
-    console.log('');
-    console.log(`  ${theme.secondary('Project:')} ${theme.highlight(project.name)}`);
-    console.log(`  ${theme.secondary('Path:')}    ${project.path}`);
-    console.log(`  ${theme.secondary('Added:')}   ${project.createdAt}`);
-    console.log('');
-  });
+const contextCommand = program.command('context').description('Manage product context');
 
 contextCommand
   .command('add <path>')
-  .description('Add a codebase, design files, or documents to context')
-  .action(async (targetPath: string) => {
+  .description('Add project files into deterministic local context index')
+  .option('--json', 'Output as JSON')
+  .action(async (targetPath: string, options: { json?: boolean }) => {
     const resolvedPath = resolve(targetPath);
-    console.log('');
-    console.log(theme.title('  INGESTING CONTEXT'));
-    console.log(theme.secondary(`  Path: ${resolvedPath}`));
-    console.log('');
-
     const contextEngine = getContextEngine();
 
     try {
-      process.stdout.write(`  ${theme.dim('Scanning files...')}`);
       const stats = await contextEngine.addPath(resolvedPath);
-
-      console.log(` ${theme.check}`);
-      console.log('');
-      console.log(`  ${theme.success('Context ingested successfully.')}`);
-      console.log('');
-      console.log(`  ${theme.secondary('Files indexed:')} ${theme.highlight(stats.totalFiles.toString())}`);
-      console.log(`  ${theme.secondary('Total size:')}    ${theme.highlight(formatSize(stats.totalSize))}`);
-      console.log(`  ${theme.secondary('Health score:')}  ${gradientBar(stats.healthScore, 10)} ${stats.healthScore}%`);
-      console.log('');
-
-      if (Object.keys(stats.byType).length > 0) {
-        console.log(`  ${theme.title('By Type:')}`);
-        for (const [type, count] of Object.entries(stats.byType)) {
-          console.log(`    ${theme.dim('•')} ${theme.secondary(type)}: ${count}`);
-        }
-        console.log('');
-      }
-
-      if (Object.keys(stats.byLanguage).length > 0) {
-        console.log(`  ${theme.title('Languages:')}`);
-        for (const [lang, count] of Object.entries(stats.byLanguage)) {
-          console.log(`    ${theme.dim('•')} ${theme.secondary(lang)}: ${count}`);
-        }
-        console.log('');
-      }
-
       const config = getConfig();
       config.addProject({
         name: basename(resolvedPath) || 'project',
@@ -160,157 +113,225 @@ contextCommand
         createdAt: new Date().toISOString(),
         lastAccessed: new Date().toISOString(),
       });
-    } catch (err: any) {
-      console.log(` ${theme.cross}`);
+
+      if (options.json) {
+        printJson({ path: resolvedPath, stats });
+        return;
+      }
+
       console.log('');
-      console.log(theme.error(`  Error: ${err.message}`));
+      console.log(theme.success('  Context ingested successfully.'));
+      console.log(`  ${theme.secondary('Path:')} ${resolvedPath}`);
+      console.log(`  ${theme.secondary('Files indexed:')} ${stats.totalFiles}`);
+      console.log(`  ${theme.secondary('Total size:')} ${formatSize(stats.totalSize)}`);
+      console.log(`  ${theme.secondary('Health score:')} ${stats.healthScore}%`);
       console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown context indexing error';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
     }
   });
 
-// ─── INSTALL ─────────────────────────────────────────────────
+contextCommand
+  .description('Show active project context')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
+    const config = getConfig();
+    const project = config.getActiveProject();
+    const stats = getContextEngine().getStats();
+    const payload = {
+      activeProject: project || null,
+      contextStats: stats,
+    };
+
+    if (options.json) {
+      printJson(payload);
+      return;
+    }
+
+    console.log('');
+    if (!project) {
+      console.log(theme.warning('  No active project. Add context first: phantom context add ./path'));
+      console.log('');
+      return;
+    }
+
+    console.log(theme.title('  PRODUCT CONTEXT'));
+    console.log(`  ${theme.secondary('Project:')} ${project.name}`);
+    console.log(`  ${theme.secondary('Path:')} ${project.path}`);
+    console.log(`  ${theme.secondary('Indexed files:')} ${stats.totalFiles}`);
+    console.log(`  ${theme.secondary('Health score:')} ${stats.healthScore}%`);
+    console.log('');
+  });
+
 program
   .command('install <module>')
-  .description('Install a Phantom module')
-  .action(async (moduleName: string) => {
-    const mm = getModuleManager();
-
+  .description('Install a built-in Phantom module')
+  .option('--json', 'Output as JSON')
+  .action(async (moduleName: string, options: { json?: boolean }) => {
     try {
-      const module = mm.install(moduleName);
-      await renderModuleInstall(module);
-    } catch (err: any) {
-      console.log('');
-      console.log(theme.error(`  Error: ${err.message}`));
-      console.log('');
-
-      console.log(theme.secondary('  Available modules:'));
-      for (const mod of mm.getAvailableModules()) {
-        console.log(`    ${theme.dim('•')} @phantom/${theme.highlight(mod.name)}`);
+      const mm = getModuleManager();
+      const mod = mm.install(moduleName);
+      if (options.json) {
+        printJson({ status: 'ok', module: mod });
+        return;
       }
-      console.log('');
+      await renderModuleInstall(mod);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to install module';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
     }
   });
 
-// ─── MODULES ─────────────────────────────────────────────────
 program
   .command('modules')
   .alias('store')
-  .description('Browse the module store')
-  .action(() => {
+  .description('Browse built-in module registry')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
     const mm = getModuleManager();
     const config = getConfig();
-    console.log(renderModuleStore(mm.getAvailableModules(), config.get().installedModules));
-  });
-
-// ─── INTEGRATIONS ────────────────────────────────────────────
-const integrateCommand = program
-  .command('integrate')
-  .description('Scan, connect, and diagnose integrations')
-  .argument('[target]', 'integration target to connect')
-  .action((target?: string) => {
-    if (!target) {
-      console.log('');
-      console.log(theme.secondary('  Usage examples:'));
-      console.log(`  ${theme.accent('phantom integrate scan')}`);
-      console.log(`  ${theme.accent('phantom integrate github')}`);
-      console.log(`  ${theme.accent('phantom integrate doctor')}`);
-      console.log('');
+    const payload = {
+      available: mm.getAvailableModules(),
+      installed: config.get().installedModules,
+    };
+    if (options.json) {
+      printJson(payload);
       return;
     }
+    console.log(renderModuleStore(payload.available, payload.installed));
+  });
 
-    const normalized = target.toLowerCase();
-    if (!isKnownIntegrationTarget(normalized)) {
+const integrateCommand = program.command('integrate').description('Integration operations');
+
+function connectIntegrationAndPrint(target: string, options: { json?: boolean }): void {
+  const normalized = target.toLowerCase();
+  if (!isKnownIntegrationTarget(normalized)) {
+    const error = `Unsupported integration target: ${target}`;
+    if (options.json) {
+      printJson({ status: 'error', error, supported: KNOWN_INTEGRATION_TARGETS });
+    } else {
       console.log('');
-      console.log(theme.error(`  Unsupported integration target: ${target}`));
+      console.log(theme.error(`  ${error}`));
       console.log(`  ${theme.secondary(`Supported: ${KNOWN_INTEGRATION_TARGETS.join(', ')}`)}`);
       console.log('');
-      return;
     }
+    process.exitCode = 1;
+    return;
+  }
 
-    const connected = connectIntegrationTarget(normalized as IntegrationTarget, process.cwd());
-
-    console.log('');
-    console.log(theme.success(`  Integration connected: ${connected.name}`));
-    if (connected.detectedPath) {
-      console.log(`  ${theme.secondary('Detected at:')} ${connected.detectedPath}`);
-    } else {
-      console.log(`  ${theme.warning('No workspace signal detected; saved as manual connection.')}`);
-    }
-    console.log(`  ${theme.secondary('Run `phantom integrate doctor` to validate status.')}`);
-    console.log('');
-  });
+  const connected = connectIntegrationTarget(normalized as IntegrationTarget, process.cwd());
+  if (options.json) {
+    printJson({ status: 'ok', integration: connected });
+    return;
+  }
+  console.log('');
+  console.log(theme.success(`  Integration connected: ${connected.name}`));
+  if (connected.detectedPath) {
+    console.log(`  ${theme.secondary('Detected at:')} ${connected.detectedPath}`);
+  }
+  console.log('');
+}
 
 integrateCommand
   .command('scan')
-  .description('Scan workspace for likely integration targets')
-  .action(() => {
+  .description('Scan workspace for integration signals')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
     const scan = scanIntegrationTargets(process.cwd());
-    const detected = scan.filter((item: IntegrationScanResult) => item.detected);
-    console.log('');
-    console.log(theme.title('  INTEGRATION SCAN'));
-    console.log('');
-
-    if (detected.length === 0) {
-      console.log(`  ${theme.warning('No integrations detected from workspace heuristics.')}`);
-      console.log('');
+    if (options.json) {
+      printJson({ integrations: scan });
       return;
     }
 
-    for (const item of detected) {
-      console.log(`  ${theme.check} ${theme.secondary(item.target)} ${theme.dim(`(${item.reason})`)}`);
-      if (item.detectedPath) {
-        console.log(`    ${theme.dim(item.detectedPath)}`);
-      }
+    console.log('');
+    console.log(theme.title('  INTEGRATION SCAN'));
+    console.log('');
+    for (const item of scan) {
+      const mark = item.detected ? theme.check : theme.warning_icon;
+      console.log(`  ${mark} ${item.target} ${theme.dim(`(${item.reason})`)}`);
+      if (item.detectedPath) console.log(`    ${theme.dim(item.detectedPath)}`);
     }
     console.log('');
   });
 
 integrateCommand
   .command('doctor')
-  .description('Run health checks for configured integrations')
-  .action(() => {
+  .description('Validate configured integrations')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
     const checks = doctorIntegrations(process.cwd());
+    if (options.json) {
+      printJson({ checks });
+      return;
+    }
 
     console.log('');
     console.log(theme.title('  INTEGRATION DOCTOR'));
     console.log('');
-
-    if (!checks.some(check => check.configured || check.detected)) {
-      console.log(`  ${theme.warning('No configured integrations yet.')}`);
-      console.log(`  ${theme.secondary('Run: phantom integrate scan')}`);
-      console.log('');
-      return;
-    }
-
-    for (const check of checks.filter((c: IntegrationDoctorResult) => c.configured || c.detected)) {
+    for (const check of checks.filter(c => c.configured || c.detected)) {
       const mark = check.healthy ? theme.check : theme.warning_icon;
-      const state = check.healthy ? 'healthy' : 'needs-attention';
-      console.log(`  ${mark} ${check.target} (${state})`);
-      console.log(`    ${theme.dim(check.reason)}`);
-      if (check.detectedPath) {
-        console.log(`    ${theme.dim(check.detectedPath)}`);
-      }
+      console.log(`  ${mark} ${check.target} ${theme.dim(`(${check.reason})`)}`);
+      if (check.detectedPath) console.log(`    ${theme.dim(check.detectedPath)}`);
+    }
+    if (!checks.some(c => c.configured || c.detected)) {
+      console.log(theme.warning('  No integration signals or configured targets yet.'));
     }
     console.log('');
   });
 
-// ─── MCP ─────────────────────────────────────────────────────
-const mcpCommand = program
-  .command('mcp')
-  .description('MCP server commands');
+integrateCommand
+  .command('connect <target>')
+  .description('Connect a specific integration target')
+  .option('--json', 'Output as JSON')
+  .action((target: string, options: { json?: boolean }) => {
+    connectIntegrationAndPrint(target, options);
+  });
+
+integrateCommand
+  .description('Show integration usage')
+  .action(() => {
+    console.log('');
+    console.log(`  ${theme.secondary('Usage:')}`);
+    console.log(`  ${theme.accent('phantom integrate scan --json')}`);
+    console.log(`  ${theme.accent('phantom integrate connect github --json')}`);
+    console.log(`  ${theme.accent('phantom integrate doctor --json')}`);
+    console.log(`  ${theme.accent('phantom integrate github --json')}`);
+    console.log('');
+  });
+
+const mcpCommand = program.command('mcp').description('MCP server commands');
 
 mcpCommand
   .command('tools')
   .description('List supported MCP tools')
-  .action(() => {
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
     const server = new PhantomMCPServer();
     const tools = server.listTools();
-
+    if (options.json) {
+      printJson({ tools });
+      return;
+    }
     console.log('');
     console.log(theme.title('  MCP TOOLS'));
     console.log('');
     for (const tool of tools) {
-      console.log(`  ${theme.check} ${theme.secondary(tool.name)}`);
+      console.log(`  ${theme.check} ${tool.name}`);
       console.log(`    ${theme.dim(tool.description)}`);
     }
     console.log('');
@@ -319,17 +340,16 @@ mcpCommand
 mcpCommand
   .command('serve')
   .description('Run MCP server over stdio')
-  .option('--mode <mode>', 'transport mode (stdio)', 'stdio')
+  .option('--mode <mode>', 'transport mode', 'stdio')
   .action(async (options: { mode: string }) => {
     if (options.mode !== 'stdio') {
       console.log('');
-      console.log(theme.warning(`  Unsupported mode '${options.mode}'. Falling back to stdio.`));
+      console.log(theme.warning(`  Unsupported mode '${options.mode}', using stdio.`));
       console.log('');
     }
     await runStdioServer();
   });
 
-// ─── STATUS ──────────────────────────────────────────────────
 program
   .command('status')
   .description('Show Phantom runtime status')
@@ -337,12 +357,10 @@ program
   .action((options: { json?: boolean }) => {
     const cfgMgr = getConfig();
     const cfg = cfgMgr.get();
-    const project = cfgMgr.getActiveProject();
-
     const payload = {
       version: PHANTOM_VERSION,
       firstRun: cfg.firstRun,
-      activeProject: project ? { name: project.name, path: project.path } : null,
+      activeProject: cfgMgr.getActiveProject() || null,
       installedModules: cfg.installedModules,
       integrations: cfg.integrations,
       dataMode: cfg.dataMode,
@@ -352,34 +370,24 @@ program
       mcp: cfg.mcp,
       security: cfg.security,
     };
-
     if (options.json) {
-      console.log(JSON.stringify(payload, null, 2));
+      printJson(payload);
       return;
     }
-
     console.log('');
     console.log(theme.title('  PHANTOM STATUS'));
-    console.log('');
     console.log(`  ${theme.secondary('Version:')} ${payload.version}`);
-    console.log(`  ${theme.secondary('First Run:')} ${payload.firstRun ? 'yes' : 'no'}`);
     console.log(`  ${theme.secondary('Active Project:')} ${payload.activeProject?.name || 'none'}`);
     console.log(`  ${theme.secondary('Installed Modules:')} ${payload.installedModules.length}`);
     console.log(`  ${theme.secondary('Integrations:')} ${payload.integrations.length}`);
-    console.log(`  ${theme.secondary('Data Mode:')} ${payload.dataMode}`);
-    console.log(`  ${theme.secondary('Permission Level:')} ${payload.permissionLevel}`);
-    console.log(`  ${theme.secondary('Install Channel:')} ${payload.installation.channel}`);
-    console.log(`  ${theme.secondary('MCP Enabled:')} ${payload.mcp.enabled ? 'yes' : 'no'}`);
-    console.log(`  ${theme.secondary('MCP Mode:')} ${payload.mcp.server_mode}`);
-    console.log(`  ${theme.secondary('Audit Log:')} ${payload.security.audit_log_path}`);
     console.log('');
   });
 
-// ─── DOCTOR ──────────────────────────────────────────────────
 program
   .command('doctor')
   .description('Run local environment and Phantom health checks')
-  .action(() => {
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
     const cfgMgr = getConfig();
     const cfg = cfgMgr.get();
     const checks = [
@@ -389,14 +397,9 @@ program
         detail: cfgMgr.getConfigDir(),
       },
       {
-        name: 'Active project configured',
-        ok: Boolean(cfgMgr.getActiveProject()),
-        detail: cfgMgr.getActiveProject()?.name || 'none',
-      },
-      {
-        name: 'Installed modules',
-        ok: cfg.installedModules.length > 0,
-        detail: `${cfg.installedModules.length}`,
+        name: 'Context entries present',
+        ok: getContextEngine().getEntries().length > 0,
+        detail: `${getContextEngine().getEntries().length}`,
       },
       {
         name: 'CLI build artifact',
@@ -415,215 +418,266 @@ program
         detail: 'installation/mcp/integrations/security',
       },
     ];
+    const passCount = checks.filter(c => c.ok).length;
+    const payload = {
+      checks,
+      summary: {
+        passing: passCount,
+        total: checks.length,
+        healthy: passCount === checks.length,
+      },
+    };
+
+    if (options.json) {
+      printJson(payload);
+      return;
+    }
 
     console.log('');
     console.log(theme.title('  PHANTOM DOCTOR'));
     console.log('');
     for (const check of checks) {
       const icon = check.ok ? theme.check : theme.warning_icon;
-      const name = check.name.padEnd(26);
-      console.log(`  ${icon} ${theme.secondary(name)} ${theme.dim(check.detail)}`);
+      console.log(`  ${icon} ${check.name.padEnd(26)} ${theme.dim(check.detail)}`);
     }
-
-    const passCount = checks.filter(c => c.ok).length;
-    const total = checks.length;
     console.log('');
-    if (passCount === total) {
-      console.log(theme.success(`  All checks passed (${passCount}/${total}).`));
+    if (payload.summary.healthy) {
+      console.log(theme.success(`  All checks passed (${passCount}/${checks.length}).`));
     } else {
-      console.log(theme.warning(`  Some checks need attention (${passCount}/${total} passing).`));
+      console.log(theme.warning(`  Some checks need attention (${passCount}/${checks.length}).`));
     }
     console.log('');
   });
 
-// ─── PRD ─────────────────────────────────────────────────────
-program
-  .command('prd <action> [title]')
-  .description('PRD operations (create, list, export)')
-  .action(async (action: string, title?: string) => {
-    switch (action) {
-      case 'create': {
-        if (!title) {
-          console.log(theme.error('  Please provide a title: phantom prd create "Feature Name"'));
-          return;
-        }
+const prdCommand = program.command('prd').description('PRD operations');
 
-        console.log('');
-        console.log(theme.title('  📋 GENERATING PRD'));
-        console.log(theme.secondary(`  Feature: "${title}"`));
-        console.log('');
+prdCommand
+  .command('create <title>')
+  .description('Generate deterministic PRD from title + local context')
+  .option('--out <path>', 'Output file path')
+  .option('--json', 'Output as JSON')
+  .action((title: string, options: { out?: string; json?: boolean }) => {
+    try {
+      const prd = generatePRD(title);
+      const markdown = prdToMarkdown(prd);
+      const outDir = join(process.cwd(), 'phantom-output');
+      if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
 
-        const steps = ['Analyzing context...', 'Generating requirements...', 'Writing user stories...', 'Defining success metrics...', 'Finalizing...'];
-        for (const step of steps) {
-          process.stdout.write(`  ${theme.dim(step)}`);
-          await sleep(300 + Math.random() * 400);
-          console.log(` ${theme.check}`);
-        }
+      const defaultFile = join(outDir, `${prd.id}-${title.toLowerCase().replace(/\s+/g, '-')}.md`);
+      const outputPath = options.out ? resolve(options.out) : defaultFile;
+      mkdirSync(dirnameSafe(outputPath), { recursive: true });
+      writeFileSync(outputPath, `${markdown}\n`, 'utf8');
 
-        const prd = generatePRD(title);
-        const markdown = prdToMarkdown(prd);
+      const payload = {
+        status: 'ok',
+        prd: {
+          id: prd.id,
+          title: prd.title,
+          version: prd.version,
+          sections: prd.sections.map(s => s.title),
+          evidence: prd.evidence,
+        },
+        outputPath,
+      };
 
-        const outDir = join(process.cwd(), 'phantom-output');
-        if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-        const filename = `${prd.id}-${title.toLowerCase().replace(/\s+/g, '-')}.md`;
-        const filepath = join(outDir, filename);
-        writeFileSync(filepath, markdown);
-
-        console.log('');
-        console.log(theme.success(`  ✓ PRD generated: ${title} v${prd.version}`));
-        console.log(theme.secondary(`  File: ${filepath}`));
-        console.log('');
-
-        console.log(theme.title('  Preview:'));
-        const preview = markdown
-          .split('\n')
-          .slice(0, 20)
-          .map((line: string) => `  ${theme.dim(line)}`)
-          .join('\n');
-        console.log(preview);
-        console.log(theme.dim('  ...'));
-        console.log('');
-        break;
+      if (options.json) {
+        printJson(payload);
+        return;
       }
 
-      case 'list': {
+      console.log('');
+      console.log(theme.success(`  PRD generated: ${prd.title}`));
+      console.log(`  ${theme.secondary('File:')} ${outputPath}`);
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'PRD generation failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
         console.log('');
-        console.log(theme.title('  📋 PRD LIBRARY'));
+        console.log(theme.error(`  ${message}`));
         console.log('');
-        console.log(theme.secondary('  No PRDs yet. Create one with:'));
-        console.log(`  ${theme.accent('phantom prd create "Feature Name"')}`);
-        console.log('');
-        break;
       }
-
-      default:
-        console.log(theme.error(`  Unknown PRD action: ${action}`));
-        console.log(theme.secondary('  Available: create, list, export'));
+      process.exitCode = 1;
     }
   });
 
-// ─── SWARM ───────────────────────────────────────────────────
+prdCommand
+  .command('list')
+  .description('List generated PRDs from phantom-output directory')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
+    const outDir = join(process.cwd(), 'phantom-output');
+    const items = existsSync(outDir)
+      ? readdirSync(outDir)
+          .filter(file => file.endsWith('.md'))
+          .map(file => {
+            const path = join(outDir, file);
+            return {
+              name: file,
+              path,
+              sizeBytes: statSync(path).size,
+            };
+          })
+          .sort((a, b) => a.name.localeCompare(b.name))
+      : [];
+
+    if (options.json) {
+      printJson({ files: items });
+      return;
+    }
+
+    console.log('');
+    console.log(theme.title('  PRD LIBRARY'));
+    console.log('');
+    if (items.length === 0) {
+      console.log(theme.warning('  No PRDs found in phantom-output/.'));
+    } else {
+      for (const item of items) {
+        console.log(`  ${theme.check} ${item.name} ${theme.dim(`(${formatSize(item.sizeBytes)})`)}`);
+      }
+    }
+    console.log('');
+  });
+
 program
   .command('swarm <question>')
-  .description('Deploy 7 AI agents to analyze a product question')
-  .action(async (question: string) => {
-    const swarm = getSwarm();
-
-    await runSwarmAnimation(question);
-
-    console.log(theme.dim('  Synthesizing results...'));
-    console.log('');
-
-    const result = await swarm.runSwarm(question);
-    console.log(renderSwarmResult(result));
-  });
-
-// ─── SCREEN ──────────────────────────────────────────────────
-program
-  .command('screen <action> [path]')
-  .description('Analyze or audit app screenshots')
-  .action(async (action: string, targetPath?: string) => {
-    switch (action) {
-      case 'analyze': {
-        if (!targetPath) {
-          console.log(theme.error('  Please provide a screenshot path'));
-          return;
-        }
-        console.log('');
-        console.log(theme.title(`  Analyzing: ${targetPath}`));
-        console.log('');
-        console.log(theme.warning('  Demo Mode: output uses example analysis data.'));
-        await sleep(1000);
-        console.log(renderScreenAnalysis(getExampleScreenAnalysis()));
-        break;
+  .description('Run deterministic multi-agent product analysis')
+  .option('--json', 'Output as JSON')
+  .action(async (question: string, options: { json?: boolean }) => {
+    try {
+      const result = await getSwarm().runSwarm(question);
+      if (options.json) {
+        printJson(result);
+        return;
       }
-
-      case 'audit': {
+      console.log(renderSwarmResult(result));
+      console.log(`  ${theme.dim(`Evidence count: ${result.evidence.length}`)}`);
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Swarm analysis failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
         console.log('');
-        console.log(theme.title('  Running app-wide UX audit...'));
-        console.log(theme.secondary(`  Analyzing screenshots in ${targetPath || './screenshots/'}...`));
+        console.log(theme.error(`  ${message}`));
         console.log('');
-        console.log(theme.warning('  Demo Mode: output uses example audit data.'));
-        await sleep(1500);
-        console.log(renderUXAudit(getExampleUXAudit()));
-        break;
       }
-
-      default:
-        console.log(theme.error(`  Unknown screen action: ${action}`));
-        console.log(theme.secondary('  Available: analyze, audit'));
+      process.exitCode = 1;
     }
   });
 
-// ─── HEALTH ──────────────────────────────────────────────────
+const screenCommand = program.command('screen').description('Screen analysis commands');
+
+screenCommand
+  .command('analyze <path>')
+  .description('Analyze a single screenshot with deterministic UX checks')
+  .option('--json', 'Output as JSON')
+  .action((targetPath: string, options: { json?: boolean }) => {
+    try {
+      const analysis = analyzeScreenPath(targetPath);
+      if (options.json) {
+        printJson(analysis);
+        return;
+      }
+      console.log('');
+      console.log(theme.title(`  SCREEN ANALYSIS: ${analysis.filename}`));
+      console.log(`  ${theme.secondary('Path:')} ${analysis.path}`);
+      console.log(`  ${theme.secondary('Score:')} ${analysis.score}/100`);
+      console.log(`  ${theme.secondary('Components detected:')} ${analysis.componentsDetected}`);
+      for (const issue of analysis.issues) {
+        console.log(`  ${theme.warning_icon} ${issue.severity} ${issue.message}`);
+      }
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Screen analysis failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+    }
+  });
+
+screenCommand
+  .command('audit [path]')
+  .description('Audit one image or image directory')
+  .option('--json', 'Output as JSON')
+  .action((targetPath: string | undefined, options: { json?: boolean }) => {
+    try {
+      const audit = auditScreensPath(targetPath || join(process.cwd(), 'screenshots'));
+      if (options.json) {
+        printJson(audit);
+        return;
+      }
+      console.log('');
+      console.log(theme.title('  SCREEN AUDIT'));
+      console.log(`  ${theme.secondary('Files analyzed:')} ${audit.filesAnalyzed}`);
+      console.log(`  ${theme.secondary('Overall score:')} ${audit.overallScore}/100`);
+      console.log(`  ${theme.secondary('Issues:')} HIGH=${audit.issuesBySeverity.HIGH} MED=${audit.issuesBySeverity.MED} LOW=${audit.issuesBySeverity.LOW}`);
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Screen audit failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+    }
+  });
+
 program
   .command('health')
-  .description('Show system health dashboard')
-  .action(() => {
-    console.log('');
-    console.log(theme.warning('  Demo Mode: health values are illustrative defaults.'));
-    console.log(renderHealthDashboard(getDefaultHealthData()));
-  });
-
-// ─── TOOLS ───────────────────────────────────────────────────
-program
-  .command('tools')
-  .description('Open the tool palette')
-  .action(() => {
-    console.log(renderToolPalette(getDefaultToolCategories()));
-  });
-
-// ─── FRAMEWORKS ──────────────────────────────────────────────
-program
-  .command('frameworks [action] [framework]')
-  .description('Browse and apply PM frameworks')
-  .action((action?: string, framework?: string) => {
-    if (!action || action === 'list') {
-      console.log('');
-      console.log(theme.title('  PM FRAMEWORKS'));
-      console.log(theme.secondary('  Built-in product management frameworks'));
-      console.log('');
-      for (const fw of FRAMEWORKS) {
-        console.log(`  ├── ${theme.highlight(fw.name.padEnd(28))} — ${theme.secondary(fw.desc)}`);
-      }
-      console.log('');
-      console.log(theme.secondary('  Apply a framework:'));
-      console.log(`  ${theme.accent('phantom frameworks apply rice --to backlog.csv')}`);
-      console.log('');
-    } else if (action === 'apply') {
-      console.log('');
-      console.log(theme.title(`  Applying ${framework || 'RICE'} framework...`));
-      console.log(theme.secondary('  This feature requires the relevant module to be installed.'));
-      console.log(`  ${theme.accent('phantom install @phantom/frameworks')}`);
-      console.log('');
+  .description('Show real runtime health metrics')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
+    const data = getRuntimeHealth(process.cwd());
+    if (options.json) {
+      printJson(data);
+      return;
     }
+    console.log('');
+    console.log(renderHealthDashboard(data));
+    console.log('');
   });
 
-// ─── SIMULATE ────────────────────────────────────────────────
 program
   .command('simulate <scenario>')
-  .description('Run product simulation')
-  .action(async (scenario: string) => {
+  .description('Run deterministic simulation for a product scenario')
+  .option('--json', 'Output as JSON')
+  .action((scenario: string, options: { json?: boolean }) => {
+    const result = runDeterministicSimulation(scenario);
+    if (options.json) {
+      printJson(result);
+      return;
+    }
     console.log('');
-    console.log(theme.title('  🔮 PRODUCT SIMULATION ENGINE'));
-    console.log(theme.secondary(`  Scenario: "${scenario}"`));
-    console.log('');
-    console.log(theme.warning('  Demo Mode: simulation output is illustrative.'));
-    console.log(theme.dim('  Creating 10,000 synthetic user sessions...'));
-    await sleep(2000);
-    console.log('');
-    console.log(renderSimulation(scenario));
+    console.log(theme.title('  DETERMINISTIC SIMULATION'));
+    console.log(`  ${theme.secondary('Scenario:')} ${result.scenario}`);
+    console.log(`  ${theme.secondary('Seed:')} ${result.seed}`);
+    console.log(`  ${theme.secondary('Baseline:')} ${result.metrics.baseline}`);
+    console.log(`  ${theme.secondary('Projected:')} ${result.metrics.projected}`);
+    console.log(`  ${theme.secondary('Delta (%):')} ${result.metrics.deltaPercent}`);
+    console.log(`  ${theme.secondary('Confidence:')} ${result.metrics.confidence}%`);
     console.log('');
   });
 
-// ─── NUDGE ───────────────────────────────────────────────────
 program
   .command('nudge')
-  .description('Show smart nudges')
-  .action(() => {
-    const nudges = getExampleNudges();
-    console.log('');
-    console.log(theme.warning('  Demo Mode: nudges are illustrative examples.'));
+  .description('Show context-backed operational nudges')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
+    const nudges = getRealNudges(process.cwd());
+    if (options.json) {
+      printJson({ nudges });
+      return;
+    }
     console.log('');
     for (const nudge of nudges) {
       console.log(renderNudge(nudge));
@@ -631,177 +685,168 @@ program
     }
   });
 
-// ─── PRODUCTS ────────────────────────────────────────────────
 program
   .command('products')
-  .description('Manage multiple products')
-  .action(() => {
-    const products = [
-      { name: 'Acme App', active: true, health: 89, sprint: '14/20' },
-      { name: 'Acme Admin Dashboard', active: false, health: 72, sprint: '8/12' },
-      { name: 'Acme Mobile', active: false, health: 65, sprint: '3/10', paused: true },
-      { name: 'Acme API Platform', active: false, health: 91, sprint: '6/8' },
-    ];
+  .description('Show persisted project/product portfolio')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
+    const products = getRealProducts(process.cwd());
+    if (options.json) {
+      printJson({ products });
+      return;
+    }
+    if (products.length === 0) {
+      console.log('');
+      console.log(theme.warning('  No products found. Add context with: phantom context add ./project'));
+      console.log('');
+      return;
+    }
 
-    const lines = products.map(p => {
-      const icon = p.paused ? theme.dim('○') : theme.statusOn;
-      const name = p.name.padEnd(24);
-      const status = p.active ? theme.success('(active)') : p.paused ? theme.dim('(paused)') : '';
-      const health = `Health: ${p.health}%`;
-      const sprint = `Sprint: ${p.sprint}`;
-      return `  ${icon} ${theme.secondary(name)} ${status}  ${theme.dim(health)}   ${theme.dim(sprint)}`;
+    const lines = products.map((p) => {
+      const status = p.active ? theme.success('active') : p.paused ? theme.warning('paused') : theme.dim('tracked');
+      return `  ${p.name.padEnd(28)} ${status}  health=${p.health}%  context_files=${p.contextFiles}`;
     });
-
     console.log('');
-    console.log(theme.warning('  Demo Mode: portfolio values are illustrative.'));
-    console.log(box(lines.join('\n'), 'YOUR PRODUCTS', 62));
-    console.log('');
-    console.log(`  ${theme.dim('[Switch Product]')}  ${theme.dim('[Compare Products]')}  ${theme.dim('[Portfolio View]')}`);
+    console.log(box(lines.join('\n'), 'PRODUCT PORTFOLIO', 80));
     console.log('');
   });
 
-// ─── DOCS ────────────────────────────────────────────────────
-program
-  .command('docs [action]')
-  .description('Auto-generate documentation')
-  .action(async (action?: string) => {
-    if (action === 'generate') {
-      console.log('');
-      console.log(theme.title('  📝 AUTO-DOCUMENTATION'));
-      console.log(theme.secondary('  Scanning product artifacts...'));
-      console.log('');
-      console.log(theme.warning('  Demo Mode: generation list is illustrative.'));
-      console.log('');
+const docsCommand = program.command('docs').description('Documentation operations');
 
-      const files = [
-        'product-overview.md',
-        'architecture-diagram.svg',
-        'feature-matrix.md',
-        'user-personas.md',
-        'metrics-dictionary.md',
-        'decision-log.md',
-        'api-reference.md',
-        'changelog.md',
-      ];
-
-      for (const file of files) {
-        process.stdout.write(`  ├── ${theme.secondary(file.padEnd(30))}`);
-        await sleep(200 + Math.random() * 300);
-        console.log(theme.dim('— ' + getDocDescription(file)));
+docsCommand
+  .command('generate')
+  .description('Generate deterministic documentation artifacts')
+  .option('--out <path>', 'Output directory path')
+  .option('--json', 'Output as JSON')
+  .action((options: { out?: string; json?: boolean }) => {
+    try {
+      const files = generateRealDocumentation(process.cwd(), options.out);
+      if (options.json) {
+        printJson({ files });
+        return;
       }
       console.log('');
-      console.log(theme.success('  ✓ All documentation generated.'));
+      console.log(theme.success('  Documentation generated:'));
+      for (const file of files) {
+        console.log(`  ${theme.check} ${file}`);
+      }
       console.log('');
-    } else {
-      console.log('');
-      console.log(theme.secondary('  Usage: phantom docs generate'));
-      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Documentation generation failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
     }
   });
 
-// ─── BOOT ────────────────────────────────────────────────────
+program
+  .command('frameworks [action] [framework]')
+  .description('List built-in PM frameworks')
+  .option('--json', 'Output as JSON')
+  .action((action: string | undefined, framework: string | undefined, options: { json?: boolean }) => {
+    if (!action || action === 'list') {
+      if (options.json) {
+        printJson({ frameworks: FRAMEWORKS });
+        return;
+      }
+      console.log('');
+      console.log(theme.title('  PM FRAMEWORKS'));
+      console.log('');
+      for (const fw of FRAMEWORKS) {
+        console.log(`  ${theme.check} ${fw.name} ${theme.dim(`— ${fw.desc}`)}`);
+      }
+      console.log('');
+      return;
+    }
+
+    if (action === 'apply') {
+      const payload = {
+        status: 'not_implemented',
+        message: 'Framework auto-apply is not implemented in real runtime mode.',
+        framework: framework || null,
+      };
+      if (options.json) {
+        printJson(payload);
+      } else {
+        console.log('');
+        console.log(theme.warning(`  ${payload.message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+      return;
+    }
+
+    process.exitCode = 1;
+  });
+
+program
+  .command('dashboard')
+  .alias('dash')
+  .description('Show concise runtime summary')
+  .option('--json', 'Output as JSON')
+  .action((options: { json?: boolean }) => {
+    const cfg = getConfig().get();
+    const stats = getContextEngine().getStats();
+    const health = getRuntimeHealth(process.cwd());
+    const payload = {
+      activeProject: cfg.activeProject || null,
+      contextFiles: stats.totalFiles,
+      contextHealth: stats.healthScore,
+      installedModules: cfg.installedModules.length,
+      connectedIntegrations: health.integrations.filter(i => i.connected).length,
+      primaryModel: health.primaryModel,
+    };
+    if (options.json) {
+      printJson(payload);
+      return;
+    }
+    console.log('');
+    console.log(box([
+      '',
+      `  Active Project: ${payload.activeProject || 'none'}`,
+      `  Context Files: ${payload.contextFiles} (health ${payload.contextHealth}%)`,
+      `  Installed Modules: ${payload.installedModules}`,
+      `  Connected Integrations: ${payload.connectedIntegrations}`,
+      `  Primary Model: ${payload.primaryModel.provider}/${payload.primaryModel.model} (${payload.primaryModel.status})`,
+      '',
+    ].join('\n'), 'PHANTOM DASHBOARD', 78));
+    console.log('');
+  });
+
 program
   .command('boot')
-  .description('Run the boot sequence')
+  .description('Run onboarding boot sequence')
   .action(async () => {
     await runBootSequence();
     await showFirstRunSetup();
   });
 
-// ─── DASHBOARD ───────────────────────────────────────────────
 program
-  .command('dashboard')
-  .alias('dash')
-  .description('Show the main dashboard')
+  .command('tools')
+  .description('Tool palette (real-mode gate)')
   .action(() => {
-    console.log(renderDashboard(getDefaultDashboardData()));
+    failNotImplemented('tools');
   });
 
-// ─── DEMO ────────────────────────────────────────────────────
-program
-  .command('demo')
-  .description('Run the full Phantom demo')
-  .action(async () => {
-    await runBootSequence();
-    await sleep(1000);
-
-    console.log(theme.dim('\n  Press any key to continue...\n'));
-    console.log(renderDashboard(getDefaultDashboardData()));
-    await sleep(1000);
-
-    console.log(theme.dim('\n  Module installation demo:\n'));
-    const mm = getModuleManager();
-    const oracle = mm.getModule('oracle');
-    if (oracle) await renderModuleInstall(oracle);
-    await sleep(500);
-
-    console.log(theme.dim('\n  Smart nudge examples:\n'));
-    const nudges = getExampleNudges();
-    console.log(renderNudge(nudges[0]));
-    await sleep(500);
-
-    console.log('');
-    console.log(renderAchievement({
-      title: 'The Architect',
-      description: 'Generated 10 PRDs with Phantom',
-      next: 'The Oracle — Run 5 simulations',
-    }));
-    await sleep(500);
-
-    console.log('');
-    console.log(renderStreak({ days: 12, target: 14 }));
-    console.log('');
-
-    console.log(theme.dim('\n  Health dashboard:\n'));
-    console.log(renderHealthDashboard(getDefaultHealthData()));
-    await sleep(500);
-
-    console.log(theme.dim('\n  Tool palette:\n'));
-    console.log(renderToolPalette(getDefaultToolCategories()));
-    await sleep(500);
-
-    console.log(theme.dim('\n  Screen analysis:\n'));
-    console.log(renderScreenAnalysis(getExampleScreenAnalysis()));
-    await sleep(500);
-
-    console.log(theme.dim('\n  UX audit:\n'));
-    console.log(renderUXAudit(getExampleUXAudit()));
-    await sleep(500);
-
-    console.log(theme.dim('\n  Product simulation:\n'));
-    console.log(renderSimulation('Add shopping cart abandonment emails'));
-
-    console.log('');
-    console.log(theme.title('  DEMO COMPLETE'));
-    console.log(theme.secondary('  Phantom is ready. Start building the future.'));
-    console.log('');
-  });
-
-// ─── HELPERS ─────────────────────────────────────────────────
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+function dirnameSafe(pathValue: string): string {
+  const idx = Math.max(pathValue.lastIndexOf('/'), pathValue.lastIndexOf('\\'));
+  if (idx <= 0) return process.cwd();
+  return pathValue.slice(0, idx);
 }
 
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+const argv = [...process.argv];
+if (
+  argv[2] === 'integrate' &&
+  typeof argv[3] === 'string' &&
+  !argv[3].startsWith('-') &&
+  !['scan', 'doctor', 'connect'].includes(argv[3])
+) {
+  argv.splice(3, 0, 'connect');
 }
 
-function getDocDescription(filename: string): string {
-  const map: Record<string, string> = {
-    'product-overview.md': 'What the product does',
-    'architecture-diagram.svg': 'System architecture visual',
-    'feature-matrix.md': 'All features with status',
-    'user-personas.md': 'Synthesized from research',
-    'metrics-dictionary.md': 'All tracked metrics explained',
-    'decision-log.md': 'All product decisions',
-    'api-reference.md': 'Public API documentation',
-    'changelog.md': 'Product changelog from git',
-  };
-  return map[filename] || '';
-}
-
-program.parse();
+program.parse(argv);

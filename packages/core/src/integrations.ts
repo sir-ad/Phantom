@@ -39,6 +39,14 @@ type Detector = {
   reason: string;
 };
 
+export interface IntegrationAdapter {
+  target: IntegrationTarget;
+  detect(cwd: string): Detector | null;
+  configure(cwd: string): IntegrationConfig;
+  validate(cwd: string): IntegrationDoctorResult;
+  rollback(): boolean;
+}
+
 function detectTarget(cwd: string, target: IntegrationTarget): Detector | null {
   switch (target) {
     case 'github': {
@@ -84,9 +92,94 @@ function detectTarget(cwd: string, target: IntegrationTarget): Detector | null {
   }
 }
 
+function buildAdapter(target: IntegrationTarget): IntegrationAdapter {
+  return {
+    target,
+    detect(cwd: string) {
+      return detectTarget(cwd, target);
+    },
+    configure(cwd: string) {
+      const cfgMgr = getConfig();
+      const cfg = cfgMgr.get();
+      const detection = detectTarget(cwd, target);
+      const now = new Date().toISOString();
+
+      const nextIntegration: IntegrationConfig = {
+        name: target,
+        connected: true,
+        detectedPath: detection?.path,
+        lastConnectedAt: now,
+        config: {
+          target,
+          configured_at: now,
+          ...(detection ? { detected_path: detection.path } : {}),
+        },
+      };
+
+      const existing = cfg.integrations.find(i => i.name === target);
+      const next = existing
+        ? cfg.integrations.map(i => (i.name === target ? { ...i, ...nextIntegration } : i))
+        : [...cfg.integrations, nextIntegration];
+
+      cfgMgr.set('integrations', next);
+      return nextIntegration;
+    },
+    validate(cwd: string) {
+      const cfg = getConfig().get();
+      const configured = cfg.integrations.find(i => i.name === target);
+      const detection = detectTarget(cwd, target);
+      const detected = Boolean(detection);
+      const connected = Boolean(configured?.connected);
+      const healthy = connected && detected;
+
+      let reason = 'Not configured';
+      if (configured && !detection) reason = 'Configured but no workspace signal found';
+      if (!configured && detection) reason = 'Detected but not configured';
+      if (healthy) reason = 'Configured and detected';
+
+      return {
+        target,
+        configured: Boolean(configured),
+        connected,
+        detected,
+        healthy,
+        reason,
+        detectedPath: detection?.path || configured?.detectedPath,
+        configuredAt: configured?.lastConnectedAt || configured?.config?.configured_at,
+      };
+    },
+    rollback() {
+      const cfgMgr = getConfig();
+      const cfg = cfgMgr.get();
+      const hasEntry = cfg.integrations.some(i => i.name === target);
+      if (!hasEntry) return false;
+      cfgMgr.set(
+        'integrations',
+        cfg.integrations.filter(i => i.name !== target)
+      );
+      return true;
+    },
+  };
+}
+
+const ADAPTERS: Record<IntegrationTarget, IntegrationAdapter> = {
+  github: buildAdapter('github'),
+  figma: buildAdapter('figma'),
+  linear: buildAdapter('linear'),
+  slack: buildAdapter('slack'),
+  cursor: buildAdapter('cursor'),
+  vscode: buildAdapter('vscode'),
+  'claude-code': buildAdapter('claude-code'),
+  codex: buildAdapter('codex'),
+};
+
+export function getAdapter(target: IntegrationTarget): IntegrationAdapter {
+  return ADAPTERS[target];
+}
+
 export function scanIntegrations(cwd: string): IntegrationScanResult[] {
   return KNOWN_INTEGRATION_TARGETS.map((target) => {
-    const detection = detectTarget(cwd, target);
+    const detection = ADAPTERS[target].detect(cwd);
     if (!detection) {
       return {
         target,
@@ -105,62 +198,15 @@ export function scanIntegrations(cwd: string): IntegrationScanResult[] {
 }
 
 export function connectIntegration(target: IntegrationTarget, cwd: string): IntegrationConfig {
-  const cfgMgr = getConfig();
-  const cfg = cfgMgr.get();
-  const detection = detectTarget(cwd, target);
-  const now = new Date().toISOString();
-
-  const nextIntegration: IntegrationConfig = {
-    name: target,
-    connected: true,
-    detectedPath: detection?.path,
-    lastConnectedAt: now,
-    config: {
-      target,
-      configured_at: now,
-      ...(detection ? { detected_path: detection.path } : {}),
-    },
-  };
-
-  const existing = cfg.integrations.find(i => i.name === target);
-  let next: IntegrationConfig[];
-  if (existing) {
-    next = cfg.integrations.map(i => (i.name === target ? { ...i, ...nextIntegration } : i));
-  } else {
-    next = [...cfg.integrations, nextIntegration];
-  }
-
-  cfgMgr.set('integrations', next);
-  return nextIntegration;
+  return ADAPTERS[target].configure(cwd);
 }
 
 export function doctorIntegrations(cwd: string): IntegrationDoctorResult[] {
-  const cfg = getConfig().get();
-  const byName = new Map(cfg.integrations.map(i => [i.name, i]));
+  return KNOWN_INTEGRATION_TARGETS.map(target => ADAPTERS[target].validate(cwd));
+}
 
-  return KNOWN_INTEGRATION_TARGETS.map((target) => {
-    const configured = byName.get(target);
-    const detection = detectTarget(cwd, target);
-    const detected = Boolean(detection);
-    const connected = Boolean(configured?.connected);
-    const healthy = connected && detected;
-
-    let reason = 'Not configured';
-    if (configured && !detection) reason = 'Configured but no workspace signal found';
-    if (!configured && detection) reason = 'Detected but not configured';
-    if (healthy) reason = 'Configured and detected';
-
-    return {
-      target,
-      configured: Boolean(configured),
-      connected,
-      detected,
-      healthy,
-      reason,
-      detectedPath: detection?.path || configured?.detectedPath,
-      configuredAt: configured?.lastConnectedAt || configured?.config?.configured_at,
-    };
-  });
+export function rollbackIntegration(target: IntegrationTarget): boolean {
+  return ADAPTERS[target].rollback();
 }
 
 export function isKnownIntegrationTarget(value: string): value is IntegrationTarget {

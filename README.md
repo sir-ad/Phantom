@@ -18,6 +18,7 @@ Open-source PM operating system for the terminal age.
 npm install
 npm run build
 npm run test
+npm run reality:check
 npm run phantom -- --help
 ```
 
@@ -26,9 +27,12 @@ npm run phantom -- --help
 ```bash
 # Core CLI
 npm run phantom -- status --json
-npm run phantom -- doctor
-npm run phantom -- integrate scan
-npm run phantom -- mcp tools
+npm run phantom -- doctor --json
+npm run phantom -- swarm "Should we add dark mode?" --json
+npm run phantom -- integrate scan --json
+npm run phantom -- integrate doctor --json
+npm run phantom -- mcp tools --json
+npm run phantom -- docs generate --json
 
 # Local installer pipeline
 npm run release:local
@@ -42,9 +46,10 @@ npm run website:dev
 
 1. Context indexing: `Real`
 2. Module system: `Real`
-3. Integration scan/connect/doctor: `Beta`
-4. MCP core server commands: `Beta`
-5. One-line installer endpoint hosting: `Planned`
+3. Deterministic swarm analysis: `Real`
+4. Integration scan/connect/doctor: `Beta`
+5. MCP core server commands: `Beta`
+6. One-line installer endpoint hosting: `Planned`
 
 ## Contributing
 

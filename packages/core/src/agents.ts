@@ -1,9 +1,17 @@
-// PHANTOM Core - Agent Swarm System
-// 7 specialized PM agents working in parallel
+// PHANTOM Core - Deterministic Agent Swarm
+import { createHash } from 'crypto';
+import { AGENT_DESCRIPTIONS, AGENT_TYPES, type AgentType } from './constants.js';
+import { doctorIntegrations } from './integrations.js';
+import { getContextEngine } from './context.js';
 
-import { AGENT_TYPES, AGENT_DESCRIPTIONS, type AgentType } from './constants.js';
-
-export type AgentStatus = 'idle' | 'analyzing' | 'processing' | 'reviewing' | 'monitoring' | 'complete' | 'error';
+export type AgentStatus =
+  | 'idle'
+  | 'analyzing'
+  | 'processing'
+  | 'reviewing'
+  | 'monitoring'
+  | 'complete'
+  | 'error';
 
 export interface AgentResult {
   agent: AgentType;
@@ -11,7 +19,9 @@ export interface AgentResult {
   confidence: number; // 0-100
   summary: string;
   details: string[];
-  duration: number; // ms
+  evidence: string[];
+  duration: number; // deterministic synthetic ms
+  score: number;
 }
 
 export interface SwarmResult {
@@ -22,6 +32,8 @@ export interface SwarmResult {
   recommendation: string;
   totalDuration: number;
   timestamp: string;
+  evidence: string[];
+  provenance: string[];
 }
 
 export interface AgentState {
@@ -29,6 +41,85 @@ export interface AgentState {
   status: AgentStatus;
   currentTask?: string;
   elapsed?: number;
+}
+
+interface SwarmInputSnapshot {
+  contextFiles: number;
+  contextHealth: number;
+  connectedIntegrations: number;
+  totalIntegrations: number;
+  tokenCount: number;
+}
+
+function hashInt(input: string): number {
+  const hex = createHash('sha256').update(input).digest('hex').slice(0, 8);
+  return parseInt(hex, 16) >>> 0;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function scoreToVerdict(score: number): AgentResult['verdict'] {
+  if (score >= 72) return 'yes';
+  if (score <= 38) return 'no';
+  if (score >= 55) return 'maybe';
+  return 'needs-data';
+}
+
+function summarizeVerdict(agent: AgentType, verdict: AgentResult['verdict']): string {
+  const byVerdict: Record<AgentResult['verdict'], string> = {
+    yes: 'supports proceeding with implementation',
+    no: 'recommends against implementation under current constraints',
+    maybe: 'sees mixed signals and requires tighter scope',
+    'needs-data': 'requires additional evidence before committing',
+  };
+  return `${agent} ${byVerdict[verdict]}.`;
+}
+
+function getSnapshot(question: string): SwarmInputSnapshot {
+  const context = getContextEngine();
+  const stats = context.getStats();
+  const checks = doctorIntegrations(process.cwd());
+  const tokenCount = question.trim().split(/\s+/).filter(Boolean).length;
+  return {
+    contextFiles: stats.totalFiles,
+    contextHealth: stats.healthScore,
+    connectedIntegrations: checks.filter(c => c.healthy).length,
+    totalIntegrations: checks.length,
+    tokenCount,
+  };
+}
+
+function baseScoreForAgent(agent: AgentType, snapshot: SwarmInputSnapshot, question: string): number {
+  const seed = hashInt(`${agent}|${question.toLowerCase()}`);
+  const seedBias = (seed % 31) - 15;
+  const contextBias = Math.floor(snapshot.contextHealth / 12) - 3;
+  const sizeBias = Math.min(8, Math.floor(snapshot.contextFiles / 120));
+  const integrationBias =
+    snapshot.totalIntegrations > 0
+      ? Math.floor((snapshot.connectedIntegrations / snapshot.totalIntegrations) * 10) - 3
+      : -2;
+  const brevityBias = snapshot.tokenCount < 4 ? -4 : 0;
+
+  const roleBias: Record<AgentType, number> = {
+    Strategist: 3,
+    Analyst: 1,
+    Builder: 0,
+    Designer: 1,
+    Researcher: 2,
+    Communicator: 0,
+    Operator: 2,
+  };
+
+  const intentLower = question.toLowerCase();
+  const intentBoost =
+    (intentLower.includes('should') ? 4 : 0) +
+    (intentLower.includes('priority') ? 3 : 0) +
+    (intentLower.includes('revenue') ? 3 : 0) +
+    (intentLower.includes('risk') ? 2 : 0);
+
+  return clamp(52 + roleBias[agent] + seedBias + contextBias + sizeBias + integrationBias + brevityBias + intentBoost, 5, 95);
 }
 
 export class Agent {
@@ -54,118 +145,47 @@ export class Agent {
     };
   }
 
-  async analyze(question: string): Promise<AgentResult> {
-    this.status = 'analyzing';
+  analyze(question: string, snapshot: SwarmInputSnapshot): AgentResult {
+    this.status = 'processing';
     this.currentTask = question;
     this.startTime = Date.now();
 
-    // Simulate analysis with realistic timing
-    const duration = 2000 + Math.random() * 8000;
-    await this.sleep(duration);
+    const score = baseScoreForAgent(this.type, snapshot, question);
+    const verdict = scoreToVerdict(score);
+    const confidence = clamp(score + (verdict === 'maybe' ? -8 : verdict === 'needs-data' ? -10 : 0), 15, 98);
+    const duration = 120 + (hashInt(`${this.type}|${question}|duration`) % 180);
 
-    const confidence = 60 + Math.floor(Math.random() * 35);
-    const isPositive = Math.random() > 0.3;
+    const evidence = [
+      `context.health=${snapshot.contextHealth}`,
+      `context.files=${snapshot.contextFiles}`,
+      `integrations.connected=${snapshot.connectedIntegrations}/${snapshot.totalIntegrations}`,
+      `question.tokens=${snapshot.tokenCount}`,
+      `agent.score=${score}`,
+    ];
+
+    const details = [
+      this.getDescription(),
+      `Deterministic score model evaluated at ${score}/100.`,
+      verdict === 'needs-data'
+        ? 'Insufficient decision signal; add richer context before committing scope.'
+        : `Decision posture: ${verdict.toUpperCase()}.`,
+      `Evidence chain: ${evidence.join(' | ')}`,
+    ];
 
     const result: AgentResult = {
       agent: this.type,
-      verdict: isPositive ? 'yes' : Math.random() > 0.5 ? 'no' : 'maybe',
+      verdict,
       confidence,
-      summary: this.generateSummary(question, isPositive),
-      details: this.generateDetails(question, isPositive),
-      duration: Date.now() - this.startTime,
+      summary: summarizeVerdict(this.type, verdict),
+      details,
+      evidence,
+      duration,
+      score,
     };
 
     this.status = 'complete';
     this.currentTask = undefined;
     return result;
-  }
-
-  private generateSummary(question: string, positive: boolean): string {
-    const summaries: Record<AgentType, [string, string]> = {
-      Strategist: [
-        'Aligns with market trends and competitive positioning',
-        'Misaligned with current strategic priorities',
-      ],
-      Analyst: [
-        'Data supports positive user impact metrics',
-        'Insufficient data to support expected ROI',
-      ],
-      Builder: [
-        'Technically feasible within current architecture',
-        'Requires significant architectural changes',
-      ],
-      Designer: [
-        'Enhances user experience and reduces friction',
-        'Adds complexity to an already busy interface',
-      ],
-      Researcher: [
-        'Matches user needs identified in research',
-        'No clear user demand signal detected',
-      ],
-      Communicator: [
-        'Easy to message and drives positive narrative',
-        'Difficult to explain value proposition to stakeholders',
-      ],
-      Operator: [
-        'Fits well into current sprint capacity',
-        'Would require deprioritizing existing commitments',
-      ],
-    };
-
-    return summaries[this.type][positive ? 0 : 1];
-  }
-
-  private generateDetails(question: string, positive: boolean): string[] {
-    const allDetails: Record<AgentType, string[]> = {
-      Strategist: [
-        '73% of competitors offer similar functionality',
-        'Market demand index: 8.2/10',
-        'Aligns with Q2 OKR: "Expand user engagement"',
-        'TAM expansion potential: +15% addressable market',
-      ],
-      Analyst: [
-        'Related feature adoption rate: 67% in first 30 days',
-        'Projected impact on retention: +4.2%',
-        'Similar features show 2.3x engagement increase',
-        'Revenue impact estimate: +$12K-34K MRR',
-      ],
-      Builder: [
-        'Estimated effort: 3-5 story points',
-        'Dependencies: Authentication service, notification system',
-        'Tech debt impact: Neutral',
-        'Existing libraries available: 3 mature options',
-      ],
-      Designer: [
-        'Reduces user flow from 4 steps to 2',
-        'Accessibility impact: Positive (WCAG AA compliant)',
-        'Mobile experience: Responsive design needed',
-        'UI consistency: Matches existing design system',
-      ],
-      Researcher: [
-        '42% of surveyed users requested this feature',
-        'Matches Job-to-be-Done: "Reduce time to complete task"',
-        'Power users would benefit most (34% of base)',
-        'Support tickets related: 28 in last 30 days',
-      ],
-      Communicator: [
-        'Stakeholder alignment: Product & Engineering agree',
-        'Customer communication plan: In-app + email',
-        'Documentation impact: Minor update needed',
-        'Marketing opportunity: Feature launch blog post',
-      ],
-      Operator: [
-        'Sprint capacity available: 8 points remaining',
-        'No blocking dependencies in current sprint',
-        'Testing effort: 2 additional QA days',
-        'Rollout strategy: 10% → 50% → 100% over 2 weeks',
-      ],
-    };
-
-    return allDetails[this.type].slice(0, positive ? 4 : 3);
-  }
-
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
@@ -187,69 +207,72 @@ export class AgentSwarm {
   }
 
   async runSwarm(question: string, onProgress?: (states: AgentState[]) => void): Promise<SwarmResult> {
-    const startTime = Date.now();
-
-    // Start progress reporting
-    let progressInterval: ReturnType<typeof setInterval> | undefined;
-    if (onProgress) {
-      progressInterval = setInterval(() => {
-        onProgress(this.getAgentStates());
-      }, 500);
+    const normalizedQuestion = question.trim();
+    if (!normalizedQuestion) {
+      throw new Error('Question must not be empty.');
     }
 
-    // Run all agents in parallel
-    const results = await Promise.all(
-      Array.from(this.agents.values()).map(agent => agent.analyze(question))
+    const snapshot = getSnapshot(normalizedQuestion);
+    if (onProgress) onProgress(this.getAgentStates());
+
+    const results = AGENT_TYPES.map((agentType) =>
+      this.agents.get(agentType)!.analyze(normalizedQuestion, snapshot)
     );
 
-    if (progressInterval) {
-      clearInterval(progressInterval);
-    }
+    if (onProgress) onProgress(this.getAgentStates());
 
-    // Calculate consensus
     const yesVotes = results.filter(r => r.verdict === 'yes').length;
     const noVotes = results.filter(r => r.verdict === 'no').length;
-    const avgConfidence = Math.round(
-      results.reduce((sum, r) => sum + r.confidence, 0) / results.length
-    );
+    const maybeVotes = results.filter(r => r.verdict === 'maybe').length;
 
-    let consensus: SwarmResult['consensus'];
+    let consensus: SwarmResult['consensus'] = 'MAYBE';
     if (yesVotes >= 6) consensus = 'STRONG YES';
     else if (yesVotes >= 4) consensus = 'YES';
-    else if (yesVotes >= 3 && noVotes <= 2) consensus = 'MAYBE';
-    else if (noVotes >= 4) consensus = 'NO';
     else if (noVotes >= 6) consensus = 'STRONG NO';
-    else consensus = 'MAYBE';
+    else if (noVotes >= 4) consensus = 'NO';
+    else if (maybeVotes >= 3) consensus = 'MAYBE';
+
+    const overallConfidence = Math.round(
+      results.reduce((sum, item) => sum + item.confidence, 0) / results.length
+    );
+    const totalDuration = results.reduce((sum, item) => sum + item.duration, 0);
+    const evidence = results.flatMap(r => r.evidence);
+    const provenance = [
+      'engine=context.stats',
+      'engine=integration.doctor',
+      'engine=swarm.deterministic.score.v1',
+    ];
+    const deterministicMillis =
+      1_700_000_000_000 + (hashInt(normalizedQuestion.toLowerCase()) % 31_536_000_000);
 
     return {
-      question,
+      question: normalizedQuestion,
       consensus,
-      overallConfidence: avgConfidence,
+      overallConfidence,
       agentResults: results,
       recommendation: this.generateRecommendation(consensus, results),
-      totalDuration: Date.now() - startTime,
-      timestamp: new Date().toISOString(),
+      totalDuration,
+      timestamp: new Date(deterministicMillis).toISOString(),
+      evidence,
+      provenance,
     };
   }
 
   private generateRecommendation(consensus: SwarmResult['consensus'], results: AgentResult[]): string {
-    const topResults = results
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, 3);
-
-    const summaries = topResults.map(r => `${r.agent}: ${r.summary}`).join('. ');
+    const sorted = [...results].sort((a, b) => b.confidence - a.confidence);
+    const top = sorted.slice(0, 3).map(r => `${r.agent}=${r.verdict}(${r.confidence}%)`).join(', ');
 
     switch (consensus) {
       case 'STRONG YES':
-        return `Strong recommendation to proceed. ${summaries}`;
+        return `Proceed with implementation. Top signals: ${top}.`;
       case 'YES':
-        return `Recommended with minor considerations. ${summaries}`;
+        return `Proceed with scoped rollout and measurement plan. Top signals: ${top}.`;
       case 'MAYBE':
-        return `Mixed signals — consider gathering more data. ${summaries}`;
+        return `Hold for additional evidence and narrowed scope. Top signals: ${top}.`;
       case 'NO':
-        return `Not recommended at this time. ${summaries}`;
+        return `Do not prioritize this now; revisit after dependency or context changes. Top signals: ${top}.`;
       case 'STRONG NO':
-        return `Strongly advised against. ${summaries}`;
+        return `Reject current proposal and reframe objective with stronger evidence. Top signals: ${top}.`;
     }
   }
 
@@ -262,12 +285,11 @@ export class AgentSwarm {
   }
 }
 
-// Singleton
-let instance: AgentSwarm | null = null;
+let swarmInstance: AgentSwarm | null = null;
 
 export function getSwarm(): AgentSwarm {
-  if (!instance) {
-    instance = new AgentSwarm();
+  if (!swarmInstance) {
+    swarmInstance = new AgentSwarm();
   }
-  return instance;
+  return swarmInstance;
 }

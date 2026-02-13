@@ -27,5 +27,8 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Reality Gate
+        run: npm run reality:check
+
       - name: Local installer pipeline check
         run: npm run installer:test-local

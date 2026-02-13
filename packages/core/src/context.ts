@@ -1,8 +1,16 @@
 // PHANTOM Core - Context Engine
-// Ingests codebases, documents, screenshots, and Figma exports
+// Deterministic local indexing for code, docs, images, and design assets.
 
-import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
-import { join, extname, relative } from 'path';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from 'fs';
+import { createHash } from 'crypto';
+import { extname, join, relative, resolve } from 'path';
 import { getConfig } from './config.js';
 
 export interface ContextEntry {
@@ -79,29 +87,76 @@ function getFileType(ext: string): ContextEntry['type'] {
   return 'data';
 }
 
+function stableEntryId(path: string, size: number, mtimeIso: string): string {
+  const digest = createHash('sha256')
+    .update(`${path}|${size}|${mtimeIso}`)
+    .digest('hex')
+    .slice(0, 16);
+  return `ctx_${digest}`;
+}
+
+interface PersistedContext {
+  entries: ContextEntry[];
+}
+
 export class ContextEngine {
   private entries: Map<string, ContextEntry> = new Map();
-  private basePath: string = '';
+  private basePath = '';
+  private readonly storePath: string;
+
+  constructor() {
+    const cfgDir = getConfig().getConfigDir();
+    const contextDir = join(cfgDir, 'context');
+    mkdirSync(contextDir, { recursive: true });
+    this.storePath = join(contextDir, 'index.json');
+    this.load();
+  }
+
+  private load(): void {
+    if (!existsSync(this.storePath)) return;
+
+    try {
+      const raw = readFileSync(this.storePath, 'utf8');
+      const parsed = JSON.parse(raw) as PersistedContext;
+      this.entries.clear();
+      for (const entry of parsed.entries || []) {
+        if (entry?.path) {
+          this.entries.set(entry.path, entry);
+        }
+      }
+    } catch {
+      this.entries.clear();
+    }
+  }
+
+  private persist(): void {
+    const payload: PersistedContext = {
+      entries: Array.from(this.entries.values()).sort((a, b) => a.path.localeCompare(b.path)),
+    };
+    writeFileSync(this.storePath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  }
 
   async addPath(targetPath: string): Promise<ContextStats> {
-    if (!existsSync(targetPath)) {
-      throw new Error(`Path not found: ${targetPath}`);
+    const resolvedPath = resolve(targetPath);
+    if (!existsSync(resolvedPath)) {
+      throw new Error(`Path not found: ${resolvedPath}`);
     }
 
-    this.basePath = targetPath;
-    const stat = statSync(targetPath);
+    this.basePath = resolvedPath;
+    const stat = statSync(resolvedPath);
 
     if (stat.isFile()) {
-      this.indexFile(targetPath, targetPath);
+      this.indexFile(resolvedPath, resolvedPath);
     } else if (stat.isDirectory()) {
-      this.indexDirectory(targetPath, targetPath);
+      this.indexDirectory(resolvedPath, resolvedPath);
     }
 
+    this.persist();
     return this.getStats();
   }
 
   private indexDirectory(dirPath: string, basePath: string): void {
-    const items = readdirSync(dirPath);
+    const items = readdirSync(dirPath).sort();
 
     for (const item of items) {
       if (IGNORE_DIRS.has(item) || IGNORE_FILES.has(item)) continue;
@@ -121,33 +176,35 @@ export class ContextEngine {
     const ext = extname(filePath).toLowerCase();
     const stat = statSync(filePath);
     const type = getFileType(ext);
-    const relPath = relative(basePath, filePath);
+    const relPath = relative(basePath, filePath) || filePath;
+    const lastModified = stat.mtime.toISOString();
 
     let content: string | undefined;
     let lines: number | undefined;
 
-    // Only read text files
+    // Read only text files and cap content to keep index deterministic and bounded.
     if (type === 'code' || type === 'document' || type === 'data') {
       try {
-        if (stat.size < 1024 * 1024) { // Skip files > 1MB
-          content = readFileSync(filePath, 'utf-8');
+        if (stat.size <= 1_000_000) {
+          content = readFileSync(filePath, 'utf8');
           lines = content.split('\n').length;
         }
       } catch {
-        // Binary file or read error, skip content
+        content = undefined;
+        lines = undefined;
       }
     }
 
     const entry: ContextEntry = {
-      id: `ctx_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      id: stableEntryId(filePath, stat.size, lastModified),
       type,
       path: filePath,
-      relativePath: relPath || filePath,
+      relativePath: relPath,
       content,
       metadata: {
         size: stat.size,
         extension: ext,
-        lastModified: stat.mtime.toISOString(),
+        lastModified,
         language: detectLanguage(ext),
         lines,
       },
@@ -171,12 +228,12 @@ export class ContextEngine {
       totalSize += entry.metadata.size;
     }
 
-    // Health score based on context richness
-    const hasCode = (byType['code'] || 0) > 0;
-    const hasDocs = (byType['document'] || 0) > 0;
-    const hasDesign = (byType['image'] || 0) > 0 || (byType['design'] || 0) > 0;
-    let healthScore = 40; // Base score for having any context
-    if (hasCode) healthScore += 25;
+    const hasCode = (byType.code || 0) > 0;
+    const hasDocs = (byType.document || 0) > 0;
+    const hasDesign = (byType.image || 0) > 0 || (byType.design || 0) > 0;
+
+    let healthScore = 35;
+    if (hasCode) healthScore += 30;
     if (hasDocs) healthScore += 20;
     if (hasDesign) healthScore += 15;
 
@@ -185,32 +242,54 @@ export class ContextEngine {
       totalSize,
       byType,
       byLanguage,
-      healthScore: Math.min(100, healthScore),
+      healthScore: Math.max(0, Math.min(100, healthScore)),
     };
   }
 
   getEntries(): ContextEntry[] {
-    return Array.from(this.entries.values());
+    return Array.from(this.entries.values()).sort((a, b) => a.path.localeCompare(b.path));
   }
 
   getEntry(path: string): ContextEntry | undefined {
-    return this.entries.get(path);
+    return this.entries.get(resolve(path));
   }
 
   search(query: string): ContextEntry[] {
-    const lower = query.toLowerCase();
-    return this.getEntries().filter(e =>
-      e.relativePath.toLowerCase().includes(lower) ||
-      e.content?.toLowerCase().includes(lower)
-    );
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) return [];
+
+    const tokens = normalized.split(/\s+/).filter(Boolean);
+    const scored: Array<{ entry: ContextEntry; score: number }> = [];
+
+    for (const entry of this.entries.values()) {
+      const pathLower = entry.relativePath.toLowerCase();
+      const contentLower = entry.content?.toLowerCase() || '';
+
+      let score = 0;
+      if (pathLower.includes(normalized)) score += 20;
+      if (contentLower.includes(normalized)) score += 10;
+
+      for (const token of tokens) {
+        if (pathLower.includes(token)) score += 6;
+        if (contentLower.includes(token)) score += 3;
+      }
+
+      if (score > 0) {
+        scored.push({ entry, score });
+      }
+    }
+
+    return scored
+      .sort((a, b) => (b.score - a.score) || a.entry.path.localeCompare(b.entry.path))
+      .map(item => item.entry);
   }
 
   clear(): void {
     this.entries.clear();
+    this.persist();
   }
 }
 
-// Singleton
 let instance: ContextEngine | null = null;
 
 export function getContextEngine(): ContextEngine {

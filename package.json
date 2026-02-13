@@ -13,7 +13,8 @@
     "phantom": "node packages/cli/dist/index.js",
     "typecheck": "npm run build",
     "lint": "npm run typecheck",
-    "test": "npm run build && node --test tests/smoke.test.mjs",
+    "test": "npm run build && node --test tests/smoke.test.mjs tests/mcp-contract.test.mjs",
+    "reality:check": "npm run build && node --test tests/reality-gate.test.mjs",
     "release:local": "npm run build && node scripts/release/build-local-install-artifacts.mjs",
     "installer:test-local": "npm run build && node scripts/release/test-local-installer.mjs",
     "clean": "rm -rf packages/*/dist"

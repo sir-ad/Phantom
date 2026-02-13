@@ -3,7 +3,9 @@ import { dirname } from 'path';
 import { createInterface } from 'readline';
 import {
   generatePRD,
+  getConfig,
   getContextEngine,
+  getModuleManager,
   getSwarm,
   prdToMarkdown,
 } from '@phantom/core';
@@ -15,6 +17,18 @@ export type PhantomToolName =
   | 'swarm.analyze'
   | 'bridge.translate_pm_to_dev';
 
+type PhantomErrorCode =
+  | 'INVALID_REQUEST'
+  | 'INVALID_TOOL'
+  | 'INVALID_ARGUMENT'
+  | 'TOOL_EXECUTION_ERROR'
+  | 'RESOURCE_NOT_FOUND';
+
+interface ToolError {
+  code: PhantomErrorCode;
+  message: string;
+}
+
 export interface ToolRequest {
   tool: PhantomToolName;
   arguments: Record<string, unknown>;
@@ -25,7 +39,7 @@ export interface ToolResponse {
   request_id: string;
   status: 'ok' | 'error';
   result?: unknown;
-  errors?: string[];
+  errors?: ToolError[];
 }
 
 export interface ToolDefinition {
@@ -36,6 +50,12 @@ export interface ToolDefinition {
     required: string[];
     properties: Record<string, { type: string; description: string }>;
   };
+}
+
+interface ResourceDefinition {
+  uri: string;
+  title: string;
+  description: string;
 }
 
 const TOOL_DEFINITIONS: ToolDefinition[] = [
@@ -77,7 +97,7 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
   },
   {
     name: 'swarm.analyze',
-    description: 'Run agent swarm analysis for a product decision',
+    description: 'Run deterministic swarm analysis for a product decision',
     input_schema: {
       type: 'object',
       required: ['question'],
@@ -103,74 +123,162 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
   },
 ];
 
+const RESOURCES: ResourceDefinition[] = [
+  {
+    uri: 'phantom://status/summary',
+    title: 'Status Summary',
+    description: 'Current Phantom runtime status and core configuration summary.',
+  },
+  {
+    uri: 'phantom://projects/summary',
+    title: 'Project Summary',
+    description: 'Tracked projects and active context metadata.',
+  },
+  {
+    uri: 'phantom://modules/summary',
+    title: 'Module Summary',
+    description: 'Installed and available module inventory.',
+  },
+];
+
 function parseStringArg(args: Record<string, unknown>, key: string): string {
   const value = args[key];
   if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new Error(`Invalid or missing argument: ${key}`);
+    throw invalidArgument(key, 'must be a non-empty string');
   }
   return value.trim();
 }
 
 function parseNumberArg(args: Record<string, unknown>, key: string, fallback: number): number {
   const value = args[key];
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return Math.max(1, Math.floor(value));
+  if (value === undefined) return fallback;
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw invalidArgument(key, 'must be a finite number');
   }
-  return fallback;
+  return Math.max(1, Math.floor(value));
+}
+
+function invalidArgument(field: string, rule: string): Error {
+  return new Error(`INVALID_ARGUMENT:${field}:${rule}`);
+}
+
+function parseError(error: unknown): ToolError {
+  if (error instanceof Error) {
+    if (error.message.startsWith('INVALID_ARGUMENT:')) {
+      return { code: 'INVALID_ARGUMENT', message: error.message.replace(/^INVALID_ARGUMENT:/, '') };
+    }
+    return { code: 'TOOL_EXECUTION_ERROR', message: error.message };
+  }
+  return { code: 'TOOL_EXECUTION_ERROR', message: 'Unknown tool execution error' };
 }
 
 function bridgeTranslate(pmIntent: string, constraintsRaw?: unknown): {
   technical_tasks: string[];
   acceptance_criteria: string[];
   risks: string[];
+  evidence: string[];
 } {
   const lower = pmIntent.toLowerCase();
   const constraints =
     typeof constraintsRaw === 'string'
       ? constraintsRaw
           .split(',')
-          .map(s => s.trim())
+          .map(item => item.trim())
           .filter(Boolean)
       : [];
 
-  const technical_tasks = [
-    `Create implementation plan for: ${pmIntent}`,
-    'Define API and data model updates',
-    'Implement UI changes and state handling',
-    'Add analytics events for rollout measurement',
-    'Add tests (unit + integration) for new behavior',
+  const technicalTasks = [
+    `Define implementation plan for "${pmIntent}"`,
+    'Specify API/data model changes with backward-compatibility notes',
+    'Implement deterministic business logic and error handling',
+    'Add unit/integration coverage for affected command paths',
+    'Update operational docs and runbook references',
   ];
-
   if (lower.includes('checkout') || lower.includes('payment')) {
-    technical_tasks.push('Validate payment and tax edge cases in staging');
+    technicalTasks.push('Validate payment edge-cases and rollback criteria in staging');
   }
-  if (lower.includes('login') || lower.includes('auth')) {
-    technical_tasks.push('Review auth scopes and session handling');
+  if (lower.includes('auth') || lower.includes('login')) {
+    technicalTasks.push('Verify auth/session boundaries and permission regression tests');
   }
 
-  const acceptance_criteria = [
-    'Feature behavior is deterministic for documented core flows',
-    'P95 response time target and error-handling requirements are met',
-    'Accessibility checks pass for updated UI states',
-    'Release notes and rollback procedure are documented',
+  const acceptanceCriteria = [
+    'Output is deterministic for identical input and context state',
+    'Command-level JSON contract remains schema valid',
+    'Observed errors include actionable remediation notes',
+    'Release checks (build/test/installer/reality gate) pass',
   ];
 
   const risks = [
-    'Scope drift if PM intent is not narrowed to MVP slice',
-    'Integration failures if external provider contracts are unstable',
-    'Regression risk without coverage on changed code paths',
+    'Scope drift if PM intent is not narrowed to a deliverable slice',
+    'Dependency uncertainty if external service contracts change',
+    'Regression risk without coverage in changed command paths',
   ];
-
   if (constraints.length > 0) {
-    risks.push(`Constraint pressure detected: ${constraints.join(', ')}`);
+    risks.push(`Constraint pressure: ${constraints.join(', ')}`);
   }
 
-  return { technical_tasks, acceptance_criteria, risks };
+  return {
+    technical_tasks: technicalTasks,
+    acceptance_criteria: acceptanceCriteria,
+    risks,
+    evidence: [
+      `constraints.count=${constraints.length}`,
+      `intent.length=${pmIntent.length}`,
+    ],
+  };
+}
+
+function isToolRequest(payload: unknown): payload is ToolRequest {
+  if (typeof payload !== 'object' || payload === null) return false;
+  const record = payload as Record<string, unknown>;
+  if (typeof record.tool !== 'string') return false;
+  if (typeof record.request_id !== 'string') return false;
+  if (typeof record.arguments !== 'object' || record.arguments === null) return false;
+  return TOOL_DEFINITIONS.some(def => def.name === record.tool);
 }
 
 export class PhantomMCPServer {
   listTools(): ToolDefinition[] {
     return TOOL_DEFINITIONS;
+  }
+
+  listResources(): ResourceDefinition[] {
+    return RESOURCES;
+  }
+
+  readResource(uri: string): unknown {
+    const cfgMgr = getConfig();
+    const cfg = cfgMgr.get();
+    switch (uri) {
+      case 'phantom://status/summary':
+        return {
+          version: cfg.version,
+          first_run: cfg.firstRun,
+          active_project: cfg.activeProject || null,
+          installed_modules: cfg.installedModules.length,
+          integrations: cfg.integrations.length,
+          mcp: cfg.mcp,
+        };
+      case 'phantom://projects/summary':
+        return {
+          active_project: cfg.activeProject || null,
+          projects: cfg.projects,
+          context_stats: getContextEngine().getStats(),
+        };
+      case 'phantom://modules/summary': {
+        const mm = getModuleManager();
+        return {
+          installed: cfg.installedModules,
+          available: mm.getAvailableModules().map(mod => ({
+            name: mod.name,
+            version: mod.version,
+            description: mod.description,
+          })),
+        };
+      }
+      default:
+        throw new Error(`RESOURCE_NOT_FOUND:${uri}`);
+    }
   }
 
   async invoke(request: ToolRequest): Promise<ToolResponse> {
@@ -188,6 +296,7 @@ export class PhantomMCPServer {
             .search(query)
             .slice(0, limit)
             .map(entry => ({
+              id: entry.id,
               path: entry.path,
               relative_path: entry.relativePath,
               type: entry.type,
@@ -204,16 +313,19 @@ export class PhantomMCPServer {
           if (typeof outputPath === 'string' && outputPath.trim().length > 0) {
             const targetPath = outputPath.trim();
             mkdirSync(dirname(targetPath), { recursive: true });
-            writeFileSync(targetPath, markdown);
+            writeFileSync(targetPath, `${markdown}\n`, 'utf8');
             return ok(request.request_id, {
               prd_id: prd.id,
-              markdown,
+              sections: prd.sections.map(section => section.title),
+              evidence: prd.evidence,
               output_path: targetPath,
             });
           }
 
           return ok(request.request_id, {
             prd_id: prd.id,
+            sections: prd.sections.map(section => section.title),
+            evidence: prd.evidence,
             markdown,
           });
         }
@@ -228,10 +340,10 @@ export class PhantomMCPServer {
           return ok(request.request_id, bridge);
         }
         default:
-          return err(request.request_id, [`Unknown tool: ${request.tool}`]);
+          return err(request.request_id, [{ code: 'INVALID_TOOL', message: `Unknown tool: ${request.tool}` }]);
       }
     } catch (error) {
-      return err(request.request_id, [error instanceof Error ? error.message : 'Unknown error']);
+      return err(request.request_id, [parseError(error)]);
     }
   }
 }
@@ -244,12 +356,24 @@ function ok(requestId: string, result: unknown): ToolResponse {
   };
 }
 
-function err(requestId: string, errors: string[]): ToolResponse {
+function err(requestId: string, errors: ToolError[]): ToolResponse {
   return {
     request_id: requestId,
     status: 'error',
     errors,
   };
+}
+
+function parseJsonLine(line: string): unknown {
+  try {
+    return JSON.parse(line);
+  } catch {
+    return null;
+  }
+}
+
+function parseRequestId(value: unknown, fallback: string): string {
+  return typeof value === 'string' ? value : fallback;
 }
 
 export async function runStdioServer(): Promise<void> {
@@ -264,44 +388,55 @@ export async function runStdioServer(): Promise<void> {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    let payload: unknown;
-    try {
-      payload = JSON.parse(trimmed);
-    } catch {
-      process.stdout.write(`${JSON.stringify(err('unknown', ['Invalid JSON payload']))}\n`);
+    const payload = parseJsonLine(trimmed);
+    if (!payload || typeof payload !== 'object') {
+      process.stdout.write(`${JSON.stringify(err('unknown', [{ code: 'INVALID_REQUEST', message: 'Invalid JSON payload' }]))}\n`);
       continue;
     }
 
-    if (
-      typeof payload === 'object' &&
-      payload !== null &&
-      'action' in payload &&
-      (payload as { action?: unknown }).action === 'tools.list'
-    ) {
-      const requestIdValue = (payload as { request_id?: unknown }).request_id;
-      const requestId = typeof requestIdValue === 'string' ? requestIdValue : 'tools.list';
-      process.stdout.write(
-        `${JSON.stringify(ok(requestId, { tools: server.listTools() }))}\n`
-      );
+    const record = payload as Record<string, unknown>;
+    const action = record.action;
+    const requestId = parseRequestId(record.request_id, 'unknown');
+
+    if (action === 'tools.list') {
+      process.stdout.write(`${JSON.stringify(ok(requestId, { tools: server.listTools() }))}\n`);
+      continue;
+    }
+    if (action === 'resources.list') {
+      process.stdout.write(`${JSON.stringify(ok(requestId, { resources: server.listResources() }))}\n`);
+      continue;
+    }
+    if (action === 'resources.read') {
+      if (typeof record.uri !== 'string' || record.uri.length === 0) {
+        process.stdout.write(
+          `${JSON.stringify(err(requestId, [{ code: 'INVALID_ARGUMENT', message: 'uri:must be a non-empty string' }]))}\n`
+        );
+        continue;
+      }
+      try {
+        const value = server.readResource(record.uri);
+        process.stdout.write(`${JSON.stringify(ok(requestId, { uri: record.uri, value }))}\n`);
+      } catch (error) {
+        if (error instanceof Error && error.message.startsWith('RESOURCE_NOT_FOUND:')) {
+          process.stdout.write(
+            `${JSON.stringify(err(requestId, [{ code: 'RESOURCE_NOT_FOUND', message: error.message.replace(/^RESOURCE_NOT_FOUND:/, '') }]))}\n`
+          );
+        } else {
+          process.stdout.write(`${JSON.stringify(err(requestId, [parseError(error)]))}\n`);
+        }
+      }
       continue;
     }
 
-    if (
-      typeof payload === 'object' &&
-      payload !== null &&
-      'tool' in payload &&
-      'arguments' in payload &&
-      'request_id' in payload
-    ) {
-      const req = payload as ToolRequest;
-      const response = await server.invoke(req);
+    if (isToolRequest(payload)) {
+      const response = await server.invoke(payload);
       process.stdout.write(`${JSON.stringify(response)}\n`);
       continue;
     }
 
     process.stdout.write(
       `${JSON.stringify(
-        err('unknown', ['Payload must be a tool request or tools.list action'])
+        err(requestId, [{ code: 'INVALID_REQUEST', message: 'Payload must be a valid tool request or supported action' }])
       )}\n`
     );
   }
