@@ -1,102 +1,115 @@
-<p align="center">
-  <pre>
+<div align="center">
+
+```text
 ░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
 ░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
 ░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀
-  </pre>
-</p>
+```
 
-<h1 align="center">PHANTOM</h1>
-<p align="center"><strong>The invisible force behind every great product.</strong></p>
-<p align="center">Open-source PM operating system for the terminal age.</p>
+# PHANTOM
+
+**The invisible force behind every great product.**
+
+Open-source PM operating system for the terminal age.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-00FF41.svg)](./LICENSE)
+[![Node >=18](https://img.shields.io/badge/Node-%3E%3D18-0D1117.svg)](./package.json)
+[![CLI](https://img.shields.io/badge/Interface-CLI%20%2B%20MCP-00D4FF.svg)](./packages/cli)
+
+</div>
 
 ## Install
 
 ```bash
-# Recommended: GitHub-hosted installer
+# One-line install (recommended)
 curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
 
-# npm global install directly from GitHub tarball
+# Upgrade
+curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh -s -- --upgrade
+
+# npm global install from GitHub tarball
 npm install -g https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main
 
 # npx run without global install
 npx -y https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main --help
 ```
 
-## Upgrade
-
-```bash
-# Upgrade PHANTOM in place
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh -s -- --upgrade
-
-# Local repo helper
-npm run agents:upgrade
-```
-
-## Upgrade Agent Integrations
-
-```bash
-# Upgrade PHANTOM + refresh local agent skills + run integration checks
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/upgrade-agents.sh | sh
-
-# Upgrade and connect specific targets
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/upgrade-agents.sh | sh -s -- codex cursor vscode claude-code
-```
-
-## Skills.sh Compatibility
-
-```bash
-# Check and update local agent skills (Codex/Cursor/Claude Code, etc.)
-npx skills check
-npx skills update
-```
-
-## First Run
-
-```bash
-phantom
-phantom context add ./your-project
-phantom swarm "Should we add social login?" --json
-phantom prd create "Auth System"
-```
-
-## Capability Matrix
-
-| Capability | Status |
-|---|---|
-| Context indexing and search | Real |
-| Module registry and installation | Real |
-| Deterministic swarm analysis | Real |
-| PRD generation | Real |
-| Screen analyze/audit (file metadata + rules) | Real |
-| Runtime health command | Real |
-| Integration scan/connect/doctor | Beta |
-| MCP server tools and resources | Beta |
-| One-line GitHub installer (`curl .../scripts/install.sh`) | Real |
-| Hosted one-line endpoint `phantom.pm/install` | Planned |
-| Hosted module marketplace | Planned |
-
-## Core Commands
+## Quick Start
 
 ```bash
 phantom --help
-phantom status --json
+phantom context add ./your-project
+phantom swarm "Should we add social login?" --json
+phantom prd create "Auth System"
 phantom doctor --json
-phantom integrate scan --json
-phantom integrate doctor --json
-phantom mcp tools --json
-phantom docs generate --json
 ```
 
-## Repository Structure
+## Agent Self-Discovery
+
+PHANTOM can detect local agent/IDE environments and register itself for MCP usage.
+
+```bash
+# Scan installed agents and IDEs
+phantom agents scan --json
+
+# Auto-register PHANTOM with detected tools
+phantom agents register
+
+# Check connection health
+phantom agents health
+phantom integrate doctor --json
+```
+
+Supported discovery targets include:
+- Claude Code
+- Codex
+- Cursor
+- VS Code
+- Zed
+
+## MCP Tools (Agent-Callable)
+
+```bash
+phantom mcp tools --json
+phantom mcp serve --mode stdio
+```
+
+Core MCP tool contracts:
+- `context.add`
+- `context.search`
+- `phantom_generate_prd`
+- `phantom_swarm_analyze`
+- `phantom_create_stories`
+- `phantom_plan_sprint`
+- `phantom_analyze_product`
+- `bridge.translate_pm_to_dev`
+
+Legacy aliases retained for compatibility:
+- `prd.generate`
+- `swarm.analyze`
+
+## Capability Status
+
+| Capability | Status |
+|---|---|
+| Context indexing/search | Real |
+| PRD generation | Real |
+| Deterministic swarm analysis | Real |
+| Agent scan/register/list/network | Beta |
+| Integration scan/connect/doctor | Beta |
+| MCP server stdio tools/resources | Beta |
+| Hosted `phantom.pm/install` endpoint | Planned |
+
+## Repository Layout
 
 ```text
 packages/
-  cli/         # command surface
-  core/        # context, swarm, modules, runtime engines
-  mcp-server/  # MCP contracts and transport
-  tui/         # terminal UI rendering
-  modules/     # module package scaffold
+  cli/           # Command surface
+  core/          # Context, swarm, discovery, runtime engines
+  mcp-server/    # MCP contracts + stdio server
+  tui/           # Terminal UI
+  modules/       # Module package scaffold
+  integrations/  # IDE integration packages (in progress)
 scripts/
   install.sh
   install.ps1
@@ -104,7 +117,7 @@ scripts/
 website/
 ```
 
-## Build and Verify
+## Validate Locally
 
 ```bash
 npm install
@@ -116,4 +129,4 @@ npm run installer:test-local
 
 ## License
 
-MIT (see `LICENSE`)
+MIT — see [`LICENSE`](./LICENSE)

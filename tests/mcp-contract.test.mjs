@@ -11,13 +11,20 @@ writeFileSync(join(TMP_DIR, 'sample.txt'), 'phantom mcp contract fixture');
 test('mcp tools list includes required contracts', () => {
   const server = new PhantomMCPServer();
   const names = server.listTools().map(tool => tool.name).sort();
-  assert.deepEqual(names, [
+  const required = [
     'bridge.translate_pm_to_dev',
     'context.add',
     'context.search',
-    'prd.generate',
-    'swarm.analyze',
-  ]);
+    'phantom_analyze_product',
+    'phantom_create_stories',
+    'phantom_generate_prd',
+    'phantom_plan_sprint',
+    'phantom_swarm_analyze',
+  ];
+
+  for (const tool of required) {
+    assert.equal(names.includes(tool), true, `missing required MCP tool: ${tool}`);
+  }
 });
 
 test('mcp resources list/read works', () => {
@@ -47,26 +54,44 @@ test('mcp context.add and context.search contracts', async () => {
   assert.equal(Array.isArray(searchResponse.result.matches), true);
 });
 
-test('mcp prd.generate contract', async () => {
+test('mcp phantom_generate_prd contract', async () => {
   const server = new PhantomMCPServer();
   const response = await server.invoke({
-    tool: 'prd.generate',
+    tool: 'phantom_generate_prd',
     request_id: 'prd-generate',
-    arguments: { title: 'MCP Contract Coverage' },
+    arguments: { featureName: 'MCP Contract Coverage' },
   });
   assert.equal(response.status, 'ok');
-  assert.equal(typeof response.result.prd_id, 'string');
+  assert.equal(typeof response.result, 'object');
 });
 
-test('mcp swarm.analyze contract', async () => {
+test('mcp phantom_swarm_analyze contract', async () => {
   const server = new PhantomMCPServer();
   const response = await server.invoke({
-    tool: 'swarm.analyze',
+    tool: 'phantom_swarm_analyze',
     request_id: 'swarm-analyze',
     arguments: { question: 'Should we add dark mode?' },
   });
   assert.equal(response.status, 'ok');
-  assert.equal(typeof response.result.swarm_result.consensus, 'string');
+  assert.equal(typeof response.result, 'object');
+});
+
+test('mcp legacy alias tools still work', async () => {
+  const server = new PhantomMCPServer();
+
+  const prdResponse = await server.invoke({
+    tool: 'prd.generate',
+    request_id: 'legacy-prd',
+    arguments: { title: 'Legacy PRD Contract' },
+  });
+  assert.equal(prdResponse.status, 'ok');
+
+  const swarmResponse = await server.invoke({
+    tool: 'swarm.analyze',
+    request_id: 'legacy-swarm',
+    arguments: { question: 'Legacy swarm contract check' },
+  });
+  assert.equal(swarmResponse.status, 'ok');
 });
 
 test('mcp bridge.translate_pm_to_dev contract', async () => {

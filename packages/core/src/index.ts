@@ -7,3 +7,6 @@ export * from './agents.js';
 export * from './prd.js';
 export * from './integrations.js';
 export * from './runtime.js';
+export * from './agent-discovery.js';
+export * from './agent-registry.js';
+export * from './nudge-engine.js';

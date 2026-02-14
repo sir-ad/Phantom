@@ -15,7 +15,12 @@ export type PhantomToolName =
   | 'context.search'
   | 'prd.generate'
   | 'swarm.analyze'
-  | 'bridge.translate_pm_to_dev';
+  | 'bridge.translate_pm_to_dev'
+  | 'phantom_generate_prd'
+  | 'phantom_swarm_analyze'
+  | 'phantom_create_stories'
+  | 'phantom_plan_sprint'
+  | 'phantom_analyze_product';
 
 type PhantomErrorCode =
   | 'INVALID_REQUEST'
@@ -107,6 +112,64 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
     },
   },
   {
+    name: 'phantom_generate_prd',
+    description: 'Generate a PRD for a feature name (agent-friendly alias)',
+    input_schema: {
+      type: 'object',
+      required: ['featureName'],
+      properties: {
+        featureName: { type: 'string', description: 'Feature name or initiative title' },
+        output_path: { type: 'string', description: 'Optional file path to write markdown output' },
+      },
+    },
+  },
+  {
+    name: 'phantom_swarm_analyze',
+    description: 'Run deterministic swarm analysis (agent-friendly alias)',
+    input_schema: {
+      type: 'object',
+      required: ['question'],
+      properties: {
+        question: { type: 'string', description: 'Decision question' },
+      },
+    },
+  },
+  {
+    name: 'phantom_create_stories',
+    description: 'Create user stories from a feature request',
+    input_schema: {
+      type: 'object',
+      required: ['feature'],
+      properties: {
+        feature: { type: 'string', description: 'Feature name' },
+        count: { type: 'number', description: 'Number of stories to create' },
+      },
+    },
+  },
+  {
+    name: 'phantom_plan_sprint',
+    description: 'Create a lightweight sprint plan from priorities and velocity',
+    input_schema: {
+      type: 'object',
+      required: [],
+      properties: {
+        velocity: { type: 'number', description: 'Sprint capacity in story points' },
+        priorities: { type: 'array', description: 'Ordered backlog priorities' },
+      },
+    },
+  },
+  {
+    name: 'phantom_analyze_product',
+    description: 'Analyze product/project state from local context and modules',
+    input_schema: {
+      type: 'object',
+      required: [],
+      properties: {
+        focus: { type: 'string', description: 'Optional analysis focus area' },
+      },
+    },
+  },
+  {
     name: 'bridge.translate_pm_to_dev',
     description: 'Translate PM intent into dev-ready tasks',
     input_schema: {
@@ -156,6 +219,132 @@ function parseNumberArg(args: Record<string, unknown>, key: string, fallback: nu
     throw invalidArgument(key, 'must be a finite number');
   }
   return Math.max(1, Math.floor(value));
+}
+
+function parseStringArrayArg(args: Record<string, unknown>, key: string): string[] {
+  const value = args[key];
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    throw invalidArgument(key, 'must be an array of strings');
+  }
+  const parsed = value.filter(item => typeof item === 'string').map(item => item.trim()).filter(Boolean);
+  return parsed;
+}
+
+function parseOptionalStringArg(args: Record<string, unknown>, key: string): string | undefined {
+  const value = args[key];
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw invalidArgument(key, 'must be a non-empty string');
+  }
+  return value.trim();
+}
+
+function buildPrdResponse(title: string, outputPath: unknown): unknown {
+  const prd = generatePRD(title);
+  const markdown = prdToMarkdown(prd);
+
+  if (typeof outputPath === 'string' && outputPath.trim().length > 0) {
+    const targetPath = outputPath.trim();
+    mkdirSync(dirname(targetPath), { recursive: true });
+    writeFileSync(targetPath, `${markdown}\n`, 'utf8');
+    return {
+      prd_id: prd.id,
+      sections: prd.sections.map(section => section.title),
+      evidence: prd.evidence,
+      output_path: targetPath,
+      markdown,
+    };
+  }
+
+  return {
+    prd_id: prd.id,
+    sections: prd.sections.map(section => section.title),
+    evidence: prd.evidence,
+    markdown,
+  };
+}
+
+function createStories(feature: string, requestedCount: number): unknown {
+  const count = Math.max(1, Math.min(requestedCount, 12));
+  const baseStories = [
+    'As a user, I can discover the feature entry point from the main workflow.',
+    'As a user, I can complete the feature flow with clear success and error states.',
+    'As an admin, I can monitor feature adoption and failures.',
+    'As a PM, I can measure success metrics after release.',
+    'As an engineer, I can observe logs/traces for debugging.',
+  ];
+  const stories = Array.from({ length: count }).map((_, index) => {
+    const template = baseStories[index % baseStories.length];
+    const points = [2, 3, 5, 8][index % 4];
+    return {
+      id: `story-${index + 1}`,
+      title: `${feature} — Story ${index + 1}`,
+      description: template,
+      points,
+      acceptance_criteria: [
+        'Given prerequisite setup, when action is taken, then expected outcome is shown.',
+        'Error states are recoverable and user-readable.',
+        'Telemetry fields required for PM reporting are emitted.',
+      ],
+    };
+  });
+
+  return {
+    feature,
+    count,
+    stories,
+  };
+}
+
+function planSprint(velocity: number, priorities: string[]): unknown {
+  const capacity = Math.max(1, velocity);
+  const items = priorities.length > 0 ? priorities : ['stability-improvements', 'core-feature-delivery', 'quality-hardening'];
+  const stories = items.map((item, index) => ({
+    id: `plan-${index + 1}`,
+    title: item,
+    points: [2, 3, 5, 8][index % 4],
+    priority: index + 1,
+  }));
+  const totalPoints = stories.reduce((sum, story) => sum + story.points, 0);
+
+  return {
+    sprint_goal: `Deliver ${items[0]} while preserving velocity and quality`,
+    capacity,
+    total_points: totalPoints,
+    within_capacity: totalPoints <= capacity,
+    stories,
+    recommendations: totalPoints > capacity
+      ? ['Reduce scope by dropping low-priority stories', 'Split large stories before sprint start']
+      : ['Lock sprint scope and track execution daily'],
+  };
+}
+
+function analyzeProduct(focus: string | undefined): unknown {
+  const cfg = getConfig().get();
+  const contextStats = getContextEngine().getStats();
+  const modules = getModuleManager();
+  const availableModules = modules.getAvailableModules();
+  const activeFocus = focus || 'overall';
+
+  return {
+    focus: activeFocus,
+    project: cfg.activeProject || null,
+    context: {
+      files_indexed: contextStats.totalFiles,
+      health_score: contextStats.healthScore,
+      projects: cfg.projects.length,
+    },
+    modules: {
+      installed: cfg.installedModules,
+      available_count: availableModules.length,
+    },
+    recommendations: [
+      'Keep context health above 80 before major roadmap decisions.',
+      'Run swarm analysis on high-impact product questions.',
+      'Generate PRDs and stories before sprint planning to reduce ambiguity.',
+    ],
+  };
 }
 
 function invalidArgument(field: string, rule: string): Error {
@@ -306,33 +495,32 @@ export class PhantomMCPServer {
         }
         case 'prd.generate': {
           const title = parseStringArg(request.arguments, 'title');
-          const prd = generatePRD(title);
-          const markdown = prdToMarkdown(prd);
-          const outputPath = request.arguments.output_path;
-
-          if (typeof outputPath === 'string' && outputPath.trim().length > 0) {
-            const targetPath = outputPath.trim();
-            mkdirSync(dirname(targetPath), { recursive: true });
-            writeFileSync(targetPath, `${markdown}\n`, 'utf8');
-            return ok(request.request_id, {
-              prd_id: prd.id,
-              sections: prd.sections.map(section => section.title),
-              evidence: prd.evidence,
-              output_path: targetPath,
-            });
-          }
-
-          return ok(request.request_id, {
-            prd_id: prd.id,
-            sections: prd.sections.map(section => section.title),
-            evidence: prd.evidence,
-            markdown,
-          });
+          return ok(request.request_id, buildPrdResponse(title, request.arguments.output_path));
         }
-        case 'swarm.analyze': {
+        case 'phantom_generate_prd': {
+          const featureName = parseOptionalStringArg(request.arguments, 'featureName');
+          const title = featureName || parseStringArg(request.arguments, 'title');
+          return ok(request.request_id, buildPrdResponse(title, request.arguments.output_path));
+        }
+        case 'swarm.analyze':
+        case 'phantom_swarm_analyze': {
           const question = parseStringArg(request.arguments, 'question');
           const result = await getSwarm().runSwarm(question);
-          return ok(request.request_id, { swarm_result: result });
+          return ok(request.request_id, { swarm_result: result, consensus: result.consensus });
+        }
+        case 'phantom_create_stories': {
+          const feature = parseStringArg(request.arguments, 'feature');
+          const count = parseNumberArg(request.arguments, 'count', 5);
+          return ok(request.request_id, createStories(feature, count));
+        }
+        case 'phantom_plan_sprint': {
+          const velocity = parseNumberArg(request.arguments, 'velocity', 20);
+          const priorities = parseStringArrayArg(request.arguments, 'priorities');
+          return ok(request.request_id, planSprint(velocity, priorities));
+        }
+        case 'phantom_analyze_product': {
+          const focus = parseOptionalStringArg(request.arguments, 'focus');
+          return ok(request.request_id, analyzeProduct(focus));
         }
         case 'bridge.translate_pm_to_dev': {
           const pmIntent = parseStringArg(request.arguments, 'pm_intent');
@@ -441,3 +629,6 @@ export async function runStdioServer(): Promise<void> {
     );
   }
 }
+
+export { PhantomDiscovery } from './discovery.js';
+export { AutonomousWorkflow, AgentMessaging } from './workflows.js';

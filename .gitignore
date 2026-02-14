@@ -42,6 +42,9 @@ SKILL.md
 releases/local/
 releases/manifest.local.json
 packages/*/dist/
+packages/integrations/**/node_modules/
+packages/integrations/**/dist/
+phantom-output/
 
 # logs and misc
 *.log

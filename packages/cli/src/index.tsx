@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { basename, join, resolve } from 'path';
 import { Command } from 'commander';
 import {
@@ -28,7 +28,7 @@ import {
   getRuntimeHealth,
   runDeterministicSimulation,
 } from '@phantom/core';
-import { PhantomMCPServer, runStdioServer } from '@phantom/mcp-server';
+import { PhantomMCPServer, runStdioServer, PhantomDiscovery } from '@phantom/mcp-server';
 import {
   theme,
   box,
@@ -670,18 +670,137 @@ program
 
 program
   .command('nudge')
-  .description('Show context-backed operational nudges')
+  .description('Show intelligent nudges and suggestions')
   .option('--json', 'Output as JSON')
-  .action((options: { json?: boolean }) => {
-    const nudges = getRealNudges(process.cwd());
-    if (options.json) {
-      printJson({ nudges });
-      return;
-    }
-    console.log('');
-    for (const nudge of nudges) {
-      console.log(renderNudge(nudge));
+  .option('--dismiss <id>', 'Dismiss a specific nudge')
+  .option('--snooze <id>', 'Snooze a nudge (minutes)')
+  .option('--refresh', 'Generate new nudges based on current context')
+  .action(async (options: { json?: boolean; dismiss?: string; snooze?: string; refresh?: boolean }) => {
+    try {
+      const { NudgeEngine, getConfig, getContextEngine, getModuleManager } = await import('@phantom/core');
+      const engine = new NudgeEngine();
+      
+      // Handle dismiss/snooze actions
+      if (options.dismiss) {
+        const success = engine.dismissNudge(options.dismiss);
+        if (options.json) {
+          printJson({ status: success ? 'ok' : 'error', action: 'dismiss', id: options.dismiss });
+        } else if (success) {
+          console.log(theme.success(`  Nudge dismissed: ${options.dismiss}`));
+        } else {
+          console.log(theme.error(`  Failed to dismiss nudge: ${options.dismiss}`));
+        }
+        return;
+      }
+      
+      if (options.snooze) {
+        const [id, minutesStr] = options.snooze.split(':');
+        const minutes = parseInt(minutesStr || '60');
+        const success = engine.snoozeNudge(id, minutes);
+        if (options.json) {
+          printJson({ status: success ? 'ok' : 'error', action: 'snooze', id, minutes });
+        } else if (success) {
+          console.log(theme.success(`  Nudge snoozed for ${minutes} minutes: ${id}`));
+        } else {
+          console.log(theme.error(`  Failed to snooze nudge: ${id}`));
+        }
+        return;
+      }
+      
+      // Generate new nudges if requested
+      if (options.refresh) {
+        const config = getConfig();
+        const cfg = config.get();
+        const context = getContextEngine();
+        const modules = getModuleManager();
+        
+        const userContext = {
+          activeProject: cfg.activeProject || null,
+          installedModules: cfg.installedModules,
+          connectedAgents: [], // TODO: Get from registry
+          recentActions: [], // TODO: Track recent actions
+          currentDirectory: process.cwd(),
+          timeOfDay: new Date().getHours().toString(),
+          dayOfWeek: new Date().getDay().toString()
+        };
+        
+        await engine.generateNudges(userContext);
+      }
+      
+      // Get current nudges
+      const nudges = engine.getCurrentNudges();
+      const stats = engine.getNudgeStats();
+      
+      if (options.json) {
+        printJson({ nudges, stats });
+        return;
+      }
+      
       console.log('');
+      console.log(theme.title('  INTELLIGENT NUDGES'));
+      console.log(theme.secondary(`  Active: ${stats.active} | Total Generated: ${stats.totalGenerated}`));
+      console.log('');
+      
+      if (nudges.length === 0) {
+        console.log(theme.success('  🎉 No active nudges. Everything looks good!'));
+        console.log(theme.dim('  Run with --refresh to generate new contextual suggestions'));
+        console.log('');
+        return;
+      }
+      
+      // Display nudges by priority
+      const priorityOrder: Array<'critical' | 'high' | 'medium' | 'low'> = ['critical', 'high', 'medium', 'low'];
+      
+      for (const priority of priorityOrder) {
+        const priorityNudges = nudges.filter(n => n.priority === priority);
+        if (priorityNudges.length === 0) continue;
+        
+        const priorityTitle = {
+          'critical': '🚨 CRITICAL ALERTS',
+          'high': '⚠️  HIGH PRIORITY',
+          'medium': '💡 RECOMMENDATIONS',
+          'low': '📢 SUGGESTIONS'
+        }[priority];
+        
+        console.log(theme.title(`  ${priorityTitle}`));
+        console.log('');
+        
+        for (const nudge of priorityNudges) {
+          const typeIcon = {
+            'suggestion': '💡',
+            'warning': '⚠️',
+            'opportunity': '✨',
+            'insight': '🔮',
+            'alert': '🚨'
+          }[nudge.type] || '📋';
+          
+          console.log(`  ${typeIcon} ${theme.accent(nudge.title)}`);
+          console.log(`     ${nudge.message}`);
+          if (nudge.command) {
+            console.log(`     ${theme.dim(`Command: ${nudge.command}`)}`);
+          }
+          if (nudge.suggestions.length > 0) {
+            console.log(`     ${theme.dim('Suggestions:')} ${nudge.suggestions.join(' • ')}`);
+          }
+          console.log(`     ${theme.dim(`ID: ${nudge.id} | ${new Date(nudge.timestamp).toLocaleString()}`)}`);
+          console.log('');
+        }
+      }
+      
+      console.log(theme.dim('  Use: phantom nudge --dismiss <id> to dismiss a nudge'));
+      console.log(theme.dim('  Use: phantom nudge --snooze <id>:<minutes> to snooze'));
+      console.log(theme.dim('  Use: phantom nudge --refresh to generate new suggestions'));
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Nudge system error';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
     }
   });
 
@@ -815,6 +934,351 @@ program
       `  Primary Model: ${payload.primaryModel.provider}/${payload.primaryModel.model} (${payload.primaryModel.status})`,
       '',
     ].join('\n'), 'PHANTOM DASHBOARD', 78));
+    console.log('');
+  });
+
+// Agent Matrix Commands
+const agentsCommand = program.command('agents').description('Agent Matrix - Connect and coordinate all AI agents');
+
+agentsCommand
+  .command('register')
+  .description('Register PHANTOM with all detected AI agents')
+  .option('--json', 'Output as JSON')
+  .action(async (options: { json?: boolean }) => {
+    try {
+      if (options.json) {
+        // JSON output for programmatic use
+        const agents = PhantomDiscovery.detectInstalledAgents();
+        const installed = agents.filter((a: any) => a.installed);
+        const results = [];
+        
+        for (const agent of installed) {
+          const success = await PhantomDiscovery.registerWithAgent(agent.type as any);
+          results.push({
+            agent: agent.name,
+            type: agent.type,
+            success,
+            status: success ? 'registered' : 'failed'
+          });
+        }
+        
+        printJson({
+          timestamp: new Date().toISOString(),
+          total_agents: installed.length,
+          successful_registrations: results.filter(r => r.success).length,
+          results
+        });
+        return;
+      }
+      
+      // Interactive output
+      await PhantomDiscovery.autoRegisterAll();
+      
+    } catch (error) {
+      console.error(theme.error('  Failed to register agents:'), error);
+      process.exitCode = 1;
+    }
+  });
+
+agentsCommand
+  .command('health')
+  .description('Check PHANTOM and agent connection health')
+  .option('--json', 'Output as JSON')
+  .action(async (options: { json?: boolean }) => {
+    try {
+      if (options.json) {
+        // Implement JSON health check
+        const mcpRunning = await PhantomDiscovery.detectPhantom();
+        const agents = PhantomDiscovery.detectInstalledAgents();
+        const healthData = {
+          timestamp: new Date().toISOString(),
+          mcp_server: {
+            status: mcpRunning ? 'running' : 'not_responding',
+            version: '1.0.0'
+          },
+          agents: agents.map((agent: any) => {
+            const configPath = PhantomDiscovery.AGENT_CONFIG_PATHS[agent.type as keyof typeof PhantomDiscovery.AGENT_CONFIG_PATHS];
+            let registered = false;
+            if (configPath && existsSync(configPath)) {
+              try {
+                const config = JSON.parse(readFileSync(configPath, 'utf8'));
+                registered = config.mcpServers?.phantom !== undefined;
+              } catch {
+                registered = false;
+              }
+            }
+            return {
+              name: agent.name,
+              type: agent.type,
+              installed: agent.installed,
+              registered,
+              status: agent.installed ? (registered ? 'connected' : 'detected_not_registered') : 'not_installed'
+            };
+          })
+        };
+        printJson(healthData);
+        return;
+      }
+      
+      // Interactive health check
+      await PhantomDiscovery.healthCheck();
+      
+    } catch (error) {
+      console.error(theme.error('  Health check failed:'), error);
+      process.exitCode = 1;
+    }
+  });
+
+agentsCommand
+  .command('scan')
+  .description('Scan system for installed AI agents and LLMs')
+  .option('--register', 'Automatically register detected agents')
+  .option('--json', 'Output as JSON')
+  .action(async (options: { register?: boolean; json?: boolean }) => {
+    try {
+      const { AgentDiscovery, AgentRegistry } = await import('@phantom/core');
+      const discovery = new AgentDiscovery();
+      const agents = await discovery.scanSystem();
+      
+      if (options.register) {
+        const registry = new AgentRegistry();
+        const registered = await registry.scanAndRegister();
+        
+        if (options.json) {
+          printJson({ detected: agents, registered: registered.map(r => r.id) });
+          return;
+        }
+        
+        console.log('');
+        console.log(theme.success(`  Registered ${registered.length} new agents:`));
+        for (const agent of registered) {
+          console.log(`    • ${agent.signature.name}`);
+        }
+        console.log('');
+      }
+      
+      if (options.json && !options.register) {
+        printJson({ agents });
+        return;
+      }
+      
+      if (!options.register) {
+        console.log('');
+        console.log(theme.title('  DETECTED AGENTS'));
+        console.log('');
+        
+        if (agents.length === 0) {
+          console.log(theme.warning('  No AI agents detected in your system.'));
+          console.log(theme.dim('  Supported: Claude Code, Cursor, Codex, Gemini, ChatGPT, VS Code, Zed')); 
+          console.log('');
+          return;
+        }
+        
+        for (const agent of agents) {
+          const statusIcon = agent.status === 'running' ? '🟢' : '🔵';
+          const confidenceColor = agent.confidence > 80 ? theme.success : 
+                                 agent.confidence > 60 ? theme.warning : theme.dim;
+          
+          console.log(`  ${statusIcon} ${theme.accent(agent.signature.name)}`);
+          console.log(`     ${theme.secondary(agent.signature.description)}`);
+          console.log(`     ${confidenceColor(`Confidence: ${agent.confidence}%`)} | Status: ${agent.status}`);
+          if (agent.detectedPaths.length > 0) {
+            console.log(`     ${theme.dim(`Paths: ${agent.detectedPaths.join(', ')}`)}`);
+          }
+          console.log('');
+        }
+        
+        console.log(theme.dim('  Run with --register to automatically register detected agents'));
+        console.log('');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Agent scan failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+    }
+  });
+
+agentsCommand
+  .command('list')
+  .description('List registered agents and their integration status')
+  .option('--json', 'Output as JSON')
+  .action(async (options: { json?: boolean }) => {
+    try {
+      const { AgentRegistry } = await import('@phantom/core');
+      const registry = new AgentRegistry();
+      const agents = registry.getAllAgents();
+      
+      if (options.json) {
+        printJson({ agents });
+        return;
+      }
+      
+      console.log('');
+      console.log(theme.title('  REGISTERED AGENTS'));
+      console.log('');
+      
+      if (agents.length === 0) {
+        console.log(theme.warning('  No agents registered yet.'));
+        console.log(theme.dim('  Run: phantom agents scan')); 
+        console.log('');
+        return;
+      }
+      
+      for (const agent of agents) {
+        const statusIcon = {
+          'connected': '🟢',
+          'running': '🟢', 
+          'available': '🔵',
+          'installed': '🔵',
+          'offline': '🔴',
+          'unknown': '⚪'
+        }[agent.status] || '⚪';
+        
+        const integrationLevel = agent.phantomIntegration.level;
+        const levelColor = integrationLevel === 'full' ? theme.success :
+                          integrationLevel === 'enhanced' ? theme.warning :
+                          theme.dim;
+        
+        console.log(`  ${statusIcon} ${theme.accent(agent.signature.name)}`);
+        console.log(`     Integration: ${levelColor(integrationLevel)}`);
+        console.log(`     Features: ${agent.phantomIntegration.featuresEnabled.join(', ') || 'None'}`);
+        console.log(`     Reliability: ${agent.performance.reliability}%`);
+        console.log(`     Last seen: ${new Date(agent.lastDetection).toLocaleString()}`);
+        console.log('');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to list agents';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+    }
+  });
+
+agentsCommand
+  .command('integrate <agentId>')
+  .description('Enable Phantom integration for an agent')
+  .option('--level <level>', 'Integration level: integrated, enhanced, full', 'enhanced')
+  .option('--json', 'Output as JSON')
+  .action(async (agentId: string, options: { level: string; json?: boolean }) => {
+    try {
+      const { AgentRegistry } = await import('@phantom/core');
+      const registry = new AgentRegistry();
+      
+      const validLevels = ['integrated', 'enhanced', 'full'] as const;
+      if (!validLevels.includes(options.level as any)) {
+        throw new Error(`Invalid integration level. Choose from: ${validLevels.join(', ')}`);
+      }
+      
+      const success = registry.enableIntegration(agentId, options.level as any);
+      
+      if (!success) {
+        throw new Error(`Agent not found: ${agentId}`);
+      }
+      
+      if (options.json) {
+        printJson({ status: 'ok', agentId, level: options.level });
+        return;
+      }
+      
+      console.log('');
+      console.log(theme.success(`  Integration enabled for ${agentId}`));
+      console.log(`  Level: ${options.level}`);
+      console.log(theme.dim('  Run: phantom agents list to see updated status'));
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Integration failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+    }
+  });
+
+agentsCommand
+  .command('network')
+  .description('Show agent network topology and connections')
+  .option('--json', 'Output as JSON')
+  .action(async (options: { json?: boolean }) => {
+    try {
+      const { AgentRegistry } = await import('@phantom/core');
+      const registry = new AgentRegistry();
+      const topology = registry.getNetworkTopology();
+      
+      if (options.json) {
+        printJson(topology);
+        return;
+      }
+      
+      console.log('');
+      console.log(theme.title('  AGENT NETWORK TOPOLOGY'));
+      console.log('');
+      
+      console.log(theme.secondary(`Agents: ${topology.agents.length}`));
+      console.log(theme.secondary(`Connections: ${topology.connections.length}`));
+      console.log(theme.secondary(`Clusters: ${topology.clusters.length}`));
+      console.log('');
+      
+      if (topology.clusters.length > 0) {
+        console.log(theme.title('  CLUSTERS'));
+        for (const cluster of topology.clusters) {
+          console.log(`  ${theme.accent(cluster.name)}: ${cluster.agents.join(', ')}`);
+        }
+        console.log('');
+      }
+      
+      if (topology.connections.length > 0) {
+        console.log(theme.title('  CONNECTIONS'));
+        for (const conn of topology.connections.slice(0, 10)) { // Show top 10
+          const strengthBar = '█'.repeat(Math.floor(conn.strength / 20)) + '░'.repeat(5 - Math.floor(conn.strength / 20));
+          console.log(`  ${conn.from} → ${conn.to} [${strengthBar}] ${conn.strength}%`);
+        }
+        if (topology.connections.length > 10) {
+          console.log(theme.dim(`  ... and ${topology.connections.length - 10} more connections`));
+        }
+      }
+      
+      console.log('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Network analysis failed';
+      if (options.json) {
+        printJson({ status: 'error', error: message });
+      } else {
+        console.log('');
+        console.log(theme.error(`  ${message}`));
+        console.log('');
+      }
+      process.exitCode = 1;
+    }
+  });
+
+agentsCommand
+  .description('Show Agent Matrix usage and capabilities')
+  .action(() => {
+    console.log('');
+    console.log(theme.title('  PHANTOM AGENT MATRIX'));
+    console.log(theme.secondary('  Connect and coordinate all your AI agents'));
+    console.log('');
+    console.log(`  ${theme.accent('phantom agents scan')}     # Detect installed AI agents`);
+    console.log(`  ${theme.accent('phantom agents list')}     # Show registered agents`);
+    console.log(`  ${theme.accent('phantom agents integrate <id>')} # Enable integration`);
+    console.log(`  ${theme.accent('phantom agents network')}   # View network topology`);
+    console.log('');
+    console.log(theme.dim('  Supported agents: Claude Code, Cursor, Codex, Gemini, ChatGPT, VS Code, Zed'));
     console.log('');
   });
 
