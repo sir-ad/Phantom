@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { build } from 'esbuild';
 import { createHash } from 'crypto';
-import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 import { spawnSync } from 'child_process';
@@ -45,11 +45,11 @@ function run(command, args, cwd = ROOT) {
 async function main() {
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   const version = pkg.version;
-  const platform = detectPlatform();
 
   rmSync(LOCAL_DIR, { recursive: true, force: true });
   mkdirSync(join(STAGE_DIR, 'lib'), { recursive: true });
 
+  // 1. Bundle the CLI (Cross-platform Node.js bundle)
   const cliEntry = join(ROOT, 'packages', 'cli', 'dist', 'index.js');
   await build({
     entryPoints: [cliEntry],
@@ -62,6 +62,7 @@ async function main() {
     legalComments: 'none',
   }).catch((error) => fail(`esbuild bundle failed: ${String(error)}`));
 
+  // 2. Create Launcher Script
   const launcher = `#!/usr/bin/env sh
 set -eu
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
@@ -74,23 +75,63 @@ exec node "$SCRIPT_DIR/lib/phantom-cli.cjs" "$@"
   writeFileSync(LAUNCHER_PATH, launcher, 'utf8');
   run('chmod', ['+x', LAUNCHER_PATH]);
 
-  const archiveName = `phantom-${platform}.tar.gz`;
-  const archivePath = join(LOCAL_DIR, archiveName);
-  run('tar', ['-czf', archivePath, '-C', STAGE_DIR, '.']);
+  // 3. Package for all targets
+  const targets = [
+    { os: 'macos', arch: 'arm64', ext: 'tar.gz' },
+    { os: 'macos', arch: 'x64', ext: 'tar.gz' },
+    { os: 'linux', arch: 'x64', ext: 'tar.gz' },
+    { os: 'win', arch: 'x64', ext: 'zip' },
+  ];
+
+  const assets = [];
+
+  for (const target of targets) {
+    const archiveName = `phantom-${target.os}-${target.arch}.${target.ext}`;
+    const archivePath = join(LOCAL_DIR, archiveName);
+
+    if (target.ext === 'tar.gz') {
+      run('tar', ['-czf', archivePath, '-C', STAGE_DIR, '.']);
+    } else {
+      // For zip (windows), we might not have 'zip' command on linux/mac sometimes, but let's try 'zip'
+      // If 'zip' fails, we might fall back to tar or just skip. 
+      // Actually, for consistency and standard tools, let's use 'tar' for everything or use a node lib.
+      // But windows users prefer zip. 
+      // GitHub Actions ubuntu-latest has 'zip'.
+      try {
+        run('zip', ['-r', archivePath, '.'], STAGE_DIR);
+      } catch (e) {
+        // Fallback to tar if zip missing (unlikely on CI)
+        const tarPath = archivePath.replace('.zip', '.tar.gz');
+        run('tar', ['-czf', tarPath, '-C', STAGE_DIR, '.']);
+      }
+    }
+
+    if (process.platform !== 'win32' || target.os === 'win') {
+      // Append to manifest assets if file exists
+      try {
+        const finalPath = target.ext === 'zip' && !existsSync(archivePath)
+          ? archivePath.replace('.zip', '.tar.gz')
+          : archivePath;
+
+        if (existsSync(finalPath)) {
+          assets.push({
+            platform: `${target.os}-${target.arch}`,
+            asset_url: pathToFileURL(finalPath).toString(),
+            sha256: sha256(finalPath),
+            signature: 'local-dev-unsigned',
+            size_bytes: statSync(finalPath).size,
+          });
+          process.stdout.write(`Package created: ${finalPath}\n`);
+        }
+      } catch (e) { console.error(e); }
+    }
+  }
 
   const manifest = {
     schema_version: '1.0',
     version,
     published_at: new Date().toISOString(),
-    assets: [
-      {
-        platform,
-        asset_url: pathToFileURL(archivePath).toString(),
-        sha256: sha256(archivePath),
-        signature: 'local-dev-unsigned',
-        size_bytes: statSync(archivePath).size,
-      },
-    ],
+    assets,
     fallback: {
       npm_package: 'https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main',
       npx_package: 'https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main',
@@ -100,10 +141,6 @@ exec node "$SCRIPT_DIR/lib/phantom-cli.cjs" "$@"
 
   writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
   process.stdout.write(`Local release manifest written: ${MANIFEST_PATH}\n`);
-  process.stdout.write(`Local archive written: ${archivePath}\n`);
-  process.stdout.write(
-    `Run installer test with:\nPHANTOM_MANIFEST_URL="${pathToFileURL(MANIFEST_PATH).toString()}" sh scripts/install.sh\n`
-  );
 }
 
 await main();
