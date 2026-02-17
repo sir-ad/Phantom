@@ -1,0 +1,15 @@
+Title:
+PHANTOM: Open-source PM operating system for the terminal age
+
+Body:
+I built PHANTOM to make PM-quality workflows available directly in the terminal.
+
+Current state:
+- context indexing from code/docs (Real)
+- module system (Real)
+- one-line installer pipeline with manifest/checksum (Beta)
+- MCP tool contracts for agent/IDE integration (Beta)
+
+Everything is documented with explicit Real/Beta/Planned tags.
+
+Repo: https://github.com/sir-ad/phantom

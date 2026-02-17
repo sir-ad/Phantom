@@ -1,6 +1,7 @@
 // PHANTOM Core - Integration detection and adapter baseline
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { homedir } from 'os';
 import { getConfig, type IntegrationConfig } from './config.js';
 
 export const KNOWN_INTEGRATION_TARGETS = [
@@ -12,6 +13,9 @@ export const KNOWN_INTEGRATION_TARGETS = [
   'vscode',
   'claude-code',
   'codex',
+  'windsurf',
+  'claude-desktop',
+  'antigravity',
 ] as const;
 
 export type IntegrationTarget = typeof KNOWN_INTEGRATION_TARGETS[number];
@@ -87,6 +91,22 @@ function detectTarget(cwd: string, target: IntegrationTarget): Detector | null {
     case 'slack': {
       const path = join(cwd, 'slack.json');
       if (existsSync(path)) return { path, reason: 'Slack config file found' };
+      return null;
+    }
+    case 'windsurf': {
+      const path = join(cwd, '.windsurf');
+      if (existsSync(path)) return { path, reason: 'Windsurf workspace settings found' };
+      return null;
+    }
+    case 'claude-desktop': {
+      const home = homedir();
+      const path = join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json');
+      if (existsSync(path)) return { path, reason: 'Claude Desktop config found' };
+      return null;
+    }
+    case 'antigravity': {
+      const path = join(cwd, '.gemini');
+      if (existsSync(path)) return { path, reason: 'Gemini/Antigravity workspace found' };
       return null;
     }
   }
@@ -171,6 +191,9 @@ const ADAPTERS: Record<IntegrationTarget, IntegrationAdapter> = {
   vscode: buildAdapter('vscode'),
   'claude-code': buildAdapter('claude-code'),
   codex: buildAdapter('codex'),
+  windsurf: buildAdapter('windsurf'),
+  'claude-desktop': buildAdapter('claude-desktop'),
+  antigravity: buildAdapter('antigravity'),
 };
 
 export function getAdapter(target: IntegrationTarget): IntegrationAdapter {

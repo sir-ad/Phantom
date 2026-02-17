@@ -1,33 +1,71 @@
 {
-  "name": "@phantom/cli",
-  "version": "1.0.0",
-  "description": "Phantom CLI - The PM Operating System",
+  "name": "@phantom-pm/cli",
+  "version": "1.0.1",
+  "description": "PHANTOM - The invisible force behind every great product. Open-source PM operating system for the terminal age.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "phantom": "dist/index.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.tsx",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "postinstall": "node dist/postinstall.js || exit 0",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@phantom/core": "*",
-    "@phantom/mcp-server": "*",
-    "@phantom/tui": "*",
-    "commander": "^12.1.0",
+    "@inquirer/prompts": "^8.2.1",
+    "@phantom-pm/core": "file:../core",
+    "@phantom-pm/mcp-server": "file:../mcp-server",
+    "@phantom-pm/tui": "file:../tui",
     "chalk": "^5.3.0",
-    "ora": "^8.0.1",
-    "inquirer": "^9.2.0",
+    "commander": "^12.1.0",
     "conf": "^13.0.1",
-    "figlet": "^1.7.0"
+    "figlet": "^1.7.0",
+    "inquirer": "^9.2.0",
+    "ora": "^8.0.1",
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "tsx": "^4.16.0",
-    "@types/node": "^20.14.0",
     "@types/figlet": "^1.5.8",
-    "@types/inquirer": "^9.0.7"
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  },
+  "keywords": [
+    "product-management",
+    "ai",
+    "cli",
+    "pm",
+    "agent",
+    "terminal",
+    "product",
+    "development",
+    "mcp",
+    "automation"
+  ],
+  "author": "PhantomPM <hello@phantom.pm>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhantomPM/phantom.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://phantom.pm",
+  "bugs": {
+    "url": "https://github.com/PhantomPM/phantom/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

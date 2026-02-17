@@ -1,0 +1,46 @@
+<!-- Product Hunt Gallery Image 5: Module Installation -->
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="matrixGradient5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FF41;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00cc33;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1200" height="630" fill="#0D1117"/>
+  
+  <!-- Circuit pattern background -->
+  <g stroke="#00FF41" stroke-width="1" opacity="0.1" fill="none">
+    <path d="M100 100 L100 200 L200 200"/>
+    <path d="M1100 100 L1100 200 L1000 200"/>
+    <circle cx="200" cy="200" r="3" fill="#00FF41"/>
+    <circle cx="1000" cy="200" r="3" fill="#00FF41"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="80" font-family="Inter, system-ui, sans-serif" font-size="42" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Install Superpowers</text>
+  <text x="600" y="115" font-family="Inter, system-ui, sans-serif" font-size="18" fill="#9CA3AF" text-anchor="middle">Download skills instantly. Just like Neo.</text>
+  
+  <!-- Terminal showing module installation -->
+  <rect x="100" y="150" width="1000" height="350" rx="8" fill="#161B22" stroke="#30363D" stroke-width="2"/>
+  
+  <!-- Terminal content -->
+  <g font-family="JetBrains Mono, monospace" font-size="16">
+    <text x="130" y="200" fill="#00FF41">$ phantom module install prd-writer</text>
+    <text x="130" y="230" fill="#7EE787">Searching registry...</text>
+    <text x="130" y="255" fill="#7EE787">Found: @phantom/prd-writer v2.1.0</text>
+    <text x="130" y="280" fill="#7EE787">Downloading [████████████████████] 100%</text>
+    
+    <text x="130" y="320" fill="#FFA657">Installing PRD Writer module...</text>
+    <text x="130" y="345" fill="#FFA657">  ✓ Loading templates</text>
+    <text x="130" y="370" fill="#FFA657">  ✓ Configuring AI prompts</text>
+    <text x="130" y="395" fill="#FFA657">  ✓ Registering commands</text>
+    <text x="130" y="420" fill="#FFA657">  ✓ Optimizing for your stack</text>
+    
+    <text x="130" y="460" fill="#00FF41" font-size="20" font-weight="bold">✓ Module installed successfully!</text>
+    <text x="130" y="485" fill="#00D4FF">Try it: phantom prd create "User Auth"</text>
+  </g>
+  
+  <!-- Quote -->
+  <text x="600" y="540" font-family="JetBrains Mono, monospace" font-size="24" fill="#00FF41" text-anchor="middle" font-style="italic">"I know PRDs"</text>
+</svg>

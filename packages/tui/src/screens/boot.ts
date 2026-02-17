@@ -1,6 +1,6 @@
 // PHANTOM TUI - Boot Sequence
 import { theme, progressBar, box, doubleBox, matrixRain, PHANTOM_LOGO_ASCII, animatedMatrixRain } from '../theme/index.js';
-import { PHANTOM_ASCII, PHANTOM_VERSION, TAGLINE, BOOT_SYSTEMS } from '@phantom/core';
+import { PHANTOM_ASCII, PHANTOM_VERSION, TAGLINE, BOOT_SYSTEMS } from '@phantom-pm/core';
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));

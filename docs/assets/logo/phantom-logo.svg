@@ -1,0 +1,52 @@
+<!-- PHANTOM Logo - Full Version -->
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="matrixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FF41;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00cc33;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1000" height="1000" fill="#0D1117"/>
+  
+  <!-- Decorative circuit lines -->
+  <g stroke="#00FF41" stroke-width="2" opacity="0.3">
+    <line x1="100" y1="100" x2="200" y2="100"/>
+    <line x1="200" y1="100" x2="200" y2="200"/>
+    <line x1="800" y1="100" x2="900" y2="100"/>
+    <line x1="800" y1="100" x2="800" y2="200"/>
+    <line x1="100" y1="900" x2="200" y2="900"/>
+    <line x1="200" y1="800" x2="200" y2="900"/>
+    <line x1="800" y1="900" x2="900" y2="900"/>
+    <line x1="800" y1="800" x2="800" y2="900"/>
+  </g>
+  
+  <!-- Main ASCII Art Logo -->
+  <g font-family="monospace" font-size="48" fill="url(#matrixGradient)" filter="url(#glow)" text-anchor="middle">
+    <text x="500" y="350">░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█</text>
+    <text x="500" y="410">░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█</text>
+    <text x="500" y="470">░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀</text>
+  </g>
+  
+  <!-- Brand name -->
+  <text x="500" y="600" font-family="Inter, system-ui, sans-serif" font-size="120" font-weight="bold" fill="#FFFFFF" text-anchor="middle" letter-spacing="8">PHANTOM</text>
+  
+  <!-- Tagline -->
+  <text x="500" y="680" font-family="Inter, system-ui, sans-serif" font-size="28" fill="#9CA3AF" text-anchor="middle">The invisible force behind every great product</text>
+  
+  <!-- Decorative elements -->
+  <g opacity="0.5">
+    <circle cx="150" cy="500" r="5" fill="#00FF41"/>
+    <circle cx="850" cy="500" r="5" fill="#00FF41"/>
+    <circle cx="500" cy="150" r="5" fill="#00FF41"/>
+    <circle cx="500" cy="850" r="5" fill="#00FF41"/>
+  </g>
+</svg>

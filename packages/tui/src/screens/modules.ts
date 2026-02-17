@@ -1,6 +1,6 @@
 // PHANTOM TUI - Module Installation Screen
 import { theme, doubleBox, matrixRain, progressBar } from '../theme/index.js';
-import type { ModuleManifest } from '@phantom/core';
+import type { ModuleManifest } from '@phantom-pm/core';
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));

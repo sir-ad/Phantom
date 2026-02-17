@@ -3,10 +3,10 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "node",
-    "lib": ["ES2022"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
+    "lib": [
+      "ES2022"
+    ],
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,5 +17,13 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
-  "exclude": ["node_modules", "dist"]
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/mcp-server" },
+    { "path": "./packages/modules" },
+    { "path": "./packages/tui" },
+    { "path": "./packages/integrations" },
+    { "path": "./packages/cli" }
+  ]
 }

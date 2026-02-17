@@ -1,5 +1,5 @@
 // PHANTOM Core - Agent Registry System
-import { join } from 'path';
+import { dirname, join } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { AgentDiscovery, type DetectedAgent, type AgentSignature } from './agent-discovery.js';
 import { getConfig } from './config.js';
@@ -52,6 +52,15 @@ export interface EnhancementPlan {
   effort: 'low' | 'medium' | 'high';
 }
 
+interface AgentRegistryPayloadV2 {
+  schemaVersion: 2;
+  updatedAt: string;
+  agents: Record<string, RegisteredAgent>;
+}
+
+const REGISTRY_SCHEMA_VERSION = 2;
+const OFFLINE_THRESHOLD_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+
 export class AgentRegistry {
   private discovery: AgentDiscovery;
   private registryPath: string;
@@ -70,8 +79,10 @@ export class AgentRegistry {
   async scanAndRegister(): Promise<RegisteredAgent[]> {
     const detectedAgents = await this.discovery.scanSystem();
     const newlyRegistered: RegisteredAgent[] = [];
+    const seenAgentIds = new Set<string>();
 
     for (const detected of detectedAgents) {
+      seenAgentIds.add(detected.signature.id);
       const existing = this.agents.get(detected.signature.id);
       
       if (existing) {
@@ -88,6 +99,7 @@ export class AgentRegistry {
       }
     }
 
+    this.reconcileOfflineAgents(seenAgentIds);
     this.saveRegistry();
     return newlyRegistered;
   }
@@ -96,6 +108,7 @@ export class AgentRegistry {
    * Get all registered agents
    */
   getAllAgents(): RegisteredAgent[] {
+    this.reconcileOfflineAgents(new Set<string>());
     return Array.from(this.agents.values())
       .sort((a, b) => b.performance.reliability - a.performance.reliability);
   }
@@ -207,16 +220,21 @@ export class AgentRegistry {
     clusters: { name: string; agents: string[] }[];
   } {
     const agents = this.getAllAgents();
-    const connections: { from: string; to: string; strength: number }[] = [];
+    const dedupConnections = new Map<string, { from: string; to: string; strength: number }>();
     
     // Collect all connections
     for (const agent of agents) {
       for (const conn of agent.connections) {
-        connections.push({
+        const key = [agent.id, conn.targetAgentId].sort().join('::');
+        const existing = dedupConnections.get(key);
+        const candidate = {
           from: agent.id,
           to: conn.targetAgentId,
           strength: conn.strength
-        });
+        };
+        if (!existing || candidate.strength > existing.strength) {
+          dedupConnections.set(key, candidate);
+        }
       }
     }
 
@@ -236,7 +254,40 @@ export class AgentRegistry {
       }
     ].filter(cluster => cluster.agents.length > 0);
 
-    return { agents, connections, clusters };
+    return { agents, connections: Array.from(dedupConnections.values()), clusters };
+  }
+
+  getHealthReport(): {
+    totalAgents: number;
+    connected: number;
+    running: number;
+    offline: number;
+    stale: string[];
+    issues: string[];
+  } {
+    const agents = this.getAllAgents();
+    const stale: string[] = [];
+    const issues: string[] = [];
+    const now = Date.now();
+
+    for (const agent of agents) {
+      const ageMs = now - new Date(agent.lastDetection).getTime();
+      if (Number.isFinite(ageMs) && ageMs > OFFLINE_THRESHOLD_MS) {
+        stale.push(agent.id);
+      }
+      if (agent.performance.reliability < 30) {
+        issues.push(`${agent.id}:low-reliability`);
+      }
+    }
+
+    return {
+      totalAgents: agents.length,
+      connected: agents.filter(agent => agent.status === 'connected').length,
+      running: agents.filter(agent => agent.status === 'running').length,
+      offline: agents.filter(agent => agent.status === 'offline').length,
+      stale,
+      issues,
+    };
   }
 
   /**
@@ -281,6 +332,18 @@ export class AgentRegistry {
     );
     
     agent.performance.lastActive = detected.lastSeen;
+  }
+
+  private reconcileOfflineAgents(seenAgentIds: Set<string>): void {
+    const now = Date.now();
+    for (const agent of this.agents.values()) {
+      if (seenAgentIds.has(agent.id)) continue;
+      const lastSeenMs = new Date(agent.lastDetection).getTime();
+      const stale = Number.isFinite(lastSeenMs) && now - lastSeenMs > OFFLINE_THRESHOLD_MS;
+      if (stale) {
+        agent.status = 'offline';
+      }
+    }
   }
 
   /**
@@ -376,9 +439,12 @@ export class AgentRegistry {
   private loadRegistry(): void {
     try {
       if (existsSync(this.registryPath)) {
-        const data = JSON.parse(readFileSync(this.registryPath, 'utf8'));
-        for (const [id, agent] of Object.entries(data)) {
-          this.agents.set(id, agent as RegisteredAgent);
+        const parsed = JSON.parse(readFileSync(this.registryPath, 'utf8')) as
+          | AgentRegistryPayloadV2
+          | Record<string, RegisteredAgent>;
+        const payload = this.migrateRegistry(parsed);
+        for (const [id, agent] of Object.entries(payload.agents)) {
+          this.agents.set(id, this.normalizeAgent(agent));
         }
       }
     } catch (error) {
@@ -392,12 +458,45 @@ export class AgentRegistry {
    */
   private saveRegistry(): void {
     try {
-      const dir = this.registryPath.split('/').slice(0, -1).join('/');
+      const dir = dirname(this.registryPath);
       mkdirSync(dir, { recursive: true });
-      const data = Object.fromEntries(this.agents);
-      writeFileSync(this.registryPath, JSON.stringify(data, null, 2));
+      const payload: AgentRegistryPayloadV2 = {
+        schemaVersion: REGISTRY_SCHEMA_VERSION,
+        updatedAt: new Date().toISOString(),
+        agents: Object.fromEntries(this.agents),
+      };
+      writeFileSync(this.registryPath, JSON.stringify(payload, null, 2));
     } catch (error) {
       console.warn('Failed to save agent registry:', error);
     }
+  }
+
+  private migrateRegistry(
+    payload: AgentRegistryPayloadV2 | Record<string, RegisteredAgent>
+  ): AgentRegistryPayloadV2 {
+    if (typeof (payload as AgentRegistryPayloadV2).schemaVersion === 'number') {
+      return payload as AgentRegistryPayloadV2;
+    }
+
+    return {
+      schemaVersion: REGISTRY_SCHEMA_VERSION,
+      updatedAt: new Date().toISOString(),
+      agents: payload as Record<string, RegisteredAgent>,
+    };
+  }
+
+  private normalizeAgent(agent: RegisteredAgent): RegisteredAgent {
+    const normalized = { ...agent };
+    if (!normalized.phantomIntegration) {
+      normalized.phantomIntegration = {
+        level: 'aware',
+        featuresEnabled: [],
+        lastSync: new Date().toISOString(),
+      };
+    }
+    if (!Array.isArray(normalized.connections)) {
+      normalized.connections = [];
+    }
+    return normalized;
   }
 }

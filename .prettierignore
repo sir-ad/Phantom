@@ -1,0 +1,39 @@
+# Dependencies
+**/node_modules/**
+
+# Build outputs
+**/dist/**
+**/build/**
+**/out/**
+**/.next/**
+
+# Generated files
+**/*.min.js
+**/*.bundle.js
+**/*.d.ts
+
+# Logs
+**/logs/**
+**/*.log
+
+# Coverage
+**/coverage/**
+
+# Cache
+**/.cache/**
+**/.eslintcache
+**/.prettiercache
+
+# Package files
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+
+# Misc
+**/.git/**
+**/.DS_Store
+**/Thumbs.db
+
+# Phantom specific
+phantom-output/
+.phantom/

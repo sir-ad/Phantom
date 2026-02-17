@@ -1,0 +1,83 @@
+<!-- PHANTOM Open Graph / Twitter Card Banner (1200x630) -->
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="matrixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FF41;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00cc33;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Matrix rain effect (simplified) -->
+  <g fill="#00FF41" opacity="0.1" font-family="monospace" font-size="14">
+    <text x="50" y="50">ｱ</text>
+    <text x="50" y="70">ｲ</text>
+    <text x="50" y="90">ｳ</text>
+    <text x="100" y="100">ｴ</text>
+    <text x="100" y="120">ｵ</text>
+    <text x="150" y="80">ｶ</text>
+    <text x="150" y="100">ｷ</text>
+    <text x="1050" y="50">ﾅ</text>
+    <text x="1050" y="70">ﾆ</text>
+    <text x="1100" y="100">ﾇ</text>
+    <text x="1100" y="120">ﾈ</text>
+    <text x="1150" y="80">ﾉ</text>
+  </g>
+  
+  <!-- Main content container -->
+  <g transform="translate(100, 100)">
+    <!-- Logo ASCII -->
+    <g font-family="monospace" font-size="32" fill="url(#matrixGradient)" filter="url(#glow)">
+      <text x="0" y="0">░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█</text>
+      <text x="0" y="40">░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█</text>
+      <text x="0" y="80">░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀</text>
+    </g>
+    
+    <!-- Brand name -->
+    <text x="0" y="160" font-family="Inter, system-ui, sans-serif" font-size="80" font-weight="bold" fill="#FFFFFF" letter-spacing="6">PHANTOM</text>
+    
+    <!-- Tagline -->
+    <text x="0" y="210" font-family="Inter, system-ui, sans-serif" font-size="28" fill="#9CA3AF">The invisible force behind every great product</text>
+    
+    <!-- Feature pills -->
+    <g transform="translate(0, 260)">
+      <rect x="0" y="0" width="140" height="36" rx="18" fill="rgba(0, 255, 65, 0.2)" stroke="#00FF41" stroke-width="1"/>
+      <text x="70" y="24" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#00FF41" text-anchor="middle">AI-Powered</text>
+      
+      <rect x="160" y="0" width="140" height="36" rx="18" fill="rgba(0, 255, 65, 0.2)" stroke="#00FF41" stroke-width="1"/>
+      <text x="230" y="24" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#00FF41" text-anchor="middle">Open Source</text>
+      
+      <rect x="320" y="0" width="140" height="36" rx="18" fill="rgba(0, 255, 65, 0.2)" stroke="#00FF41" stroke-width="1"/>
+      <text x="390" y="24" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#00FF41" text-anchor="middle">Terminal</text>
+    </g>
+    
+    <!-- Install command -->
+    <rect x="0" y="330" width="500" height="50" rx="8" fill="#000000" stroke="#00FF41" stroke-width="2" opacity="0.8"/>
+    <text x="20" y="362" font-family="monospace" font-size="18" fill="#00FF41">$ curl -fsSL https://phantom.pm/install | sh</text>
+  </g>
+  
+  <!-- Corner accents -->
+  <g stroke="#00FF41" stroke-width="2" opacity="0.3">
+    <line x1="20" y1="20" x2="60" y2="20"/>
+    <line x1="20" y1="20" x2="20" y2="60"/>
+    <line x1="1140" y1="20" x2="1180" y2="20"/>
+    <line x1="1180" y1="20" x2="1180" y2="60"/>
+    <line x1="20" y1="610" x2="60" y2="610"/>
+    <line x1="20" y1="570" x2="20" y2="610"/>
+    <line x1="1140" y1="610" x2="1180" y2="610"/>
+    <line x1="1180" y1="570" x2="1180" y2="610"/>
+  </g>
+</svg>

@@ -10,13 +10,17 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace=@phantom/core && npm run build --workspace=@phantom/mcp-server && npm run build --workspace=@phantom/modules && npm run build --workspace=@phantom/tui && npm run build --workspace=@phantom/cli",
+    "build": "npm run build --workspace=@phantom-pm/core && npm run build --workspace=@phantom-pm/mcp-server && npm run build --workspace=@phantom-pm/modules && npm run build --workspace=@phantom-pm/tui && npm run build --workspace=@phantom-pm/integrations && npm run build --workspace=@phantom-pm/cli",
     "build:github-dist": "node scripts/release/build-github-distribution.mjs",
     "dev": "npm run dev --workspace=packages/cli",
     "website:dev": "node scripts/serve-website.mjs",
     "phantom": "node packages/cli/dist/index.js",
     "typecheck": "npm run build",
-    "lint": "npm run typecheck",
+    "deps:check": "node scripts/check-dependency-consistency.mjs",
+    "lint": "eslint packages --ext .ts,.tsx",
+    "lint:fix": "eslint packages --ext .ts,.tsx --fix",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"packages/**/*.{ts,tsx,json,md}\"",
     "test": "npm run build && node --test tests/smoke.test.mjs tests/mcp-contract.test.mjs",
     "reality:check": "npm run build && node --test tests/reality-gate.test.mjs",
     "release:local": "npm run build && node scripts/release/build-local-install-artifacts.mjs",
@@ -43,6 +47,11 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.74.0",
+    "@types/open": "^6.1.0",
+    "open": "^11.0.0",
+    "openai": "^6.22.0",
+    "p-limit": "^7.3.0",
     "playwright": "^1.58.2"
   }
 }

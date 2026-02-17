@@ -28,18 +28,18 @@ export const TAGLINE = 'The invisible force behind every great product.';
 export const SUBTITLE = 'Open source PM operating system for the terminal age.';
 
 export const MODULE_QUOTES: Record<string, string> = {
-  'prd-forge':      'I know PRDs.',
-  'story-writer':   'I know user stories.',
+  'prd-forge': 'I know PRDs.',
+  'story-writer': 'I know user stories.',
   'sprint-planner': 'I know velocity.',
-  'competitive':    'I know your enemies.',
-  'oracle':         'I know the future.',
-  'figma-bridge':   'I know design.',
+  'competitive': 'I know your enemies.',
+  'oracle': 'I know the future.',
+  'figma-bridge': 'I know design.',
   'analytics-lens': 'I know the numbers.',
   'experiment-lab': 'I know the truth.',
-  'ux-auditor':     'I know the user.',
-  'time-machine':   'I know the past.',
-  'bridge':         'I know both worlds.',
-  'swarm':          'We know everything.',
+  'ux-auditor': 'I know the user.',
+  'time-machine': 'I know the past.',
+  'bridge': 'I know both worlds.',
+  'swarm': 'We know everything.',
 };
 
 export const AGENT_TYPES = [
@@ -55,28 +55,28 @@ export const AGENT_TYPES = [
 export type AgentType = typeof AGENT_TYPES[number];
 
 export const AGENT_DESCRIPTIONS: Record<AgentType, string> = {
-  Strategist:    'Market positioning, competitive analysis, go-to-market strategy',
-  Analyst:       'Data analysis, metrics interpretation, trend identification',
-  Builder:       'Technical feasibility, effort estimation, architecture review',
-  Designer:      'UX/UI analysis, usability heuristics, design system review',
-  Researcher:    'User research synthesis, persona development, JTBD analysis',
-  Communicator:  'Stakeholder updates, documentation, team alignment',
-  Operator:      'Sprint management, velocity tracking, process optimization',
+  Strategist: 'Market positioning, competitive analysis, go-to-market strategy',
+  Analyst: 'Data analysis, metrics interpretation, trend identification',
+  Builder: 'Technical feasibility, effort estimation, architecture review',
+  Designer: 'UX/UI analysis, usability heuristics, design system review',
+  Researcher: 'User research synthesis, persona development, JTBD analysis',
+  Communicator: 'Stakeholder updates, documentation, team alignment',
+  Operator: 'Sprint management, velocity tracking, process optimization',
 };
 
 export const FRAMEWORKS = [
-  { name: 'RICE Scoring',           desc: 'Reach, Impact, Confidence, Effort' },
-  { name: 'MoSCoW',                 desc: 'Must, Should, Could, Won\'t' },
-  { name: 'Kano Model',             desc: 'Delight, Performance, Basic' },
+  { name: 'RICE Scoring', desc: 'Reach, Impact, Confidence, Effort' },
+  { name: 'MoSCoW', desc: 'Must, Should, Could, Won\'t' },
+  { name: 'Kano Model', desc: 'Delight, Performance, Basic' },
   { name: 'AARRR (Pirate Metrics)', desc: 'Acquisition through Revenue' },
-  { name: 'Jobs-to-be-Done',        desc: 'Outcome-driven innovation' },
-  { name: 'ICE Scoring',            desc: 'Impact, Confidence, Ease' },
-  { name: 'Opportunity Scoring',    desc: 'Importance vs Satisfaction' },
-  { name: 'Story Mapping',          desc: 'User activity mapping' },
-  { name: 'Impact Mapping',         desc: 'Goal → Actor → Impact → Deliverable' },
-  { name: 'Lean Canvas',            desc: '1-page business model' },
-  { name: 'Value Proposition',      desc: 'Gains, Pains, Jobs' },
-  { name: 'North Star Framework',   desc: 'Metric → Inputs → Work' },
+  { name: 'Jobs-to-be-Done', desc: 'Outcome-driven innovation' },
+  { name: 'ICE Scoring', desc: 'Impact, Confidence, Ease' },
+  { name: 'Opportunity Scoring', desc: 'Importance vs Satisfaction' },
+  { name: 'Story Mapping', desc: 'User activity mapping' },
+  { name: 'Impact Mapping', desc: 'Goal → Actor → Impact → Deliverable' },
+  { name: 'Lean Canvas', desc: '1-page business model' },
+  { name: 'Value Proposition', desc: 'Gains, Pains, Jobs' },
+  { name: 'North Star Framework', desc: 'Metric → Inputs → Work' },
 ] as const;
 
 export const BOOT_SYSTEMS = [
@@ -86,3 +86,29 @@ export const BOOT_SYSTEMS = [
   'Security Layer',
   'Module System',
 ] as const;
+
+export const PHILOSOPHER_QUOTES = [
+  '"The unexamined product is not worth building." — Phantom',
+  '"First, define the problem. Then, the solution reveals itself." — Phantom',
+  '"Measure twice. Ship once. Iterate forever." — Phantom',
+  '"In the garden of competing priorities, the user is the sun." — Phantom',
+  '"Simplicity is the ultimate sophistication of scope." — Phantom',
+  '"A feature delayed is better than a bug shipped." — Phantom',
+  '"The best PRD is the one your engineers actually read." — Phantom',
+  '"Data whispers. Metrics shout. Users scream." — Phantom',
+  '"Every sprint is a fresh canvas for structured chaos." — Phantom',
+  '"Ship the smallest thing that teaches you the biggest lesson." — Phantom',
+  '"Strategy without execution is hallucination." — Phantom',
+  '"The roadmap is a living document, not a tombstone." — Phantom',
+] as const;
+
+export const BOOT_MESSAGES = [
+  'Initializing thought engine',
+  'Loading PM frameworks',
+  'Connecting neural pathways',
+  'Calibrating decision matrix',
+  'Awakening agent swarm',
+  'Indexing product context',
+] as const;
+
+export const SPINNER_FRAMES = ['◐', '◓', '◑', '◒'] as const;

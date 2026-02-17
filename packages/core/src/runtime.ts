@@ -617,7 +617,7 @@ export function generateRealDocumentation(cwd: string, outDir?: string): string[
         31_536_000_000)
   ).toISOString();
 
-  const root = outDir ? resolve(outDir) : join(cwd, 'phantom-output', 'docs');
+  const root = outDir ? resolve(outDir) : join(cwd, '.phantom', 'output', 'docs');
   mkdirSync(root, { recursive: true });
 
   const files: Array<{ name: string; content: string }> = [

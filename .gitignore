@@ -29,14 +29,22 @@ node_modules/
 .windsurf/
 .zencoder/
 
-# keep planning/docs local only
-docs/
-launch/
-PLAN.md
-REPO_SETUP.md
-PHANTOM_AUDIT_AND_PLAN.md
+# local planning scratch files
 AGENTS.md
 SKILL.md
+LAUNCH_*.md
+PHANTOM_*.md
+*PLAN*.md
+*CHECKLIST*.md
+PUBLISH_*.md
+README_PERFECT.md
+REPO_SETUP.md
+VISUAL_ASSETS*.md
+*user-stories*.md
+Quest*.md
+Qoder*.md
+*master index*.md
+Visual*.md
 
 # local release/test artifacts
 releases/local/

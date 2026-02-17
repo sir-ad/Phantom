@@ -41,6 +41,17 @@ export interface ProjectConfig {
   lastAccessed: string;
 }
 
+export interface APIKeyConfig {
+  openai?: string;
+  anthropic?: string;
+  github?: string;
+  githubClientId?: string;
+  githubClientSecret?: string;
+  linear?: string;
+  figma?: string;
+  slack?: string;
+}
+
 export interface PhantomConfig {
   version: string;
   firstRun: boolean;
@@ -60,6 +71,7 @@ export interface PhantomConfig {
   installation: InstallationConfig;
   mcp: MCPConfig;
   security: SecurityConfig;
+  apiKeys: APIKeyConfig;
 }
 
 const DEFAULT_CONFIG: PhantomConfig = {
@@ -90,6 +102,7 @@ const DEFAULT_CONFIG: PhantomConfig = {
   security: {
     audit_log_path: join(homedir(), '.phantom', 'logs', 'audit.log'),
   },
+  apiKeys: {},
 };
 
 export class ConfigManager {
@@ -166,6 +179,29 @@ export class ConfigManager {
 
   get(): PhantomConfig {
     return this.config;
+  }
+
+  getAPIKey(service: keyof APIKeyConfig): string | undefined {
+    return this.config.apiKeys[service];
+  }
+
+  setAPIKey(service: keyof APIKeyConfig, value: string): void {
+    this.config.apiKeys[service] = value;
+    this.save();
+  }
+
+  removeAPIKey(service: keyof APIKeyConfig): void {
+    delete this.config.apiKeys[service];
+    this.save();
+  }
+
+  getAllAPIKeys(): APIKeyConfig {
+    return { ...this.config.apiKeys };
+  }
+
+  clearAPIKeys(): void {
+    this.config.apiKeys = {};
+    this.save();
   }
 
   set<K extends keyof PhantomConfig>(key: K, value: PhantomConfig[K]): void {

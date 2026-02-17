@@ -1,7 +1,7 @@
 // PHANTOM TUI - Swarm Analysis Screen
 import { theme, box, doubleBox, gradientBar, formatDuration } from '../theme/index.js';
-import type { SwarmResult, AgentResult, AgentState } from '@phantom/core';
-import { AGENT_TYPES } from '@phantom/core';
+import type { SwarmResult, AgentResult, AgentState } from '@phantom-pm/core';
+import { AGENT_TYPES } from '@phantom-pm/core';
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));

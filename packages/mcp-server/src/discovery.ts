@@ -1,108 +1,228 @@
-// PHANTOM Agent Discovery System
-// Auto-detects installed AI agents and registers PHANTOM with them
-
+// PHANTOM Agent/MCP Discovery and Registration
 import { spawnSync } from 'child_process';
-import { writeFileSync, existsSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 import { homedir } from 'os';
+import { AgentDiscovery } from '@phantom-pm/core';
 
-/**
- * Self-Discovery Mechanism
- * 
- * When AI agents start, they check for available MCP servers.
- * PHANTOM registers itself so agents automatically know it exists.
- */
+type SupportedAgent = 'claude-code' | 'cursor' | 'zed' | 'vscode' | 'codex' | 'gemini-cli';
 
-export class PhantomDiscovery {
-  static readonly AGENT_CONFIG_PATHS = {
-    'claude-code': join(homedir(), '.claude', 'settings.json'),
-    'cursor': join(homedir(), '.cursor/settings.json'),
-    'zed': join(homedir(), '.config/zed/settings.json'),
-    'vscode': join(homedir(), 'Library/Application Support/Code/User/settings.json'),
-    'codex': join(homedir(), 'Library/Application Support/Codex/User/settings.json'),
-    'antigravity': join(homedir(), 'Library/Application Support/Antigravity/User/settings.json'),
-    'qoder': join(homedir(), 'Library/Application Support/Qoder/User/settings.json'),
+interface AgentAdapter {
+  type: SupportedAgent;
+  name: string;
+  configPathByPlatform: Partial<Record<NodeJS.Platform, string>>;
+}
+
+interface InstalledAgent {
+  type: SupportedAgent;
+  name: string;
+  installed: boolean;
+  running: boolean;
+  confidence: number;
+  status: 'running' | 'installed' | 'available';
+}
+
+interface RegisteredAgent extends InstalledAgent {
+  configPath: string;
+  registered: boolean;
+  registrationError?: string;
+}
+
+interface HealthReport {
+  timestamp: string;
+  mcp_server: {
+    status: 'running' | 'not_responding';
   };
+  agents: RegisteredAgent[];
+  issues: string[];
+}
 
-  private static readonly AGENT_NAMES = {
-    'claude-code': 'Claude Code',
-    'cursor': 'Cursor',
-    'zed': 'Zed Editor',
-    'vscode': 'Visual Studio Code',
-    'codex': 'Codex AI',
-    'antigravity': 'AntiGravity AI',
-    'qoder': 'Qoder AI',
-  };
+const ADAPTERS: Record<SupportedAgent, AgentAdapter> = {
+  'claude-code': {
+    type: 'claude-code',
+    name: 'Claude Code',
+    configPathByPlatform: {
+      darwin: join(homedir(), '.claude', 'settings.json'),
+      linux: join(homedir(), '.claude', 'settings.json'),
+      win32: join(homedir(), '.claude', 'settings.json'),
+    },
+  },
+  cursor: {
+    type: 'cursor',
+    name: 'Cursor',
+    configPathByPlatform: {
+      darwin: join(homedir(), '.cursor', 'settings.json'),
+      linux: join(homedir(), '.cursor', 'settings.json'),
+      win32: join(homedir(), '.cursor', 'settings.json'),
+    },
+  },
+  zed: {
+    type: 'zed',
+    name: 'Zed Editor',
+    configPathByPlatform: {
+      darwin: join(homedir(), '.config', 'zed', 'settings.json'),
+      linux: join(homedir(), '.config', 'zed', 'settings.json'),
+      win32: join(homedir(), '.config', 'zed', 'settings.json'),
+    },
+  },
+  vscode: {
+    type: 'vscode',
+    name: 'Visual Studio Code',
+    configPathByPlatform: {
+      darwin: join(homedir(), 'Library', 'Application Support', 'Code', 'User', 'settings.json'),
+      linux: join(homedir(), '.config', 'Code', 'User', 'settings.json'),
+      win32: join(homedir(), 'AppData', 'Roaming', 'Code', 'User', 'settings.json'),
+    },
+  },
+  codex: {
+    type: 'codex',
+    name: 'Codex AI',
+    configPathByPlatform: {
+      darwin: join(homedir(), 'Library', 'Application Support', 'Codex', 'User', 'settings.json'),
+      linux: join(homedir(), '.config', 'Codex', 'User', 'settings.json'),
+      win32: join(homedir(), 'AppData', 'Roaming', 'Codex', 'User', 'settings.json'),
+    },
+  },
+  'gemini-cli': {
+    type: 'gemini-cli',
+    name: 'Gemini CLI',
+    configPathByPlatform: {
+      darwin: join(homedir(), '.gemini', 'settings.json'),
+      linux: join(homedir(), '.gemini', 'settings.json'),
+      win32: join(homedir(), '.gemini', 'settings.json'),
+    },
+  },
+};
 
-  /**
-   * Register PHANTOM with agent's MCP registry
-   * This happens automatically when PHANTOM is installed
-   */
-  static async registerWithAgent(agentType: keyof typeof PhantomDiscovery.AGENT_CONFIG_PATHS): Promise<boolean> {
-    try {
-      const configPath = this.AGENT_CONFIG_PATHS[agentType];
-      const agentName = this.AGENT_NAMES[agentType];
-      
-      if (!configPath) {
-        console.log(`❌ Unknown agent type: ${agentType}`);
-        return false;
+function getConfigPath(type: SupportedAgent): string {
+  const adapter = ADAPTERS[type];
+  const fromPlatform = adapter.configPathByPlatform[process.platform];
+  if (fromPlatform) return fromPlatform;
+  return Object.values(adapter.configPathByPlatform)[0] || join(homedir(), `.${type}`, 'settings.json');
+}
+
+function stripJsonComments(input: string): string {
+  let result = '';
+  let index = 0;
+  let inString = false;
+  let escaped = false;
+
+  while (index < input.length) {
+    const current = input[index];
+    const next = input[index + 1];
+
+    if (inString) {
+      result += current;
+      if (escaped) {
+        escaped = false;
+      } else if (current === '\\') {
+        escaped = true;
+      } else if (current === '"') {
+        inString = false;
       }
-
-      // Check if agent config exists
-      if (!existsSync(configPath)) {
-        console.log(`○ ${agentName} config not found (skipped)`);
-        return false;
-      }
-
-      // Read existing config
-      let config: any = {};
-      try {
-        const configContent = readFileSync(configPath, 'utf8');
-        config = JSON.parse(configContent);
-      } catch (error) {
-        config = {};
-      }
-
-      // Ensure mcpServers object exists
-      if (!config.mcpServers) {
-        config.mcpServers = {};
-      }
-
-      // Register PHANTOM MCP server
-      config.mcpServers.phantom = {
-        command: 'phantom',
-        args: ['mcp', 'serve'],
-        description: 'PHANTOM PM Operating System - Product management superpowers',
-        capabilities: [
-          'Generate PRDs',
-          'Analyze product decisions',
-          'Create user stories',
-          'Plan sprints',
-          'Access product context',
-        ],
-      };
-
-      // Write updated config
-      writeFileSync(configPath, JSON.stringify(config, null, 2));
-      
-      console.log(`✓ Registered with ${agentName} (MCP enabled)`);
-      return true;
-      
-    } catch (error) {
-      console.error(`❌ Failed to register with ${this.AGENT_NAMES[agentType]}:`, error);
-      return false;
+      index += 1;
+      continue;
     }
+
+    if (current === '"') {
+      inString = true;
+      result += current;
+      index += 1;
+      continue;
+    }
+
+    if (current === '/' && next === '/') {
+      while (index < input.length && input[index] !== '\n') {
+        index += 1;
+      }
+      continue;
+    }
+
+    if (current === '/' && next === '*') {
+      index += 2;
+      while (index < input.length) {
+        if (input[index] === '*' && input[index + 1] === '/') {
+          index += 2;
+          break;
+        }
+        index += 1;
+      }
+      continue;
+    }
+
+    result += current;
+    index += 1;
   }
 
-  /**
-   * Auto-detection during agent startup
-   * Agent checks: "Is PHANTOM available?"
-   */
+  return result;
+}
+
+function parseJsonc(input: string): unknown {
+  const withoutComments = stripJsonComments(input);
+  const normalized = withoutComments.replace(/,\s*([}\]])/g, '$1');
+  return JSON.parse(normalized);
+}
+
+function readAgentConfig(configPath: string): { data: Record<string, unknown>; error?: string } {
+  if (!existsSync(configPath)) {
+    return { data: {} };
+  }
+
+  try {
+    const raw = readFileSync(configPath, 'utf8');
+    const parsed = parseJsonc(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { data: {}, error: 'Config is not an object' };
+    }
+    return { data: parsed as Record<string, unknown> };
+  } catch (error) {
+    return {
+      data: {},
+      error: error instanceof Error ? error.message : 'Failed to parse config',
+    };
+  }
+}
+
+function createBackup(configPath: string): string | null {
+  if (!existsSync(configPath)) return null;
+  const backupPath = `${configPath}.bak.${Date.now()}`;
+  copyFileSync(configPath, backupPath);
+  return backupPath;
+}
+
+function restoreBackup(configPath: string, backupPath: string | null): void {
+  if (!backupPath || !existsSync(backupPath)) return;
+  copyFileSync(backupPath, configPath);
+}
+
+export class PhantomDiscovery {
+  static get AGENT_CONFIG_PATHS(): Record<SupportedAgent, string> {
+    return {
+      'claude-code': getConfigPath('claude-code'),
+      cursor: getConfigPath('cursor'),
+      zed: getConfigPath('zed'),
+      vscode: getConfigPath('vscode'),
+      codex: getConfigPath('codex'),
+      'gemini-cli': getConfigPath('gemini-cli'),
+    };
+  }
+
+  private static get AGENT_NAMES(): Record<SupportedAgent, string> {
+    return {
+      'claude-code': ADAPTERS['claude-code'].name,
+      cursor: ADAPTERS.cursor.name,
+      zed: ADAPTERS.zed.name,
+      vscode: ADAPTERS.vscode.name,
+      codex: ADAPTERS.codex.name,
+      'gemini-cli': ADAPTERS['gemini-cli'].name,
+    };
+  }
+
   static async detectPhantom(): Promise<boolean> {
     try {
-      const result = spawnSync('phantom', ['--version'], { 
+      const result = spawnSync('phantom', ['--version'], {
         stdio: 'pipe',
-        timeout: 5000
+        timeout: 5000,
       });
       return result.status === 0;
     } catch {
@@ -110,141 +230,207 @@ export class PhantomDiscovery {
     }
   }
 
-  /**
-   * Detect all installed agents
-   */
-  static detectInstalledAgents(): Array<{type: string, name: string, installed: boolean}> {
-    const agents = [
-      { type: 'claude-code', name: 'Claude Code', command: 'cursor' },
-      { type: 'cursor', name: 'Cursor', command: 'cursor' },
-      { type: 'zed', name: 'Zed Editor', command: 'zed' },
-      { type: 'vscode', name: 'Visual Studio Code', command: 'code' },
-      { type: 'codex', name: 'Codex AI', command: 'codex' },
-      { type: 'antigravity', name: 'AntiGravity AI', command: 'antigravity' },
-      { type: 'qoder', name: 'Qoder AI', command: 'qoder' },
-    ];
+  static async detectInstalledAgents(): Promise<InstalledAgent[]> {
+    const discovery = new AgentDiscovery(process.cwd());
 
-    return agents.map(agent => {
-      try {
-        // Special handling for apps that might not have CLI commands
-        if (agent.command === 'codex' || agent.command === 'antigravity' || agent.command === 'qoder') {
-          // Check if the app is running
-          const processCheck = spawnSync('pgrep', ['-f', agent.command], { 
-            stdio: 'pipe',
-            timeout: 3000
-          });
-          return {
-            type: agent.type,
-            name: agent.name,
-            installed: processCheck.status === 0 || processCheck.stdout.toString().trim() !== ''
-          };
-        } else {
-          // Standard CLI command check
-          const result = spawnSync(agent.command, ['--version'], { 
-            stdio: 'pipe',
-            timeout: 3000
-          });
-          return {
-            type: agent.type,
-            name: agent.name,
-            installed: result.status === 0
-          };
-        }
-      } catch {
-        return {
-          type: agent.type,
-          name: agent.name,
-          installed: false
-        };
-      }
+    const detected = await discovery.scanSystem();
+    const detectedMap = new Map(detected.map(item => [item.signature.id, item]));
+
+    return (Object.keys(ADAPTERS) as SupportedAgent[]).map(type => {
+      const found = detectedMap.get(type);
+      return {
+        type,
+        name: ADAPTERS[type].name,
+        installed: Boolean(found),
+        running: found?.status === 'running',
+        confidence: found?.confidence || 0,
+        status: found?.status || 'available',
+      };
     });
   }
 
-  /**
-   * Auto-register with all detected agents
-   */
+  static async detectRegisteredAgents(): Promise<RegisteredAgent[]> {
+    const installed = await this.detectInstalledAgents();
+
+    return installed.map(agent => {
+      const configPath = this.AGENT_CONFIG_PATHS[agent.type];
+      const parsed = readAgentConfig(configPath);
+      const mcpServers = parsed.data.mcpServers as Record<string, unknown> | undefined;
+      const registered = Boolean(mcpServers && typeof mcpServers === 'object' && mcpServers.phantom);
+
+      return {
+        ...agent,
+        configPath,
+        registered,
+        ...(parsed.error ? { registrationError: parsed.error } : {}),
+      };
+    });
+  }
+
+  static async registerAgent(type: SupportedAgent): Promise<{ success: boolean; message: string }> {
+    const configPath = this.AGENT_CONFIG_PATHS[type];
+    const agentName = this.AGENT_NAMES[type];
+    let backupPath: string | null = null;
+
+    try {
+      mkdirSync(dirname(configPath), { recursive: true });
+
+      backupPath = createBackup(configPath);
+      const parsed = readAgentConfig(configPath);
+      const config = parsed.data;
+      const mcpServers = (config.mcpServers && typeof config.mcpServers === 'object')
+        ? (config.mcpServers as Record<string, unknown>)
+        : {};
+
+      if (mcpServers.phantom) {
+        return { success: true, message: `${agentName} already registered` };
+      }
+
+      const nextConfig = {
+        ...config,
+        mcpServers: {
+          ...mcpServers,
+          phantom: {
+            command: 'phantom',
+            args: ['mcp', 'serve'],
+            description: 'PHANTOM PM Operating System - Product management superpowers',
+            capabilities: [
+              'Generate PRDs',
+              'Analyze product decisions',
+              'Create user stories',
+              'Plan sprints',
+              'Access product context',
+            ],
+          },
+        },
+      };
+
+      writeFileSync(configPath, `${JSON.stringify(nextConfig, null, 2)}\n`, 'utf8');
+      return { success: true, message: `Registered with ${agentName}` };
+    } catch (error) {
+      restoreBackup(configPath, backupPath);
+      return {
+        success: false,
+        message: error instanceof Error ? `Failed to register ${agentName}: ${error.message}` : `Failed to register ${agentName}`,
+      };
+    }
+  }
+
+  static async registerWithAgent(type: SupportedAgent): Promise<boolean> {
+    const result = await this.registerAgent(type);
+    if (result.success) {
+      console.log(`✓ ${result.message}`);
+      return true;
+    }
+    console.log(`○ ${result.message}`);
+    return false;
+  }
+
+  static async registerAll(agentTypes?: SupportedAgent[]): Promise<{ total: number; success: number; failed: number }> {
+    const targets = agentTypes || (await this.detectInstalledAgents()).filter(agent => agent.installed).map(agent => agent.type);
+    const uniqueTargets = Array.from(new Set(targets));
+
+    let success = 0;
+    for (const target of uniqueTargets) {
+      const result = await this.registerAgent(target);
+      if (result.success) {
+        success += 1;
+        console.log(`✓ ${result.message}`);
+      } else {
+        console.log(`○ ${result.message}`);
+      }
+    }
+
+    return {
+      total: uniqueTargets.length,
+      success,
+      failed: uniqueTargets.length - success,
+    };
+  }
+
+  static async forceRegisterAgents(agentTypes: SupportedAgent[]): Promise<void> {
+    const summary = await this.registerAll(agentTypes);
+    console.log(`✓ Successfully registered with ${summary.success}/${summary.total} agents`);
+  }
+
   static async autoRegisterAll(): Promise<void> {
     console.log('🔍 Detecting installed AI agents...\n');
-    
-    const agents = this.detectInstalledAgents();
-    const installedAgents = agents.filter(agent => agent.installed);
-    
-    if (installedAgents.length === 0) {
+    const installed = await this.detectInstalledAgents();
+    const detected = installed.filter(agent => agent.installed);
+
+    if (detected.length === 0) {
       console.log('No supported AI agents detected.');
-      console.log(this.getSuggestedInstall());
+      console.log('Creating baseline configs for common agents...\n');
+      await this.forceRegisterAgents(['codex', 'cursor', 'claude-code']);
       return;
     }
 
-    console.log(`Found ${installedAgents.length} installed agent${installedAgents.length > 1 ? 's' : ''}:`);
-    installedAgents.forEach(agent => {
-      console.log(`  ✓ ${agent.name}`);
-    });
+    console.log(`Found ${detected.length} installed agent${detected.length > 1 ? 's' : ''}:`);
+    for (const agent of detected) {
+      console.log(`  ✓ ${agent.name} (${agent.status}, confidence ${agent.confidence}%)`);
+    }
     console.log('');
 
-    console.log('🔌 Registering PHANTOM with agents...\n');
-    
-    let successCount = 0;
-    for (const agent of installedAgents) {
-      const success = await this.registerWithAgent(agent.type as any);
-      if (success) successCount++;
-    }
-
+    const summary = await this.registerAll(detected.map(agent => agent.type));
     console.log(`\n🎯 Registration complete!`);
-    console.log(`✓ Successfully registered with ${successCount}/${installedAgents.length} agents`);
-    
-    if (successCount > 0) {
-      console.log('\n✨ Your AI agents now have PM superpowers!');
-      console.log('Next time you work on a feature in your IDE,');
-      console.log('your agent will automatically use PHANTOM.');
-    }
+    console.log(`✓ Successfully registered with ${summary.success}/${summary.total} agents`);
   }
 
-  /**
-   * Suggest installation if not found
-   */
   static getSuggestedInstall(): string {
     return `
 # PHANTOM not found. Install with:
-npm install -g https://codeload.github.com/sir-ad/Phantom/tar.gz/refs/heads/main
+npm install -g @phantom-pm/cli
 
 # Or:
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/PhantomPM/phantom/main/scripts/install.sh | sh
     `.trim();
   }
 
-  /**
-   * Health check - verify MCP server and agent registrations
-   */
-  static async healthCheck(): Promise<void> {
-    console.log('🏥 PHANTOM Health Check\n');
-    
-    // Check MCP server
+  static async healthReport(): Promise<HealthReport> {
     const mcpRunning = await this.detectPhantom();
-    console.log(`◉ MCP Server: ${mcpRunning ? 'Running' : 'Not responding'}`);
-    
-    // Check agent registrations
-    const agents = this.detectInstalledAgents();
+    const agents = await this.detectRegisteredAgents();
+
+    const issues: string[] = [];
     for (const agent of agents) {
-      if (agent.installed) {
-        const configPath = this.AGENT_CONFIG_PATHS[agent.type as keyof typeof this.AGENT_CONFIG_PATHS];
-        let registered = false;
-        
-        if (configPath && existsSync(configPath)) {
-          try {
-            const config = JSON.parse(readFileSync(configPath, 'utf8'));
-            registered = config.mcpServers?.phantom !== undefined;
-          } catch {
-            registered = false;
-          }
-        }
-        
-        console.log(`◉ ${agent.name}: ${registered ? 'Connected' : 'Not registered'}`);
+      if (agent.installed && !agent.registered) {
+        issues.push(`${agent.type}:detected_not_registered`);
+      }
+      if (agent.registrationError) {
+        issues.push(`${agent.type}:config_error`);
+      }
+    }
+
+    return {
+      timestamp: new Date().toISOString(),
+      mcp_server: {
+        status: mcpRunning ? 'running' : 'not_responding',
+      },
+      agents,
+      issues,
+    };
+  }
+
+  static async healthCheck(): Promise<void> {
+    const report = await this.healthReport();
+    console.log('🏥 PHANTOM Health Check\n');
+    console.log(`◉ MCP Server: ${report.mcp_server.status === 'running' ? 'Running' : 'Not responding'}`);
+
+    for (const agent of report.agents) {
+      const status = agent.installed
+        ? (agent.registered ? 'Connected' : 'Installed but not registered')
+        : 'Not installed';
+      console.log(`◉ ${agent.name}: ${status}`);
+    }
+
+    if (report.issues.length > 0) {
+      console.log('\nIssues:');
+      for (const issue of report.issues) {
+        console.log(`  - ${issue}`);
       }
     }
   }
 }
 
-// Post-install hook - automatically register with detected agents
 if (import.meta.url === `file://${process.argv[1]}`) {
   PhantomDiscovery.autoRegisterAll().catch(console.error);
 }

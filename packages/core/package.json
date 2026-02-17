@@ -1,12 +1,20 @@
 {
-  "name": "@phantom/core",
-  "version": "1.0.0",
-  "description": "Phantom Core Engine - Context, Modules, Agents",
+  "name": "@phantom-pm/core",
+  "version": "1.0.1",
+  "description": "PHANTOM Core Engine - Context, swarm, discovery, runtime engines",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "better-sqlite3": "^11.1.0",
@@ -21,5 +29,26 @@
     "@types/node": "^20.14.0",
     "@types/better-sqlite3": "^7.6.11",
     "@types/crypto-js": "^4.2.2"
+  },
+  "keywords": [
+    "phantom",
+    "core",
+    "context",
+    "ai",
+    "product-management"
+  ],
+  "author": "PhantomPM <hello@phantom.pm>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhantomPM/phantom.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://phantom.pm",
+  "bugs": {
+    "url": "https://github.com/PhantomPM/phantom/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

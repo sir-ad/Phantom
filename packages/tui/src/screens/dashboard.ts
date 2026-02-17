@@ -1,7 +1,7 @@
 // PHANTOM TUI - Main Dashboard
 import { theme, box, gradientBar, doubleBox, separator } from '../theme/index.js';
-import { PHANTOM_VERSION } from '@phantom/core';
-import type { AgentState } from '@phantom/core';
+import { PHANTOM_VERSION } from '@phantom-pm/core';
+import type { AgentState } from '@phantom-pm/core';
 
 export interface DashboardData {
   projectName: string;

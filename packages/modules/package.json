@@ -1,19 +1,48 @@
 {
-  "name": "@phantom/modules",
-  "version": "1.0.0",
-  "description": "Phantom Built-in Modules",
+  "name": "@phantom-pm/modules",
+  "version": "1.0.1",
+  "description": "PHANTOM Built-in Modules - PRD, stories, competitive analysis, and more",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@phantom/core": "*"
+    "@phantom-pm/core": "file:../core"
   },
   "devDependencies": {
     "typescript": "^5.5.0",
     "tsx": "^4.16.0",
     "@types/node": "^20.14.0"
+  },
+  "keywords": [
+    "phantom",
+    "modules",
+    "prd",
+    "product-management",
+    "ai"
+  ],
+  "author": "PhantomPM <hello@phantom.pm>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhantomPM/phantom.git",
+    "directory": "packages/modules"
+  },
+  "homepage": "https://phantom.pm",
+  "bugs": {
+    "url": "https://github.com/PhantomPM/phantom/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

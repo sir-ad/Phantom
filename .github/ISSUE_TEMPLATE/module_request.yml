@@ -1,0 +1,44 @@
+name: Module Request
+about: Propose a new module for PHANTOM
+title: '[Module]: '
+labels: ['module', 'enhancement']
+body:
+  - type: textarea
+    id: concept
+    attributes:
+      label: Module Concept
+      description: What PM capability should this module provide?
+      placeholder: |
+        Example: "Competitive analysis module that monitors competitors and analyzes market positioning"
+    validations:
+      required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Proposed Commands
+      description: What CLI commands should this module expose?
+      placeholder: |
+        phantom competitive analyze "market segment"
+        phantom competitive watch "competitor name"
+        phantom competitive report --period "monthly"
+    validations:
+      required: true
+  - type: textarea
+    id: integration
+    attributes:
+      label: Integration Points
+      description: How should this module integrate with existing PHANTOM features?
+      placeholder: |
+        - Work with context engine for market data
+        - Generate reports compatible with analytics-lens
+        - Support swarm analysis for strategic decisions
+    validations:
+      required: false
+  - type: textarea
+    id: quote
+    attributes:
+      label: Module Quote
+      description: What should this module's "I know X" quote be?
+      placeholder: '"I know your enemies." (for competitive analysis)'
+    validations:
+      required: false

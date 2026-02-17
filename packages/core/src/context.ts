@@ -12,6 +12,7 @@ import {
 import { createHash } from 'crypto';
 import { extname, join, relative, resolve } from 'path';
 import { getConfig } from './config.js';
+import { EmbeddingEngine, type Embedding } from './ai/embeddings.js';
 
 export interface ContextEntry {
   id: string;
@@ -103,6 +104,7 @@ export class ContextEngine {
   private entries: Map<string, ContextEntry> = new Map();
   private basePath = '';
   private readonly storePath: string;
+  private embeddingEngine: EmbeddingEngine | null = null;
 
   constructor() {
     const cfgDir = getConfig().getConfigDir();
@@ -110,6 +112,18 @@ export class ContextEngine {
     mkdirSync(contextDir, { recursive: true });
     this.storePath = join(contextDir, 'index.json');
     this.load();
+    
+    // Initialize embedding engine if we have AI capabilities
+    this.initializeEmbeddings(contextDir);
+  }
+
+  private initializeEmbeddings(contextDir: string): void {
+    try {
+      this.embeddingEngine = new EmbeddingEngine(join(contextDir, 'embeddings'));
+    } catch (error) {
+      console.warn('Failed to initialize embedding engine:', error);
+      this.embeddingEngine = null;
+    }
   }
 
   private load(): void {
@@ -213,6 +227,31 @@ export class ContextEngine {
     };
 
     this.entries.set(filePath, entry);
+
+    // Create embedding for text-based files
+    if (this.embeddingEngine && content) {
+      this.createEmbeddingAsync(entry, content).catch(error => {
+        console.warn(`Failed to create embedding for ${filePath}:`, error);
+      });
+    }
+  }
+
+  private async createEmbeddingAsync(entry: ContextEntry, content: string): Promise<void> {
+    if (!this.embeddingEngine) return;
+
+    await this.embeddingEngine.indexEntry(
+      entry.id,
+      entry.path,
+      entry.relativePath,
+      entry.type,
+      content,
+      {
+        language: entry.metadata.language,
+        lines: entry.metadata.lines,
+        size: entry.metadata.size,
+        lastModified: entry.metadata.lastModified,
+      }
+    );
   }
 
   getStats(): ContextStats {
@@ -254,10 +293,47 @@ export class ContextEngine {
     return this.entries.get(resolve(path));
   }
 
-  search(query: string): ContextEntry[] {
+  getEmbeddingStats() {
+    return this.embeddingEngine?.getStats() || null;
+  }
+
+  async search(query: string): Promise<ContextEntry[]> {
     const normalized = query.trim().toLowerCase();
     if (!normalized) return [];
 
+    // Try semantic search first if embedding engine is available
+    if (this.embeddingEngine) {
+      try {
+        return await this.semanticSearch(query);
+      } catch (error) {
+        console.warn('Semantic search failed, falling back to text search:', error);
+      }
+    }
+
+    // Fallback to text-based search
+    return this.textSearch(normalized);
+  }
+
+  private async semanticSearch(query: string): Promise<ContextEntry[]> {
+    if (!this.embeddingEngine) return [];
+
+    const results = await this.embeddingEngine.search(query, 20);
+    
+    // Convert embedding results to context entries
+    const entries: ContextEntry[] = [];
+    for (const result of results) {
+      if (result.score > 0.3) { // Minimum similarity threshold
+        const entry = this.getEntry(result.entry.path);
+        if (entry) {
+          entries.push(entry);
+        }
+      }
+    }
+
+    return entries.slice(0, 10); // Return top 10
+  }
+
+  private textSearch(normalized: string): ContextEntry[] {
     const tokens = normalized.split(/\s+/).filter(Boolean);
     const scored: Array<{ entry: ContextEntry; score: number }> = [];
 
@@ -281,7 +357,8 @@ export class ContextEngine {
 
     return scored
       .sort((a, b) => (b.score - a.score) || a.entry.path.localeCompare(b.entry.path))
-      .map(item => item.entry);
+      .map(item => item.entry)
+      .slice(0, 10); // Return top 10
   }
 
   clear(): void {

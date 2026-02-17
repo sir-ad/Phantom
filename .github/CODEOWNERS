@@ -1,0 +1,32 @@
+# PHANTOM Code Owners
+
+# Core maintainers
+* @sir-ad
+
+# Package-specific owners
+packages/cli/ @sir-ad
+packages/core/ @sir-ad
+packages/mcp-server/ @sir-ad
+packages/tui/ @sir-ad
+packages/modules/ @sir-ad
+packages/integrations/ @sir-ad
+
+# Documentation
+docs/ @sir-ad
+README.md @sir-ad
+CONTRIBUTING.md @sir-ad
+
+# Website
+website/ @sir-ad
+
+# Scripts
+scripts/ @sir-ad
+
+# Configuration
+.github/ @sir-ad
+.eslintrc @sir-ad
+.prettierrc @sir-ad
+tsconfig.json @sir-ad
+
+# Tests
+tests/ @sir-ad

@@ -8,7 +8,13 @@ import {
   getModuleManager,
   getSwarm,
   prdToMarkdown,
-} from '@phantom/core';
+  runDeterministicSimulation,
+  AgentDiscovery,
+  AGENT_SIGNATURES,
+  registerWithAllDetected,
+  registerWithSpecificAgent,
+  listRegistrationTargets,
+} from '@phantom-pm/core';
 
 export type PhantomToolName =
   | 'context.add'
@@ -20,7 +26,10 @@ export type PhantomToolName =
   | 'phantom_swarm_analyze'
   | 'phantom_create_stories'
   | 'phantom_plan_sprint'
-  | 'phantom_analyze_product';
+  | 'phantom_analyze_product'
+  | 'phantom_discover_agents'
+  | 'phantom_register_self'
+  | 'phantom_simulate';
 
 type PhantomErrorCode =
   | 'INVALID_REQUEST'
@@ -184,6 +193,39 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
       },
     },
   },
+  {
+    name: 'phantom_discover_agents',
+    description: 'Discover all AI agents, IDEs, and LLMs installed on this system. Returns detected agents with confidence scores and capabilities.',
+    input_schema: {
+      type: 'object',
+      required: [],
+      properties: {
+        include_offline: { type: 'boolean', description: 'Include agents that are installed but not running' },
+      },
+    },
+  },
+  {
+    name: 'phantom_register_self',
+    description: 'Register Phantom MCP server with a target agent. Writes config so the agent can connect to Phantom.',
+    input_schema: {
+      type: 'object',
+      required: [],
+      properties: {
+        target: { type: 'string', description: 'Agent ID to register with (e.g. cursor, claude-code). Omit to register with all detected agents.' },
+      },
+    },
+  },
+  {
+    name: 'phantom_simulate',
+    description: 'Run a deterministic product simulation for a scenario. Returns baseline, projected metrics, and confidence.',
+    input_schema: {
+      type: 'object',
+      required: ['scenario'],
+      properties: {
+        scenario: { type: 'string', description: 'Product scenario to simulate (e.g. "Add dark mode", "Launch premium tier")' },
+      },
+    },
+  },
 ];
 
 const RESOURCES: ResourceDefinition[] = [
@@ -201,6 +243,11 @@ const RESOURCES: ResourceDefinition[] = [
     uri: 'phantom://modules/summary',
     title: 'Module Summary',
     description: 'Installed and available module inventory.',
+  },
+  {
+    uri: 'phantom://self/capabilities',
+    title: 'Phantom Capabilities',
+    description: 'Complete self-description of Phantom tools, resources, supported agents, and integration points. Use this to learn what Phantom can do.',
   },
 ];
 
@@ -371,9 +418,9 @@ function bridgeTranslate(pmIntent: string, constraintsRaw?: unknown): {
   const constraints =
     typeof constraintsRaw === 'string'
       ? constraintsRaw
-          .split(',')
-          .map(item => item.trim())
-          .filter(Boolean)
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean)
       : [];
 
   const technicalTasks = [
@@ -465,6 +512,29 @@ export class PhantomMCPServer {
           })),
         };
       }
+      case 'phantom://self/capabilities': {
+        return {
+          name: 'Phantom',
+          description: 'The invisible force behind every great product. Open-source PM operating system for the terminal age.',
+          version: cfg.version,
+          tools: TOOL_DEFINITIONS.map(t => ({ name: t.name, description: t.description })),
+          resources: RESOURCES.map(r => ({ uri: r.uri, title: r.title, description: r.description })),
+          known_agents: AGENT_SIGNATURES.length,
+          agent_types: ['ide', 'cli', 'assistant', 'plugin', 'llm'],
+          features: [
+            'Context engine — index project files for AI-powered analysis',
+            'PRD generation — generate product requirement documents',
+            'Swarm analysis — multi-agent consensus on product decisions',
+            'Agent discovery — detect all AI tools on your system',
+            'Auto-registration — inject MCP config into agent settings',
+            'Product simulation — deterministic scenario modeling',
+            'Integration management — GitHub, Figma, Linear, Slack, and more',
+            'Sprint planning — velocity-based sprint capacity planning',
+            'User stories — generate acceptance-criteria-rich stories',
+            'PM-to-dev bridge — translate product intent into dev tasks',
+          ],
+        };
+      }
       default:
         throw new Error(`RESOURCE_NOT_FOUND:${uri}`);
     }
@@ -481,16 +551,16 @@ export class PhantomMCPServer {
         case 'context.search': {
           const query = parseStringArg(request.arguments, 'query');
           const limit = parseNumberArg(request.arguments, 'limit', 20);
-          const matches = getContextEngine()
+          const matches = await getContextEngine()
             .search(query)
-            .slice(0, limit)
-            .map(entry => ({
-              id: entry.id,
-              path: entry.path,
-              relative_path: entry.relativePath,
-              type: entry.type,
-              snippet: entry.content?.slice(0, 200) || '',
-            }));
+            .then(results => results.slice(0, limit)
+              .map((entry: any) => ({
+                id: entry.id,
+                path: entry.path,
+                relative_path: entry.relativePath,
+                type: entry.type,
+                snippet: entry.content?.slice(0, 200) || '',
+              })));
           return ok(request.request_id, { matches });
         }
         case 'prd.generate': {
@@ -527,6 +597,40 @@ export class PhantomMCPServer {
           const bridge = bridgeTranslate(pmIntent, request.arguments.product_constraints);
           return ok(request.request_id, bridge);
         }
+        case 'phantom_discover_agents': {
+          const discovery = new AgentDiscovery(process.cwd());
+          const detected = await discovery.scanSystem();
+          const agents = detected.map(agent => ({
+            id: agent.signature.id,
+            name: agent.signature.name,
+            type: agent.signature.type,
+            capabilities: agent.signature.capabilities,
+            confidence: agent.confidence,
+            status: agent.status,
+            integration_level: agent.signature.integrationLevel,
+            phantom_features: agent.signature.phantomFeatures,
+          }));
+          return ok(request.request_id, {
+            total: agents.length,
+            agents,
+            all_known_signatures: AGENT_SIGNATURES.length,
+          });
+        }
+        case 'phantom_register_self': {
+          const target = parseOptionalStringArg(request.arguments, 'target');
+          const cwd = process.cwd();
+          if (target) {
+            const result = registerWithSpecificAgent(cwd, target);
+            return ok(request.request_id, result);
+          }
+          const summary = await registerWithAllDetected(cwd);
+          return ok(request.request_id, summary);
+        }
+        case 'phantom_simulate': {
+          const scenario = parseStringArg(request.arguments, 'scenario');
+          const result = runDeterministicSimulation(scenario);
+          return ok(request.request_id, result);
+        }
         default:
           return err(request.request_id, [{ code: 'INVALID_TOOL', message: `Unknown tool: ${request.tool}` }]);
       }
@@ -560,11 +664,235 @@ function parseJsonLine(line: string): unknown {
   }
 }
 
-function parseRequestId(value: unknown, fallback: string): string {
-  return typeof value === 'string' ? value : fallback;
+type JsonRpcId = string | number;
+
+interface JsonRpcRequest {
+  jsonrpc: '2.0';
+  method: string;
+  id?: JsonRpcId | null;
+  params?: unknown;
 }
 
-export async function runStdioServer(): Promise<void> {
+interface JsonRpcResponse {
+  jsonrpc: '2.0';
+  id: JsonRpcId | null;
+  result?: unknown;
+  error?: {
+    code: number;
+    message: string;
+    data?: unknown;
+  };
+}
+
+function toRequestId(value: JsonRpcId | null | undefined): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  return 'unknown';
+}
+
+function redactSecrets(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(item => redactSecrets(item));
+  }
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>).map(([key, val]) => {
+      if (/(token|secret|api.?key|password|authorization)/i.test(key)) {
+        return [key, '[REDACTED]'];
+      }
+      return [key, redactSecrets(val)];
+    });
+    return Object.fromEntries(entries);
+  }
+  return value;
+}
+
+function isDebugEnabled(): boolean {
+  return process.env.PHANTOM_MCP_DEBUG === '1';
+}
+
+function debugLog(direction: 'in' | 'out', payload: unknown): void {
+  if (!isDebugEnabled()) return;
+  const serialized = JSON.stringify(redactSecrets(payload));
+  process.stderr.write(`[phantom-mcp][${direction}] ${serialized}\n`);
+}
+
+function jsonRpcOk(id: JsonRpcId | null, result: unknown): JsonRpcResponse {
+  return {
+    jsonrpc: '2.0',
+    id,
+    result,
+  };
+}
+
+function jsonRpcErr(id: JsonRpcId | null, code: number, message: string, data?: unknown): JsonRpcResponse {
+  return {
+    jsonrpc: '2.0',
+    id,
+    error: {
+      code,
+      message,
+      ...(data !== undefined ? { data } : {}),
+    },
+  };
+}
+
+function isJsonRpcRequest(payload: unknown): payload is JsonRpcRequest {
+  if (!payload || typeof payload !== 'object') return false;
+  const record = payload as Record<string, unknown>;
+  return record.jsonrpc === '2.0' && typeof record.method === 'string';
+}
+
+function normalizeToolSchema(definition: ToolDefinition): {
+  name: string;
+  description: string;
+  inputSchema: ToolDefinition['input_schema'];
+} {
+  return {
+    name: definition.name,
+    description: definition.description,
+    inputSchema: definition.input_schema,
+  };
+}
+
+function normalizeResourceSchema(resource: ResourceDefinition): {
+  uri: string;
+  name: string;
+  description: string;
+  mimeType: string;
+} {
+  return {
+    uri: resource.uri,
+    name: resource.title,
+    description: resource.description,
+    mimeType: 'application/json',
+  };
+}
+
+async function handleJsonRpcRequest(server: PhantomMCPServer, request: JsonRpcRequest): Promise<JsonRpcResponse | null> {
+  const id = (request.id ?? null) as JsonRpcId | null;
+  const method = request.method;
+  const params = request.params;
+
+  if (id === null) {
+    if (method === 'notifications/initialized') {
+      return null;
+    }
+  }
+
+  if (method === 'initialize') {
+    return jsonRpcOk(id, {
+      protocolVersion: '2025-06-18',
+      capabilities: {
+        tools: {},
+        resources: {},
+      },
+      serverInfo: {
+        name: 'phantom-mcp',
+        version: '1.0.1',
+      },
+    });
+  }
+
+  if (method === 'ping') {
+    return jsonRpcOk(id, {});
+  }
+
+  if (method === 'tools/list') {
+    return jsonRpcOk(id, {
+      tools: server.listTools().map(normalizeToolSchema),
+    });
+  }
+
+  if (method === 'tools/call') {
+    if (!params || typeof params !== 'object') {
+      return jsonRpcErr(id, -32602, 'Invalid params: expected object');
+    }
+    const record = params as Record<string, unknown>;
+    const name = record.name;
+    const args = record.arguments;
+
+    if (typeof name !== 'string' || !name.trim()) {
+      return jsonRpcErr(id, -32602, 'Invalid params: name must be non-empty string');
+    }
+    if (args !== undefined && (!args || typeof args !== 'object' || Array.isArray(args))) {
+      return jsonRpcErr(id, -32602, 'Invalid params: arguments must be object');
+    }
+
+    const toolResponse = await server.invoke({
+      tool: name as PhantomToolName,
+      request_id: toRequestId(id),
+      arguments: (args as Record<string, unknown>) || {},
+    });
+
+    if (toolResponse.status === 'error') {
+      return jsonRpcOk(id, {
+        isError: true,
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({ errors: toolResponse.errors ?? [] }),
+          },
+        ],
+        structuredContent: {
+          errors: toolResponse.errors ?? [],
+        },
+      });
+    }
+
+    return jsonRpcOk(id, {
+      isError: false,
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(toolResponse.result ?? {}),
+        },
+      ],
+      structuredContent: toolResponse.result ?? {},
+    });
+  }
+
+  if (method === 'resources/list') {
+    return jsonRpcOk(id, {
+      resources: server.listResources().map(normalizeResourceSchema),
+    });
+  }
+
+  if (method === 'resources/read') {
+    if (!params || typeof params !== 'object') {
+      return jsonRpcErr(id, -32602, 'Invalid params: expected object');
+    }
+
+    const record = params as Record<string, unknown>;
+    const uri = record.uri;
+    if (typeof uri !== 'string' || !uri.trim()) {
+      return jsonRpcErr(id, -32602, 'Invalid params: uri must be non-empty string');
+    }
+
+    try {
+      const value = server.readResource(uri);
+      return jsonRpcOk(id, {
+        contents: [
+          {
+            uri,
+            mimeType: 'application/json',
+            text: JSON.stringify(value),
+          },
+        ],
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('RESOURCE_NOT_FOUND:')) {
+        return jsonRpcErr(id, -32001, 'Resource not found', {
+          uri: error.message.replace(/^RESOURCE_NOT_FOUND:/, ''),
+        });
+      }
+      return jsonRpcErr(id, -32603, 'Failed to read resource', parseError(error));
+    }
+  }
+
+  return jsonRpcErr(id, -32601, `Method not found: ${method}`);
+}
+
+export async function runLegacyJsonlServer(): Promise<void> {
   const server = new PhantomMCPServer();
   const rl = createInterface({
     input: process.stdin,
@@ -584,7 +912,7 @@ export async function runStdioServer(): Promise<void> {
 
     const record = payload as Record<string, unknown>;
     const action = record.action;
-    const requestId = parseRequestId(record.request_id, 'unknown');
+    const requestId = typeof record.request_id === 'string' ? record.request_id : 'unknown';
 
     if (action === 'tools.list') {
       process.stdout.write(`${JSON.stringify(ok(requestId, { tools: server.listTools() }))}\n`);
@@ -627,6 +955,42 @@ export async function runStdioServer(): Promise<void> {
         err(requestId, [{ code: 'INVALID_REQUEST', message: 'Payload must be a valid tool request or supported action' }])
       )}\n`
     );
+  }
+}
+
+export async function runStdioServer(mode: 'stdio' | 'legacy-jsonl' = 'stdio'): Promise<void> {
+  if (mode === 'legacy-jsonl') {
+    await runLegacyJsonlServer();
+    return;
+  }
+
+  const server = new PhantomMCPServer();
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false,
+  });
+
+  for await (const line of rl) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const payload = parseJsonLine(trimmed);
+
+    if (!isJsonRpcRequest(payload)) {
+      const response = jsonRpcErr(null, -32600, 'Invalid Request');
+      debugLog('out', response);
+      process.stdout.write(`${JSON.stringify(response)}\n`);
+      continue;
+    }
+
+    debugLog('in', payload);
+    const response = await handleJsonRpcRequest(server, payload);
+    if (!response || payload.id === undefined || payload.id === null) {
+      continue;
+    }
+
+    debugLog('out', response);
+    process.stdout.write(`${JSON.stringify(response)}\n`);
   }
 }
 

@@ -1,15 +1,23 @@
 {
-  "name": "@phantom/tui",
-  "version": "1.0.0",
-  "description": "Phantom Terminal UI - Matrix-themed TUI",
+  "name": "@phantom-pm/tui",
+  "version": "1.0.1",
+  "description": "PHANTOM Terminal UI - Matrix-themed React TUI components",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/index.tsx"
+    "dev": "tsx watch src/index.tsx",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@phantom/core": "*",
+    "@phantom-pm/core": "file:../core",
     "ink": "^5.0.1",
     "ink-text-input": "^6.0.0",
     "ink-spinner": "^5.0.0",
@@ -25,5 +33,27 @@
     "tsx": "^4.16.0",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.3"
+  },
+  "keywords": [
+    "phantom",
+    "tui",
+    "terminal",
+    "ink",
+    "react",
+    "cli"
+  ],
+  "author": "PhantomPM <hello@phantom.pm>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhantomPM/phantom.git",
+    "directory": "packages/tui"
+  },
+  "homepage": "https://phantom.pm",
+  "bugs": {
+    "url": "https://github.com/PhantomPM/phantom/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
