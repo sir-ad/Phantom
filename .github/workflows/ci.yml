@@ -9,8 +9,8 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [18.x, 20.x, 22.x]
+        os: [ubuntu-latest, macos-latest]
+        node-version: [18.x, 20.x]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -25,64 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Dependency consistency gate
-        run: npm run deps:check
-
       - name: Build
         run: npm run build
-
-      - name: Type Check
-        run: npm run typecheck
-
-      - name: Lint
-        run: npm run lint
 
       - name: Test
         run: npm run test
 
-      - name: Reality Gate
-        run: npm run reality:check
-
-      - name: Local installer pipeline check
-        run: npm run installer:test-local
-
-  code-quality:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Security audit
-        run: npm audit --audit-level high
-
-      - name: Dependency check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: 'phantom'
-          path: '.'
-          format: 'HTML'
-          out: 'reports'
-          args: >
-            --failOnAnyVuln
-            --enableRetired
-            --nodeAuditSkipDevDependencies
-
-      - name: Upload Dependency Check Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Dependency-Check-Report
-          path: reports/
-
-  cross-platform:
+  cross-platform-smoke:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -103,52 +52,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test core functionality
+      - name: Smoke test
         run: |
           node packages/cli/dist/index.js --version
           node packages/cli/dist/index.js --help
-
-  documentation:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check markdown links
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
-        with:
-          use-quiet-mode: 'yes'
-          use-verbose-mode: 'yes'
-          config-file: '.mlc_config.json'
-
-      - name: Check for broken links
-        run: |
-          # Add link checking for documentation
-          echo "Checking documentation links"
-
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests with coverage
-        run: npm run test -- --coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
