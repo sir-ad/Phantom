@@ -2,9 +2,6 @@
 title = "Ollama"
 +++
 
----
-title: Ollama
----
 
 
 [Ollama](https://ollama.com) runs LLMs locally on your machine. It's free, private, and fast.

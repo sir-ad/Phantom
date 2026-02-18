@@ -2,11 +2,6 @@
 title = "Intro"
 +++
 
----
-slug: /
-sidebar_position: 1
-title: Introduction
----
 
 
 **Phantom is the open-source Product Management Operating System for the terminal.**

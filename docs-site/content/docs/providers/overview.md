@@ -2,10 +2,6 @@
 title = "Index"
 +++
 
----
-sidebar_position: 1
-title: AI Providers Overview
----
 
 
 Phantom supports 4 LLM providers out of the box. You can use one or configure all of them — Phantom will auto-detect the best available provider.

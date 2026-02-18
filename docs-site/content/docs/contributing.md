@@ -2,10 +2,6 @@
 title = "Contributing"
 +++
 
----
-sidebar_position: 11
-title: Contributing
----
 
 
 Phantom is open source (MIT) and we welcome contributions of all kinds.

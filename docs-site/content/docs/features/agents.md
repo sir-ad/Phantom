@@ -2,10 +2,6 @@
 title = "Agents"
 +++
 
----
-sidebar_position: 5
-title: Agent Discovery
----
 
 
 Phantom can detect, register with, and orchestrate other AI agents installed on your system.

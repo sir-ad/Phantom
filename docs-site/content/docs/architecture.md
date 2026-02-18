@@ -2,10 +2,6 @@
 title = "Architecture"
 +++
 
----
-sidebar_position: 1
-title: Architecture
----
 
 
 Phantom is built as a modular monorepo with 6 packages. Each package has a single responsibility and communicates through well-defined TypeScript interfaces.

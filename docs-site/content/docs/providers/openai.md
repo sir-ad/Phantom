@@ -2,9 +2,6 @@
 title = "Openai"
 +++
 
----
-title: OpenAI
----
 
 
 Connect GPT-4o, GPT-4o-mini, and o3-mini to Phantom.

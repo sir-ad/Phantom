@@ -2,10 +2,6 @@
 title = "Cli Reference"
 +++
 
----
-sidebar_position: 4
-title: CLI Reference
----
 
 
 Complete reference for all Phantom CLI commands.
@@ -36,18 +32,6 @@ phantom chat --provider ollama --model llama3.1:8b
 | `--model <name>` | Model to connect |
 | `--provider <name>` | Force a specific provider |
 
----
-
-### `phantom swarm <question>`
-
-Run a multi-agent consensus analysis.
-
-```bash
-phantom swarm "Should we add dark mode?"
-phantom swarm "Should we add dark mode?" --json
-```
-
----
 
 ### `phantom prd <title>`
 
@@ -58,18 +42,6 @@ phantom prd "User Authentication"
 phantom prd "User Authentication" --json
 ```
 
----
-
-### `phantom simulate <scenario>`
-
-Run a product simulation.
-
-```bash
-phantom simulate "User onboarding flow"
-phantom simulate "User onboarding flow" --json
-```
-
----
 
 ### `phantom agents scan`
 
@@ -80,19 +52,6 @@ phantom agents scan
 phantom agents scan --json
 ```
 
----
-
-### `phantom register`
-
-Register Phantom with AI agents.
-
-```bash
-phantom register --all
-phantom register --target cursor
-phantom register --target claude-desktop
-```
-
----
 
 ### `phantom model`
 
@@ -103,21 +62,6 @@ phantom model
 phantom model list
 ```
 
----
-
-### `phantom config`
-
-Manage configuration.
-
-```bash
-phantom config setup              # Interactive wizard
-phantom config set <key> <value>  # Set a value
-phantom config get [key]          # Get a value
-phantom config env                # Show environment status
-phantom config clear              # Reset configuration
-```
-
----
 
 ### `phantom doctor`
 
@@ -127,14 +71,3 @@ Run a system health check.
 phantom doctor
 ```
 
----
-
-### `phantom mcp`
-
-Start the MCP server.
-
-```bash
-phantom mcp start        # Start MCP server
-phantom mcp stdio        # Run in stdio mode (for agents)
-phantom mcp tools        # List available MCP tools
-```

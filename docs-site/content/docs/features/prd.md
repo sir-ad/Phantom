@@ -2,10 +2,6 @@
 title = "Prd"
 +++
 
----
-sidebar_position: 3
-title: PRD Generation
----
 
 
 Generate comprehensive Product Requirements Documents from a single sentence.

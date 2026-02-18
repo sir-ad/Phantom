@@ -2,10 +2,6 @@
 title = "Chat"
 +++
 
----
-sidebar_position: 1
-title: Interactive Chat
----
 
 
 The chat REPL is Phantom's primary interface. It's an intelligent, streaming conversation with your connected LLM, guided by PM frameworks.

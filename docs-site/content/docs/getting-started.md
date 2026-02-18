@@ -2,10 +2,6 @@
 title = "Getting Started"
 +++
 
----
-sidebar_position: 2
-title: Getting Started
----
 
 
 Get Phantom running in under 60 seconds.

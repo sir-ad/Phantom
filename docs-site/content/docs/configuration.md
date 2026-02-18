@@ -2,10 +2,6 @@
 title = "Configuration"
 +++
 
----
-sidebar_position: 10
-title: Configuration
----
 
 
 Phantom stores configuration in `~/.phantom/config.json`.

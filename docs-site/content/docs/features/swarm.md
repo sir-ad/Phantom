@@ -2,10 +2,6 @@
 title = "Swarm"
 +++
 
----
-sidebar_position: 2
-title: Swarm Intelligence
----
 
 
 Phantom's swarm mode simulates a room of expert product leaders debating a topic. Instead of relying on a single AI perspective, the swarm generates multi-perspective consensus.

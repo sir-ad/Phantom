@@ -2,9 +2,6 @@
 title = "Anthropic"
 +++
 
----
-title: Anthropic
----
 
 
 Connect Claude models to Phantom for long-form writing and nuanced analysis.

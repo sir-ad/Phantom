@@ -2,10 +2,6 @@
 title = "Installation"
 +++
 
----
-sidebar_position: 3
-title: Installation
----
 
 
 Phantom supports macOS, Linux, and Windows (via WSL2). Choose the method that suits you.
@@ -36,25 +32,6 @@ curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install
 rm -rf ~/.phantom
 ```
 
----
-
-## npm Global Install
-
-If you have Node.js 18+ installed:
-
-```bash
-npm install -g phantom-pm
-```
-
-This installs the `phantom` command globally.
-
-### Upgrading via npm
-
-```bash
-npm update -g phantom-pm
-```
-
----
 
 ## Docker
 
@@ -75,33 +52,6 @@ docker run -it \
   phantompm/phantom:latest
 ```
 
----
-
-## Build from Source
-
-For contributors or custom builds:
-
-```bash
-git clone https://github.com/sir-ad/Phantom.git
-cd phantom
-npm install
-npm run build
-```
-
-Run locally:
-
-```bash
-node packages/cli/dist/index.js
-```
-
-Or link globally:
-
-```bash
-npm link packages/cli
-phantom --version
-```
-
----
 
 ## System Requirements
 

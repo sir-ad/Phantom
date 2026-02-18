@@ -2,10 +2,6 @@
 title = "Modules"
 +++
 
----
-sidebar_position: 3
-title: Modules
----
 
 
 Phantom's functionality is organized into installable modules. Each module adds a specific PM capability.
