@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { startTelegramBot } from './telegram.js';
-import { startDiscordBot } from './discord.js';
+await startTelegramBot();
+await startDiscordBot();
+await startServer();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +17,7 @@ console.log('Starting Chat Servers...');
 const start = async () => {
     await startTelegramBot();
     await startDiscordBot();
+    await startServer();
 };
 
 start().catch(console.error);

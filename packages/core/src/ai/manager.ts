@@ -4,6 +4,7 @@ import { AnthropicProvider, type AnthropicProviderConfig } from './providers/ant
 import { OllamaProvider, type OllamaProviderConfig } from './providers/ollama.js';
 import { GeminiProvider, type GeminiProviderConfig } from './providers/gemini.js';
 import { BaseAIProvider, type AIRequest, type AIResponse, type StreamingAIResponse, type AIProviderConfig, type ProviderHealth } from './providers/base.js';
+import { getConfig } from '../config.js';
 
 export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'gemini';
 
@@ -164,8 +165,12 @@ export class AIManager {
     for (let i = 0; i < this.fallbackChain.length; i++) {
       const provider = this.fallbackChain[i];
 
+      // For fallback providers, we should probably prefer their default model
+      const modelToUse = i > 0 ? provider.getDefaultModel() : request.model;
+      const effectiveRequest = { ...request, model: modelToUse };
+
       try {
-        const response = await provider.complete(request);
+        const response = await provider.complete(effectiveRequest);
         this.updateMetrics(provider, response, true);
 
         // Cache the response
@@ -179,8 +184,24 @@ export class AIManager {
 
         return response;
       } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+
+        // If the specific model failed on the primary provider, try its default before moving on
+        if (i === 0 && (errorMsg.includes('not found') || errorMsg.includes('404'))) {
+          try {
+            const fallbackRequest = { ...request, model: provider.getDefaultModel() };
+            if (fallbackRequest.model !== request.model) {
+              const response = await provider.complete(fallbackRequest);
+              this.updateMetrics(provider, response, true);
+              return response;
+            }
+          } catch (innerError) {
+            // silent fail
+          }
+        }
+
         lastError = error instanceof Error ? error : new Error('Unknown provider error');
-        this.updateMetrics(provider, { content: '', latency: 0, model: request.model }, false);
+        this.updateMetrics(provider, { content: '', latency: 0, model: effectiveRequest.model }, false);
 
         // Continue to next provider
         continue;
@@ -316,21 +337,48 @@ let aiManager: AIManager | null = null;
 
 export function getAIManager(): AIManager {
   if (!aiManager) {
-    // Default configuration - should be loaded from config
-    const config: AIManagerConfig = {
-      defaultProvider: 'openai',
-      providers: {
-        // Config should be loaded from user's config file
-        openai: { apiKey: process.env.OPENAI_API_KEY || '' },
-        anthropic: { apiKey: process.env.ANTHROPIC_API_KEY || '' },
-        ollama: { baseUrl: 'http://localhost:11434' },
-      },
-      fallbackProviders: ['anthropic', 'ollama'],
-      enableCaching: true,
-      maxRetries: 3,
-    };
+    try {
+      const configManager = getConfig();
+      const phantomConfig = configManager.get();
 
-    aiManager = new AIManager(config);
+      const config: AIManagerConfig = {
+        defaultProvider: phantomConfig.primaryModel.provider as ProviderType,
+        providers: {
+          openai: {
+            apiKey: phantomConfig.apiKeys.openai || process.env.OPENAI_API_KEY || '',
+            defaultModel: phantomConfig.primaryModel.provider === 'openai' ? phantomConfig.primaryModel.model : 'gpt-4-turbo-preview'
+          },
+          anthropic: {
+            apiKey: phantomConfig.apiKeys.anthropic || process.env.ANTHROPIC_API_KEY || '',
+            defaultModel: phantomConfig.primaryModel.provider === 'anthropic' ? phantomConfig.primaryModel.model : 'claude-3-5-sonnet-20241022'
+          },
+          ollama: {
+            baseUrl: phantomConfig.primaryModel.baseUrl || 'http://localhost:11434',
+            defaultModel: phantomConfig.primaryModel.provider === 'ollama' ? phantomConfig.primaryModel.model : 'llama3.1:8b'
+          },
+          gemini: {
+            apiKey: phantomConfig.apiKeys.gemini || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '',
+            defaultModel: phantomConfig.primaryModel.provider === 'gemini' ? phantomConfig.primaryModel.model : 'gemini-2.0-flash'
+          }
+        },
+        fallbackProviders: ['anthropic', 'ollama', 'gemini'],
+        enableCaching: true,
+        maxRetries: 3,
+      };
+
+      aiManager = new AIManager(config);
+    } catch (e) {
+      // Fallback if config manager fails
+      const config: AIManagerConfig = {
+        defaultProvider: 'ollama',
+        providers: {
+          ollama: { baseUrl: 'http://localhost:11434', defaultModel: 'llama3.1:8b' },
+        },
+        enableCaching: true,
+        maxRetries: 3,
+      };
+      aiManager = new AIManager(config);
+    }
   }
   return aiManager;
 }

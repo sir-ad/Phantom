@@ -43,6 +43,7 @@ import {
 import { registerConfigCommands } from './commands/config.js';
 import { registerStoriesCommands } from './commands/stories.js';
 import { startChat } from './commands/chat.js';
+import { TaskAnalyze } from './commands/task.js';
 import { PhantomMCPServer, runStdioServer, PhantomDiscovery, MCPMode } from '@phantom-pm/mcp-server';
 import {
   theme,
@@ -795,8 +796,18 @@ program
         console.log(theme.error(`  ${message}`));
         console.log('');
       }
-      process.exitCode = 1;
     }
+  });
+
+program
+  .command('task')
+  .description('Deep task analysis and decomposition')
+  .command('analyze <goal>')
+  .description('Recursively decompose a goal into subtasks')
+  .action(async (goal: string) => {
+    // We need to render the React component
+    const { render } = await import('ink');
+    render(<TaskAnalyze goal={goal} />);
   });
 
 const screenCommand = program.command('screen').description('Screen analysis commands');

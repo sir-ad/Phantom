@@ -64,7 +64,7 @@ export interface ProviderHealth {
 export abstract class BaseAIProvider implements AIProvider {
   protected config: AIProviderConfig;
   protected rateLimiter: Set<Promise<unknown>> = new Set();
-  
+
   constructor(config: AIProviderConfig) {
     this.config = {
       maxConcurrentRequests: 5,
@@ -74,21 +74,25 @@ export abstract class BaseAIProvider implements AIProvider {
   }
 
   abstract name: string;
-  
+
   abstract isAvailable(): Promise<boolean>;
   abstract complete(request: AIRequest): Promise<AIResponse>;
   abstract stream(request: AIRequest): Promise<StreamingAIResponse>;
   abstract estimateCost(request: AIRequest, response: AIResponse): number;
   abstract close(): Promise<void>;
-  
+
+  getDefaultModel(): string {
+    return this.config.defaultModel;
+  }
+
   protected async rateLimit<T>(fn: () => Promise<T>): Promise<T> {
     while (this.rateLimiter.size >= (this.config.maxConcurrentRequests || 5)) {
       await Promise.race(this.rateLimiter);
     }
-    
+
     const promise = fn();
     this.rateLimiter.add(promise);
-    
+
     try {
       const result = await promise;
       return result;
@@ -96,7 +100,7 @@ export abstract class BaseAIProvider implements AIProvider {
       this.rateLimiter.delete(promise);
     }
   }
-  
+
   protected timeoutPromise<T>(promise: Promise<T>, timeout: number): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -120,7 +124,7 @@ export abstract class BaseAIProvider implements AIProvider {
       );
     });
   }
-  
+
   protected createStreamingResponse(
     stream: AsyncIterable<string>,
     responsePromise: Promise<AIResponse>

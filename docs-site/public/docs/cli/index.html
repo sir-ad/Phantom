@@ -1,0 +1,94 @@
+<!doctype html><html data-theme=dark lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><title>Cli – Phantom</title><meta content="The invisible force behind every great product" name=description><link href=https://phantom.pm/oat.min.css rel=stylesheet><link href=https://phantom.pm/docs.css rel=stylesheet><body><nav class=sidebar><a class=logo href=https://phantom.pm> <strong>Phantom</strong> </a><ul><li class=section-header>Technical Specs<li><a href=https://phantom.pm/docs/tech/architecture-overview/>Architecture Overview</a><li class=section-header>Providers<li><a href=https://phantom.pm/docs/providers/anthropic/>Anthropic</a><li><a href=https://phantom.pm/docs/providers/gemini/>Gemini</a><li><a href=https://phantom.pm/docs/providers/overview/>Index</a><li><a href=https://phantom.pm/docs/providers/ollama/>Ollama</a><li><a href=https://phantom.pm/docs/providers/openai/>Openai</a><li class=section-header>Features<li><a href=https://phantom.pm/docs/features/agents/>Agents</a><li><a href=https://phantom.pm/docs/features/chat/>Chat</a><li><a href=https://phantom.pm/docs/features/prd/>Prd</a><li><a href=https://phantom.pm/docs/features/simulation/>Simulation</a><li><a href=https://phantom.pm/docs/features/swarm/>Swarm</a><li class=section-header>User Guide<li><a href=https://phantom.pm/docs/user/install/>Install</a><li><a href=https://phantom.pm/docs/user/integrations/>Integrations</a><li><a href=https://phantom.pm/docs/user/modules/>Modules</a><li><a href=https://phantom.pm/docs/user/quickstart/>Quickstart</a><li><a href=https://phantom.pm/docs/user/troubleshooting/>Troubleshooting</a></ul></nav><main class=content><article><h1>Cli</h1><h1 id=phantom-cli-reference>PHANTOM CLI Reference</h1><p>Complete reference for all PHANTOM command-line interface commands.<h2 id=global-options>Global Options</h2><pre><code data-lang=bash>-v, --version    # Output the version number
+-h, --help       # Display help for command
+--json           # Output as JSON (where applicable)
+</code></pre><h2 id=core-commands>Core Commands</h2><h3 id=phantom>phantom</h3><p>Launch the PHANTOM operator console.<pre><code data-lang=bash>phantom
+</code></pre><h3 id=phantom-help>phantom –help</h3><p>Display help information for all commands.<pre><code data-lang=bash>phantom --help
+</code></pre><h3 id=phantom-version>phantom –version</h3><p>Display the current version of PHANTOM.<pre><code data-lang=bash>phantom --version
+</code></pre><h2 id=context-management>Context Management</h2><h3 id=phantom-context>phantom context</h3><p>Manage project context for PHANTOM’s understanding.<pre><code data-lang=bash>phantom context [options]
+</code></pre><h4 id=phantom-context-add>phantom context add</h4><p>Add a path to PHANTOM’s context engine.<pre><code data-lang=bash>phantom context add &lt;path>
+</code></pre><p>Options:<ul><li><code>--recursive</code> - Index directories recursively<li><code>--exclude &lt;patterns></code> - Comma-separated exclude patterns<li><code>--types &lt;types></code> - File types to include (code,docs,images,etc.)</ul><h4 id=phantom-context-search>phantom context search</h4><p>Search indexed context.<pre><code data-lang=bash>phantom context search &lt;query>
+</code></pre><p>Options:<ul><li><code>--limit &lt;number></code> - Maximum number of results<li><code>--type &lt;type></code> - Filter by file type</ul><h4 id=phantom-context-status>phantom context status</h4><p>Show context indexing status.<pre><code data-lang=bash>phantom context status
+</code></pre><h2 id=product-requirements-documents>Product Requirements Documents</h2><h3 id=phantom-prd>phantom prd</h3><p>Generate and manage Product Requirements Documents.<pre><code data-lang=bash>phantom prd [options] [command]
+</code></pre><h4 id=phantom-prd-create>phantom prd create</h4><p>Generate a new PRD from a title.<pre><code data-lang=bash>phantom prd create &lt;title>
+</code></pre><p>Options:<ul><li><code>--out &lt;path></code> - Output file path<li><code>--technical</code> - Include technical requirements<li><code>--ux</code> - Include UX wireframe descriptions<li><code>--metrics</code> - Include metrics framework</ul><h4 id=phantom-prd-list>phantom prd list</h4><p>List generated PRDs.<pre><code data-lang=bash>phantom prd list
+</code></pre><h4 id=phantom-prd-update>phantom prd update</h4><p>Update an existing PRD.<pre><code data-lang=bash>phantom prd update &lt;id>
+</code></pre><h4 id=phantom-prd-export>phantom prd export</h4><p>Export PRD to different formats.<pre><code data-lang=bash>phantom prd export &lt;id> --format &lt;pdf|markdown|json>
+</code></pre><h2 id=user-stories>User Stories</h2><h3 id=phantom-stories>phantom stories</h3><p>Generate user stories from features or PRDs.<pre><code data-lang=bash>phantom stories [options] [command]
+</code></pre><h4 id=phantom-stories-generate>phantom stories generate</h4><p>Generate user stories from a feature description.<pre><code data-lang=bash>phantom stories generate &lt;feature>
+</code></pre><p>Options:<ul><li><code>-c, --count &lt;number></code> - Number of stories to generate (default: 5)<li><code>--no-edge-cases</code> - Skip edge case stories<li><code>-o, --output &lt;filename></code> - Output filename (default: user-stories.md)</ul><h4 id=phantom-stories-from-prd>phantom stories from-prd</h4><p>Generate user stories from a PRD file.<pre><code data-lang=bash>phantom stories from-prd &lt;prd-path>
+</code></pre><p>Options:<ul><li><code>-s, --sprints &lt;number></code> - Number of sprints to plan (default: 2)</ul><h2 id=sprint-planning>Sprint Planning</h2><h3 id=phantom-sprint>phantom sprint</h3><p>Plan and manage sprints.<pre><code data-lang=bash>phantom sprint [options] [command]
+</code></pre><h4 id=phantom-sprint-plan>phantom sprint plan</h4><p>Plan a new sprint.<pre><code data-lang=bash>phantom sprint plan
+</code></pre><p>Options:<ul><li><code>--goal &lt;string></code> - Sprint goal<li><code>--duration &lt;days></code> - Sprint duration in days (default: 14)<li><code>--velocity &lt;points></code> - Team velocity in story points<li><code>--backlog &lt;path></code> - Path to backlog file</ul><h4 id=phantom-sprint-retro>phantom sprint retro</h4><p>Generate sprint retrospective.<pre><code data-lang=bash>phantom sprint retro
+</code></pre><p>Options:<ul><li><code>--sprint &lt;path></code> - Path to sprint data file</ul><h2 id=agent-swarm>Agent Swarm</h2><h3 id=phantom-swarm>phantom swarm</h3><p>Run multi-agent product analysis.<pre><code data-lang=bash>phantom swarm &lt;question>
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h2 id=module-management>Module Management</h2><h3 id=phantom-modules>phantom modules</h3><p>Browse and manage modules.<pre><code data-lang=bash>phantom modules [options]
+</code></pre><p>Options:<ul><li><code>--installed</code> - Show only installed modules<li><code>--available</code> - Show only available modules<li><code>--json</code> - Output as JSON</ul><h3 id=phantom-install>phantom install</h3><p>Install a module.<pre><code data-lang=bash>phantom install &lt;module>
+</code></pre><h3 id=phantom-uninstall>phantom uninstall</h3><p>Uninstall a module.<pre><code data-lang=bash>phantom uninstall &lt;module>
+</code></pre><h3 id=phantom-update>phantom update</h3><p>Update modules.<pre><code data-lang=bash>phantom update [module]
+</code></pre><p>Options:<ul><li><code>--all</code> - Update all modules</ul><h2 id=configuration>Configuration</h2><h3 id=phantom-config>phantom config</h3><p>Manage PHANTOM configuration.<pre><code data-lang=bash>phantom config [options] [command]
+</code></pre><h4 id=phantom-config-set>phantom config set</h4><p>Set configuration values.<pre><code data-lang=bash>phantom config set &lt;key> &lt;value>
+</code></pre><h4 id=phantom-config-get>phantom config get</h4><p>Get configuration values.<pre><code data-lang=bash>phantom config get [key]
+</code></pre><h4 id=phantom-config-setup>phantom config setup</h4><p>Interactive configuration setup.<pre><code data-lang=bash>phantom config setup
+</code></pre><h4 id=phantom-config-clear>phantom config clear</h4><p>Clear configuration.<pre><code data-lang=bash>phantom config clear [--api-keys]
+</code></pre><h4 id=phantom-config-env>phantom config env</h4><p>Show environment configuration status.<pre><code data-lang=bash>phantom config env
+</code></pre><h2 id=integrations>Integrations</h2><h3 id=phantom-integrate>phantom integrate</h3><p>Manage IDE and tool integrations.<pre><code data-lang=bash>phantom integrate [options] [command]
+</code></pre><h4 id=phantom-integrate-scan>phantom integrate scan</h4><p>Scan for available integrations.<pre><code data-lang=bash>phantom integrate scan
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h4 id=phantom-integrate-connect>phantom integrate connect</h4><p>Connect to a specific integration.<pre><code data-lang=bash>phantom integrate connect &lt;target>
+</code></pre><h4 id=phantom-integrate-doctor>phantom integrate doctor</h4><p>Run integration health checks.<pre><code data-lang=bash>phantom integrate doctor
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h2 id=mcp-model-connection-protocol>MCP (Model Connection Protocol)</h2><h3 id=phantom-mcp>phantom mcp</h3><p>MCP server and tool management.<pre><code data-lang=bash>phantom mcp [options] [command]
+</code></pre><h4 id=phantom-mcp-serve>phantom mcp serve</h4><p>Start MCP server.<pre><code data-lang=bash>phantom mcp serve
+</code></pre><p>Options:<ul><li><code>--mode &lt;stdio|legacy-jsonl></code> - Server mode (<code>stdio</code> is default)</ul><h4 id=phantom-mcp-tools>phantom mcp tools</h4><p>List available MCP tools.<pre><code data-lang=bash>phantom mcp tools
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h4 id=phantom-mcp-status>phantom mcp status</h4><p>Show MCP server status.<pre><code data-lang=bash>phantom mcp status
+</code></pre><h2 id=system-commands>System Commands</h2><h3 id=phantom-status>phantom status</h3><p>Show PHANTOM runtime status.<pre><code data-lang=bash>phantom status [options]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-doctor>phantom doctor</h3><p>Run system health checks.<pre><code data-lang=bash>phantom doctor [options]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-health>phantom health</h3><p>Show real runtime health metrics.<pre><code data-lang=bash>phantom health [options]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-simulate>phantom simulate</h3><p>Run deterministic simulation for a product scenario.<pre><code data-lang=bash>phantom simulate &lt;scenario>
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-nudge>phantom nudge</h3><p>Show intelligent nudges and suggestions.<pre><code data-lang=bash>phantom nudge [options]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON<li><code>--dismiss &lt;id></code> - Dismiss a specific nudge<li><code>--snooze &lt;id>:&lt;minutes></code> - Snooze a nudge<li><code>--refresh</code> - Generate new suggestions</ul><h3 id=phantom-products>phantom products</h3><p>Show persisted project/product portfolio.<pre><code data-lang=bash>phantom products [options]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-docs>phantom docs</h3><p>Documentation operations.<pre><code data-lang=bash>phantom docs [options] [command]
+</code></pre><h3 id=phantom-frameworks>phantom frameworks</h3><p>List built-in PM frameworks.<pre><code data-lang=bash>phantom frameworks [options] [action] [framework]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-dashboard>phantom dashboard</h3><p>Show concise runtime summary.<pre><code data-lang=bash>phantom dashboard [options]
+</code></pre><p>Options:<ul><li><code>--json</code> - Output as JSON</ul><h3 id=phantom-agents>phantom agents</h3><p>Show Agent Matrix usage and capabilities.<pre><code data-lang=bash>phantom agents [options] [command]
+</code></pre><h3 id=phantom-boot>phantom boot</h3><p>Run onboarding boot sequence.<pre><code data-lang=bash>phantom boot
+</code></pre><h3 id=phantom-tools>phantom tools</h3><p>Tool palette (real-mode gate).<pre><code data-lang=bash>phantom tools [options] [command]
+</code></pre><h2 id=environment-variables>Environment Variables</h2><p>PHANTOM respects the following environment variables:<ul><li><code>PHANTOM_HOME</code> - Configuration directory (default: <code>~/.phantom</code>)<li><code>OPENAI_API_KEY</code> - OpenAI API key<li><code>ANTHROPIC_API_KEY</code> - Anthropic API key<li><code>OLLAMA_HOST</code> - Ollama server host (default: <code>http://localhost:11434</code>)<li><code>PHANTOM_THEME</code> - UI theme (matrix, cyberpunk, minimal)</ul><h2 id=examples>Examples</h2><h3 id=basic-workflow>Basic Workflow</h3><pre><code data-lang=bash># Initialize PHANTOM with your project
+phantom context add ./my-project
+
+# Generate a PRD
+phantom prd create "User Authentication System"
+
+# Create user stories
+phantom stories generate "Authentication with OAuth support"
+
+# Plan a sprint
+phantom sprint plan --goal "Implement Auth System" --duration 10
+
+# Get expert advice
+phantom swarm "Should we use JWT or session-based auth?"
+</code></pre><h3 id=module-management-1>Module Management</h3><pre><code data-lang=bash># Browse available modules
+phantom modules
+
+# Install specific modules
+phantom install @phantom/competitive
+phantom install @phantom/analytics-lens
+
+# List installed modules
+phantom modules --installed
+</code></pre><h3 id=integration-setup>Integration Setup</h3><pre><code data-lang=bash># Scan for available integrations
+phantom integrate scan
+
+# Connect to specific tools
+phantom integrate connect cursor
+phantom integrate connect vscode
+
+# Check integration health
+phantom integrate doctor
+</code></pre><h3 id=configuration-1>Configuration</h3><pre><code data-lang=bash># Interactive setup
+phantom config setup
+
+# Set specific values
+phantom config set apiKeys.openai sk-...
+phantom config set primaryModel.provider openai
+
+# Check configuration
+phantom config env
+</code></pre><h2 id=exit-codes>Exit Codes</h2><ul><li><code>0</code> - Success<li><code>1</code> - General error<li><code>2</code> - Invalid arguments<li><code>3</code> - Configuration error<li><code>4</code> - Network error<li><code>5</code> - AI provider error</ul><h2 id=output-formats>Output Formats</h2><p>Most commands support multiple output formats:<ul><li><strong>Human-readable</strong> - Default terminal-friendly output<li><strong>JSON</strong> - Structured data output with <code>--json</code> flag<li><strong>Silent</strong> - Minimal output for scripting (where applicable)</ul><h2 id=performance-considerations>Performance Considerations</h2><ul><li>First-time module installations may take longer due to downloading<li>AI-powered commands require network connectivity to AI providers<li>Context indexing can be resource-intensive for large codebases<li>Use <code>--json</code> output for programmatic consumption</ul><p>For more information on specific commands, use <code>phantom &lt;command> --help</code>.</article></main><script src=https://phantom.pm/oat.min.js></script>

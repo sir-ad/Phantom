@@ -1,0 +1,118 @@
+/* Phantom Docs – Layout */
+:root {
+    --sidebar-width: 260px;
+    --content-max: 780px;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    border-right: 1px solid var(--border, #333);
+    padding: 1.5rem 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg-alt, #0d0d0d);
+}
+
+.sidebar .logo {
+    display: block;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    font-size: 1.25rem;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    margin-bottom: 0.25rem;
+}
+
+.sidebar li a {
+    display: block;
+    padding: 0.35rem 0.75rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.sidebar li a:hover,
+.sidebar li a.active {
+    background: var(--bg, #1a1a2e);
+}
+
+.sidebar .section-header {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    padding: 0 0.75rem;
+    opacity: 0.6;
+}
+
+.content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem 3rem;
+    max-width: var(--content-max);
+    width: 100%;
+}
+
+.content h1 {
+    margin-top: 0;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.card {
+    padding: 1.25rem;
+    border: 1px solid var(--border, #333);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+}
+
+.card:hover {
+    border-color: var(--primary, #7c3aed);
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card h3 a {
+    text-decoration: none;
+}
+
+pre {
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}

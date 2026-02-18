@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { homedir } from 'os';
 
 export interface ModelConfig {
-  provider: 'ollama' | 'anthropic' | 'openai' | 'custom';
+  provider: 'ollama' | 'anthropic' | 'openai' | 'gemini' | 'custom';
   model: string;
   apiKey?: string;
   baseUrl?: string;
@@ -44,6 +44,8 @@ export interface ProjectConfig {
 export interface APIKeyConfig {
   openai?: string;
   anthropic?: string;
+  gemini?: string;
+  google?: string;
   github?: string;
   githubClientId?: string;
   githubClientSecret?: string;

@@ -12,7 +12,7 @@ export * from './constants.js';
 export * from './config.js';
 export * from './context.js';
 export * from './modules.js';
-export * from './agents.js';
+export * from './agents/index.js';
 export * from './prd.js';
 export * from './integrations.js';
 export * from './runtime.js';

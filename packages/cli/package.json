@@ -47,9 +47,16 @@
     "@types/inquirer": "^9.0.7",
     "@types/node": "^20.14.0",
     "@types/open": "^6.1.0",
+    "@types/open": "^6.1.0",
     "@types/react": "^18.3.28",
     "tsx": "^4.16.0",
     "typescript": "^5.5.0"
+  },
+  "overrides": {
+    "react": "$react",
+    "ink": {
+      "react": "$react"
+    }
   },
   "keywords": [
     "product-management",

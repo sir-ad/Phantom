@@ -1,0 +1,14 @@
+# Phantom Documentation - Zola Config
+base_url = "https://phantom.pm"
+title = "Phantom"
+description = "The invisible force behind every great product"
+compile_sass = true
+build_search_index = true
+generate_feeds = false
+minify_html = true
+
+[markdown]
+smart_punctuation = true
+
+[extra]
+author = "PhantomPM"

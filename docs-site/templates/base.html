@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ config.title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+    <link rel="stylesheet" href="{{ get_url(path='oat.min.css') }}">
+    <link rel="stylesheet" href="{{ get_url(path='docs.css') }}">
+</head>
+
+<body>
+    <nav class="sidebar">
+        <a href="{{ get_url(path='/') }}" class="logo">
+            <strong>Phantom</strong>
+        </a>
+        {% block sidebar %}
+        {% set docs = get_section(path="docs/_index.md", metadata_only=true) %}
+        <ul>
+            {% for page in docs.pages %}
+            <li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
+            {% endfor %}
+            {% for sub in docs.subsections %}
+            {% set s = get_section(path=sub) %}
+            <li class="section-header">{{ s.title }}</li>
+            {% for page in s.pages %}
+            <li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
+            {% endfor %}
+            {% endfor %}
+        </ul>
+        {% endblock %}
+    </nav>
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+    <script src="{{ get_url(path='oat.min.js') }}"></script>
+</body>
+
+</html>

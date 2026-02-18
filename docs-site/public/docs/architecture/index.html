@@ -1,0 +1,37 @@
+<!doctype html><html data-theme=dark lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><title>Architecture – Phantom</title><meta content="The invisible force behind every great product" name=description><link href=https://phantom.pm/oat.min.css rel=stylesheet><link href=https://phantom.pm/docs.css rel=stylesheet><body><nav class=sidebar><a class=logo href=https://phantom.pm> <strong>Phantom</strong> </a><ul><li class=section-header>Technical Specs<li><a href=https://phantom.pm/docs/tech/architecture-overview/>Architecture Overview</a><li class=section-header>Providers<li><a href=https://phantom.pm/docs/providers/anthropic/>Anthropic</a><li><a href=https://phantom.pm/docs/providers/gemini/>Gemini</a><li><a href=https://phantom.pm/docs/providers/overview/>Index</a><li><a href=https://phantom.pm/docs/providers/ollama/>Ollama</a><li><a href=https://phantom.pm/docs/providers/openai/>Openai</a><li class=section-header>Features<li><a href=https://phantom.pm/docs/features/agents/>Agents</a><li><a href=https://phantom.pm/docs/features/chat/>Chat</a><li><a href=https://phantom.pm/docs/features/prd/>Prd</a><li><a href=https://phantom.pm/docs/features/simulation/>Simulation</a><li><a href=https://phantom.pm/docs/features/swarm/>Swarm</a><li class=section-header>User Guide<li><a href=https://phantom.pm/docs/user/install/>Install</a><li><a href=https://phantom.pm/docs/user/integrations/>Integrations</a><li><a href=https://phantom.pm/docs/user/modules/>Modules</a><li><a href=https://phantom.pm/docs/user/quickstart/>Quickstart</a><li><a href=https://phantom.pm/docs/user/troubleshooting/>Troubleshooting</a></ul></nav><main class=content><article><h1>Architecture</h1><hr><h2 id=sidebar-position-1title-architecture>sidebar_position: 1 title: Architecture</h2><h1 id=architecture>Architecture</h1><p>Phantom is built as a modular monorepo with 6 packages. Each package has a single responsibility and communicates through well-defined TypeScript interfaces.<h2 id=system-diagram>System Diagram</h2><pre><code data-lang=mermaid>graph TD
+    User[User Terminal] --> CLI["@phantom-pm/cli"]
+    IDE[IDE / Agent] --> MCP["@phantom-pm/mcp-server"]
+    
+    subgraph "Phantom Core"
+        CLI --> Core["@phantom-pm/core"]
+        MCP --> Core
+        CLI --> TUI["@phantom-pm/tui"]
+        
+        Core --> AI[AI Manager]
+        Core --> Context[Context Engine]
+        Core --> Discovery[Agent Discovery]
+        Core --> Config[Configuration]
+        
+        AI --> Providers[LLM Providers]
+        
+        Modules["@phantom-pm/modules"] --> Core
+        Integrations["@phantom-pm/integrations"] --> Core
+    end
+    
+    Providers --> Ollama[Ollama]
+    Providers --> OpenAI[OpenAI]
+    Providers --> Anthropic[Anthropic]
+    Providers --> Gemini[Gemini]
+</code></pre><h2 id=package-overview>Package Overview</h2><table><thead><tr><th>Package<th>Purpose<th>Key Files<tbody><tr><td><code>@phantom-pm/core</code><td>AI providers, config, context, discovery<td><code>ai/manager.ts</code>, <code>config.ts</code>, <code>context.ts</code><tr><td><code>@phantom-pm/cli</code><td>Terminal interface, commands, chat REPL<td><code>index.tsx</code>, <code>commands/chat.ts</code><tr><td><code>@phantom-pm/mcp-server</code><td>Model Context Protocol server<td><code>index.ts</code>, <code>discovery.ts</code><tr><td><code>@phantom-pm/tui</code><td>Terminal UI components (Ink/React)<td><code>screens/boot.ts</code>, <code>screens/swarm.ts</code><tr><td><code>@phantom-pm/modules</code><td>Functional plugins (PRD, Swarm, etc.)<td><code>prd-forge.ts</code>, <code>swarm.ts</code><tr><td><code>@phantom-pm/integrations</code><td>External tool connectors<td><code>github.ts</code></table><h2 id=ai-manager>AI Manager</h2><p>The <code>AIManager</code> class is the central abstraction for LLM communication:<pre><code data-lang=typescript>class AIManager {
+  providers: Map&lt;ProviderType, BaseAIProvider>;
+  defaultProvider: BaseAIProvider;
+  fallbackChain: BaseAIProvider[];
+  
+  async complete(request: AIRequest): Promise&lt;AIResponse>;
+  async stream(request: AIRequest): Promise&lt;StreamingAIResponse>;
+}
+</code></pre><p><strong>Key design decisions:</strong><ul><li><strong>Provider abstraction</strong>: All providers implement <code>BaseAIProvider</code>, making it trivial to add new ones.<li><strong>Automatic fallback</strong>: If the primary provider fails, the manager tries the next in the chain.<li><strong>Streaming-first</strong>: The chat REPL uses <code>stream()</code> for real-time output.<li><strong>Rate limiting</strong>: Built-in per-provider rate limiting prevents API throttling.</ul><h2 id=data-storage>Data Storage</h2><p>All data is stored locally in <code>~/.phantom/</code>:<pre><code>~/.phantom/
+├── config.json     # User configuration & API keys
+├── brain/          # Project context and memory
+└── modules/        # Installed module data
+</code></pre><p>No data is sent to Phantom servers. All AI calls go directly from your machine to the provider API.<h2 id=build-system>Build System</h2><ul><li><strong>TypeScript</strong> throughout, compiled with <code>tsc</code>.<li><strong>npm workspaces</strong> for monorepo management.<li><strong>esbuild</strong> for release binary bundling.<li>Dependencies flow: <code>core</code> → <code>mcp-server</code> / <code>modules</code> / <code>tui</code> → <code>cli</code>.</ul></article></main><script src=https://phantom.pm/oat.min.js></script>

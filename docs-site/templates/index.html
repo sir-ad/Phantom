@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Phantom – Documentation{% endblock %}
+
+{% block content %}
+<h1>Phantom Documentation</h1>
+<p>{{ config.description }}</p>
+
+{% set docs = get_section(path="docs/_index.md", metadata_only=true) %}
+<div class="card-grid">
+    {% for page in docs.pages %}
+    <article class="card">
+        <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
+        {% if page.description %}
+        <p>{{ page.description }}</p>
+        {% endif %}
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

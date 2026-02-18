@@ -1,0 +1,29 @@
+<!doctype html><html data-theme=dark lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><title>Chat – Phantom</title><meta content="The invisible force behind every great product" name=description><link href=https://phantom.pm/oat.min.css rel=stylesheet><link href=https://phantom.pm/docs.css rel=stylesheet><body><nav class=sidebar><a class=logo href=https://phantom.pm> <strong>Phantom</strong> </a><ul><li class=section-header>Technical Specs<li><a href=https://phantom.pm/docs/tech/architecture-overview/>Architecture Overview</a><li class=section-header>Providers<li><a href=https://phantom.pm/docs/providers/anthropic/>Anthropic</a><li><a href=https://phantom.pm/docs/providers/gemini/>Gemini</a><li><a href=https://phantom.pm/docs/providers/overview/>Index</a><li><a href=https://phantom.pm/docs/providers/ollama/>Ollama</a><li><a href=https://phantom.pm/docs/providers/openai/>Openai</a><li class=section-header>Features<li><a href=https://phantom.pm/docs/features/agents/>Agents</a><li><a href=https://phantom.pm/docs/features/chat/>Chat</a><li><a href=https://phantom.pm/docs/features/prd/>Prd</a><li><a href=https://phantom.pm/docs/features/simulation/>Simulation</a><li><a href=https://phantom.pm/docs/features/swarm/>Swarm</a><li class=section-header>User Guide<li><a href=https://phantom.pm/docs/user/install/>Install</a><li><a href=https://phantom.pm/docs/user/integrations/>Integrations</a><li><a href=https://phantom.pm/docs/user/modules/>Modules</a><li><a href=https://phantom.pm/docs/user/quickstart/>Quickstart</a><li><a href=https://phantom.pm/docs/user/troubleshooting/>Troubleshooting</a></ul></nav><main class=content><article><h1>Chat</h1><hr><h2 id=sidebar-position-1title-interactive-chat>sidebar_position: 1 title: Interactive Chat</h2><h1 id=interactive-chat>Interactive Chat</h1><p>The chat REPL is Phantom’s primary interface. It’s an intelligent, streaming conversation with your connected LLM, guided by PM frameworks.<h2 id=launching-chat>Launching Chat</h2><pre><code data-lang=bash># Default — auto-detects best available model
+phantom
+
+# Specify a model
+phantom chat --model gpt-4o
+
+# Specify provider and model
+phantom chat --provider ollama --model llama3.1:8b
+</code></pre><h2 id=the-prompt>The Prompt</h2><p>Once connected, you’ll see Phantom’s boot sequence and a prompt showing your active provider and model:<pre><code>phantom (ollama:llama3.1) ▸
+</code></pre><p>Type any product question, and Phantom will stream a structured response.<h2 id=how-it-thinks>How It Thinks</h2><p>Phantom isn’t a generic chatbot. Its system prompt instructs it to:<ol><li><strong>Apply PM Frameworks</strong>: RICE scoring, MoSCoW prioritization, Kano analysis, JTBD.<li><strong>Think in Structure</strong>: Every response has clear sections (Problem, Analysis, Recommendation).<li><strong>Challenge Assumptions</strong>: Phantom will push back on weak requirements.<li><strong>Quantify Impact</strong>: Responses include estimated effort, risk level, and expected outcomes.</ol><h3 id=example>Example</h3><pre><code>phantom (gemini:gemini-2.0-flash) ▸ Should we add dark mode to our mobile app?
+
+◈ ANALYSIS
+
+  Framework: RICE Scoring
+  ─────────────────────────────────
+  Reach:      High (85% of users on mobile)
+  Impact:     Medium (accessibility + aesthetics)
+  Confidence: High (industry standard feature)
+  Effort:     Low-Medium (2-3 sprint cycles)
+  RICE Score: 7.2 / 10
+
+  Recommendation: SHIP IT
+  Dark mode is a high-reach, low-effort feature with strong user demand.
+  Prioritize via MoSCoW as a "Should Have" for the next release.
+</code></pre><h2 id=slash-commands>Slash Commands</h2><p>These commands are available inside the chat:<table><thead><tr><th>Command<th>Description<tbody><tr><td><code>/model &lt;name></code><td>Switch to a different model mid-conversation<tr><td><code>/provider</code><td>Show all providers and their status (✓/✗)<tr><td><code>/swarm &lt;question></code><td>Trigger a multi-agent swarm debate<tr><td><code>/prd &lt;title></code><td>Generate a Product Requirements Document<tr><td><code>/clear</code><td>Reset conversation history<tr><td><code>/help</code><td>Show all available commands<tr><td><code>/exit</code><td>Exit Phantom</table><h2 id=model-switching>Model Switching</h2><p>Switch models without leaving the chat:<pre><code>phantom (ollama:llama3.1) ▸ /model gpt-4o
+  ✓ Switched to openai:gpt-4o
+
+phantom (openai:gpt-4o) ▸ Now using GPT-4o for this conversation
+</code></pre><h2 id=conversation-context>Conversation Context</h2><p>Phantom maintains conversation history within a session. This means:<ul><li>Follow-up questions reference previous context.<li>You can refine analysis by asking “what about X?” after an initial response.<li>Use <code>/clear</code> to reset context and start fresh.</ul><h2 id=tips-for-best-results>Tips for Best Results</h2><ol><li><strong>Be specific</strong>: “Should we add social login?” is better than “What features should we add?”<li><strong>Provide context</strong>: “We’re a B2B SaaS with 500 enterprise customers” gives Phantom data to work with.<li><strong>Use follow-ups</strong>: Ask Phantom to drill into specific aspects of its analysis.<li><strong>Try different models</strong>: GPT-4o excels at strategy, Claude at writing, Gemini at speed.</ol></article></main><script src=https://phantom.pm/oat.min.js></script>

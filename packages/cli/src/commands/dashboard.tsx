@@ -10,6 +10,8 @@ import Spinner from 'ink-spinner';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const BoxAny = Box as any;
+
 export function Dashboard({ port: initialPort = 3333 }: { port?: number }) {
     const [status, setStatus] = useState<'starting' | 'running' | 'error'>('starting');
     const [port, setPort] = useState(initialPort);
@@ -19,12 +21,13 @@ export function Dashboard({ port: initialPort = 3333 }: { port?: number }) {
         const startServer = async () => {
             try {
                 const app = express();
+                // Resolve path relative to where CLI is built/run
+                // packages/cli/dist/commands/dashboard.js -> packages/dashboard/dist
+                // Adjusting path resolution to be more robust
                 const distPath = path.resolve(__dirname, '../../../dashboard/dist');
 
-                // Serve static files
                 app.use(express.static(distPath));
 
-                // API endpoints
                 app.get('/api/config', (req, res) => {
                     res.json({
                         brand: BRAND,
@@ -36,7 +39,6 @@ export function Dashboard({ port: initialPort = 3333 }: { port?: number }) {
                     });
                 });
 
-                // Fallback to index.html for SPA routing
                 app.get(/.*/, (req, res) => {
                     res.sendFile(path.join(distPath, 'index.html'));
                 });
@@ -57,25 +59,25 @@ export function Dashboard({ port: initialPort = 3333 }: { port?: number }) {
 
     if (status === 'error') {
         return (
-            <Box flexDirection="column" padding={1} borderStyle="round" borderColor="red">
+            <BoxAny flexDirection="column" padding={1} borderStyle="round" borderColor="red">
                 <Text color="red" bold>Dashboard Error</Text>
                 <Text>{error}</Text>
-            </Box>
+            </BoxAny>
         );
     }
 
     if (status === 'starting') {
         return (
-            <Box padding={1}>
+            <BoxAny padding={1}>
                 <Text color="green">
                     <Spinner type="dots" /> Starting local dashboard...
                 </Text>
-            </Box>
+            </BoxAny>
         );
     }
 
     return (
-        <Box flexDirection="column" padding={1} borderStyle="round" borderColor="green">
+        <BoxAny flexDirection="column" padding={1} borderStyle="round" borderColor="green">
             <Text bold color="green">PHANTOM DASHBOARD ONLINE</Text>
             <Newline />
             <Text>Localhost: <Text color="cyan" underline>http://localhost:{port}</Text></Text>
@@ -83,6 +85,6 @@ export function Dashboard({ port: initialPort = 3333 }: { port?: number }) {
             <Text color="gray">Press Ctrl+C to stop.</Text>
             <Newline />
             <Text color="gray" dimColor>Dashboard source: {path.resolve(__dirname, '../../../packages/dashboard/dist')}</Text>
-        </Box>
+        </BoxAny>
     );
 }
