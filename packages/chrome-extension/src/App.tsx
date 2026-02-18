@@ -13,6 +13,7 @@ interface QuoteData {
   text: string;
   author: string;
   topic?: string;
+  insight?: string;
 }
 
 const DEFAULT_QUOTES: QuoteData[] = [
@@ -28,15 +29,14 @@ function App() {
   const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load context from storage
+    // Load context and quote from storage
     if (chrome?.storage?.local) {
-      chrome.storage.local.get(['lastContext'], (result) => {
+      chrome.storage.local.get(['lastContext', 'lastQuote'], (result) => {
         if (result.lastContext) {
           setContext(result.lastContext as PhantomContext);
-          // TODO: In the future, fetch a real dynamic quote based on this context
-          // For now, simple random selection or deterministic mapping
-          const randomQuote = DEFAULT_QUOTES[Math.floor(Math.random() * DEFAULT_QUOTES.length)];
-          setQuote(randomQuote);
+        }
+        if (result.lastQuote) {
+          setQuote(result.lastQuote as QuoteData);
         }
         setLoading(false);
       });
@@ -44,6 +44,20 @@ function App() {
       // Dev mode fallback
       setLoading(false);
     }
+  }, []);
+
+  // Listen for storage changes
+  useEffect(() => {
+    const listener = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.lastQuote) {
+        setQuote(changes.lastQuote.newValue as QuoteData);
+      }
+      if (changes.lastContext) {
+        setContext(changes.lastContext.newValue as PhantomContext);
+      }
+    };
+    chrome.storage.onChanged.addListener(listener);
+    return () => chrome.storage.onChanged.removeListener(listener);
   }, []);
 
   return (
@@ -57,6 +71,8 @@ function App() {
           <Quote className="quote-icon" size={24} />
           <h1 className="quote-text">"{quote.text}"</h1>
           <p className="quote-author">— {quote.author}</p>
+          {quote.topic && <span className="quote-topic">{quote.topic}</span>}
+          {quote.insight && <p className="calibration-insight">{quote.insight}</p>}
         </div>
 
         {context && (

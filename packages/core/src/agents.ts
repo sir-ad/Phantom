@@ -167,6 +167,27 @@ Focus on:
 5. Continuous improvement opportunities
 
 Provide a clear verdict (yes/no/maybe/needs-data) with confidence score (0-100) and reasoning.`,
+
+    TaskMaster: `You are a Technical Project Architect. Analyze from a work decomposition, complexity, and resource assignment perspective.
+Project Context:
+- Indexed files: ${snapshot.contextFiles}
+- Context health: ${snapshot.healthScore}%
+Focus on:
+1. Recursive task decomposition
+2. Complexity hotspots (Complexity > 5)
+3. Specialized agent assignment
+4. Critical path identification
+Provide a clear verdict (yes/no/maybe/needs-data) with confidence score (0-100) and reasoning.`,
+
+    Oracle: `You are a Philosophical Calibration Agent. Analyze from a context-aware, first-principles, and insight-driven perspective.
+Project Context:
+- Indexed files: ${snapshot.contextFiles}
+Focus on:
+1. Contextual alignment with research
+2. Philosophical insights (Stoicism, Taoism)
+3. Research-to-Action mapping
+4. Mental model calibration
+Provide a clear verdict (yes/no/maybe/needs-data) with confidence score (0-100) and reasoning.`,
   };
 
   return basePrompts[agent];
@@ -176,12 +197,12 @@ async function extractRelevantContext(question: string): Promise<string> {
   const context = getContextEngine();
   const searchResults = await context.search(question);
   const topResults = searchResults.slice(0, 3);
-  
+
   if (topResults.length === 0) {
     return 'No relevant project context found.';
   }
-  
-  return topResults.map((entry: any) => 
+
+  return topResults.map((entry: any) =>
     `File: ${entry.relativePath}\n` +
     `Type: ${entry.type}\n` +
     `Snippet: ${entry.content?.slice(0, 300) || 'No content available'}\n`
@@ -193,31 +214,31 @@ function parseAIResponse(response: string): { verdict: AgentResult['verdict']; c
   let verdict: AgentResult['verdict'] = 'maybe';
   let confidence = 50;
   let reasoning = '';
-  
+
   for (const line of lines) {
     const lower = line.toLowerCase();
-    
+
     if (lower.includes('verdict:')) {
       if (lower.includes('yes')) verdict = 'yes';
       else if (lower.includes('no')) verdict = 'no';
       else if (lower.includes('maybe')) verdict = 'maybe';
       else if (lower.includes('needs-data') || lower.includes('needs data')) verdict = 'needs-data';
     }
-    
+
     if (lower.includes('confidence:')) {
       const match = line.match(/(\d+)/);
       if (match) {
         confidence = Math.min(100, Math.max(0, parseInt(match[1], 10)));
       }
     }
-    
+
     if (!lower.includes('verdict:') && !lower.includes('confidence:')) {
       reasoning += line + '\n';
     }
   }
-  
+
   reasoning = reasoning.trim();
-  
+
   // Fallback if parsing failed
   if (verdict === 'maybe' && confidence === 50) {
     const lowerResponse = response.toLowerCase();
@@ -229,7 +250,7 @@ function parseAIResponse(response: string): { verdict: AgentResult['verdict']; c
       confidence = 60;
     }
   }
-  
+
   return { verdict, confidence, reasoning };
 }
 
@@ -238,7 +259,7 @@ function getSnapshot(question: string): SwarmInputSnapshot {
   const stats = context.getStats();
   const checks = doctorIntegrations(process.cwd());
   const tokenCount = question.trim().split(/\s+/).filter(Boolean).length;
-  
+
   return {
     contextFiles: stats.totalFiles,
     contextHealth: stats.healthScore,
@@ -281,7 +302,7 @@ export class Agent {
       const ai = getAIManager();
       const systemPrompt = getSystemPrompt(this.type, snapshot);
       const relevantContext = await extractRelevantContext(question);
-      
+
       const messages: AIMessage[] = [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Question: ${question}\n\nRelevant Context:\n${relevantContext}\n\nPlease provide your analysis with:\n1. Verdict: yes/no/maybe/needs-data\n2. Confidence: 0-100\n3. Reasoning: Your detailed analysis\n\nYour response should start with "Verdict:" followed by your verdict, then "Confidence:" followed by a number, then your reasoning.` },
@@ -296,7 +317,7 @@ export class Agent {
 
       const response = await ai.complete(request);
       const { verdict, confidence, reasoning } = parseAIResponse(response.content);
-      
+
       const evidence = [
         `context.files=${snapshot.contextFiles}`,
         `context.health=${snapshot.contextHealth}`,
@@ -330,11 +351,11 @@ export class Agent {
     } catch (error) {
       this.status = 'error';
       this.currentTask = undefined;
-      
+
       // Fallback to deterministic result if AI fails
       const deterministicVerdict: AgentResult['verdict'] = 'maybe';
       const deterministicConfidence = 50;
-      
+
       return {
         agent: this.type,
         verdict: deterministicVerdict,
@@ -377,14 +398,14 @@ export class AgentSwarm {
     if (onProgress) onProgress(this.getAgentStates());
 
     // Run all agents in parallel
-    const agentPromises = AGENT_TYPES.map(agentType => 
+    const agentPromises = AGENT_TYPES.map(agentType =>
       this.limit(() => {
         if (onProgress) {
           const states = this.getAgentStates();
           states.find(s => s.type === agentType)!.status = 'processing';
           onProgress(states);
         }
-        
+
         return this.agents.get(agentType)!.analyze(normalizedQuestion, snapshot);
       })
     );
@@ -407,7 +428,7 @@ export class AgentSwarm {
     const overallConfidence = Math.round(
       results.reduce((sum, item) => sum + item.confidence, 0) / results.length
     );
-    
+
     const totalDuration = results.reduce((sum, item) => sum + item.duration, 0);
     const totalCost = results.reduce((sum, item) => sum + item.cost, 0);
     const evidence = results.flatMap(r => r.evidence);

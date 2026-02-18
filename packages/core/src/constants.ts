@@ -57,6 +57,8 @@ export const AGENT_TYPES = [
   'Researcher',
   'Communicator',
   'Operator',
+  'TaskMaster',
+  'Oracle',
 ] as const;
 
 export type AgentType = typeof AGENT_TYPES[number];
@@ -69,6 +71,8 @@ export const AGENT_DESCRIPTIONS: Record<AgentType, string> = {
   Researcher: 'User research synthesis, persona development, JTBD analysis',
   Communicator: 'Stakeholder updates, documentation, team alignment',
   Operator: 'Sprint management, velocity tracking, process optimization',
+  TaskMaster: 'Recursive task decomposition, complexity assessment, architectural mapping',
+  Oracle: 'Contextual calibration, philosophical insights, research synthesis',
 };
 
 export const FRAMEWORKS = [

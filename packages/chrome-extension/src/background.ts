@@ -11,7 +11,22 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
             timestamp: Date.now()
         });
 
-        // TODO: Send to Phantom Server (localhost:3000)
-        // fetch('http://localhost:3000/analyze-context', ...)
+        // Send to Phantom Server (localhost:3000)
+        fetch('http://localhost:3000/analyze-context', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(message.payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.quote) {
+                    chrome.storage.local.set({
+                        lastQuote: data.quote
+                    });
+                }
+            })
+            .catch(err => console.error('Phantom: Failed to fetch calibration', err));
     }
 });

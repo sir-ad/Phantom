@@ -21,7 +21,7 @@
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-333?style=flat-square)](./)
 [![Modules](https://img.shields.io/badge/modules-23-FF6B35?style=flat-square)](./)
 
-[Install](#install) · [Modules](#module-system--23-superpowers) · [MCP Setup](#mcp-integration) · [Docs](https://sir-ad.github.io/Phantom/) · [Contributing](./CONTRIBUTING.md)
+[Install](#install) · [Modules](#module-system--23-superpowers) · [Phantom Oracle](#phantom-oracle-universal-agent) · [MCP Setup](#mcp-integration) · [Docs](https://sir-ad.github.io/Phantom/) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
@@ -65,7 +65,29 @@ phantom prd "Dark Mode for iOS"    # Generate a PRD
 phantom swarm "Mobile app or PWA?" # 7 agents debate it
 phantom mece analyze "Auth flows"  # MECE validation
 phantom bcg analyze                # BCG matrix analysis
+phantom task analyze "Build a SaaS" # Recursive task decomposition 🧠
 ```
+
+---
+
+## 🦅 Sprint 5: Wings of Depth (Universal Agent)
+
+Phantom has evolved from a CLI tool into a **Universal Agent** that follows you across the web.
+
+### 🔮 Phantom Oracle (Chrome Extension)
+A "New Tab" experience that connects your web research to your product strategy.
+- **Context Awareness**: Content scripts read your active LLM chats (ChatGPT, Claude, Gemini).
+- **Philosophical Calibration**: Analyzes your current challenges and surfaces relevant philosophical insights (Marcus Aurelius on bugs, Nietzsche on purpose).
+- **Local Integration**: Everything is processed by your local Phantom instance.
+
+### 🧠 Deep Task Analysis
+Recursive task decomposition inspired by high-performance engineering teams.
+- **`phantom task analyze <goal>`**: Breaks goals into hierarchical subtasks.
+- **Complexity Scoring**: AI-driven 1-10 difficulty assessment.
+- **Agent Assignment**: Recommends specialized agents (Coder, Architect, Researcher) for each node.
+
+### 🤝 Agent-to-Agent Protocols
+Standardized communication for agents talking to agents, compatible with MCP and OpenClaw.
 
 ---
 
@@ -110,6 +132,8 @@ Every module is an installable PM superpower. Install with `phantom install <nam
 | 📑 `deck-forge` | **Pyramid Principle** | Generates presentation outlines (Situation→Complication→Resolution) |
 | 📋 `exec-brief` | **Executive One-Pager** | Creates C-suite ready briefs from PRDs and analysis |
 | 🔍 `porter-scan` | **Porter's Five Forces** | Competitive landscape analysis for product positioning |
+| 🧠 `task-master` | **Recursive Decomposition** | Recursive goal breakdown with complexity + assignment |
+| 🔮 `oracle` | **Contextual Calibration** | The brain behind 'Phantom Oracle' Chrome Extension |
 
 ```bash
 # Consulting examples

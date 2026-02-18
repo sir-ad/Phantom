@@ -16,7 +16,7 @@ export interface TaskNode {
 
 export class TaskMasterAgent extends BaseAgent {
     constructor() {
-        super('Strategist'); // Reuse 'Strategist' type for now, or add 'TaskMaster' to enums later
+        super('TaskMaster');
     }
 
     override getDescription(): string {

@@ -56,6 +56,13 @@ Phantom detects and integrates with **16 AI agents**:
 | **Roo** | Agent | MCP config |
 | **Kilo** | Agent | MCP config |
 
+## Key Agents
+
+- **StrategistAgent**: Focused on long-term product vision and market positioning.
+- **TaskMasterAgent**: Specialized in recursive goal decomposition and complexity assessment.
+- **OracleAgent**: Bridges real-world context with product calibration and philosophical insights.
+- **ArchitectAgent**: High-level system design and technical feasibility analysis.
+
 ## Auto-Registration
 
 Register Phantom as an MCP server with all detected agents:

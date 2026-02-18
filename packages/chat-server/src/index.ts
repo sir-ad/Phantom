@@ -1,9 +1,9 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-await startTelegramBot();
-await startDiscordBot();
-await startServer();
+import { startTelegramBot } from './telegram.js';
+import { startDiscordBot } from './discord.js';
+import { startServer } from './server.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
