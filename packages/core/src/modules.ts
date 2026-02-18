@@ -86,7 +86,31 @@ export class ModuleLoadError extends Error {
   }
 }
 
-type ModulesPackage = typeof import('@phantom-pm/modules');
+// Explicit interface for @phantom-pm/modules to avoid compile-time dependency.
+// Core is built BEFORE modules in the workspace build order, so we can't use
+// `typeof import('@phantom-pm/modules')` here — it would fail on fresh checkouts/CI.
+// The actual package is loaded dynamically at runtime via `import('@phantom-pm/modules')`.
+interface ModulesPackageAPI {
+  runPRDForge(args: Record<string, unknown>): Promise<ModuleResult>;
+  StoryWriterModule: new () => {
+    generateStoriesFromFeature(feature: string, count: number): Promise<UserStory[]>;
+    generateStoriesFromPRD(prdPath: string, sprintCount: number): Promise<StorySprint[]>;
+    saveStoriesToFile(stories: UserStory[], output: string): Promise<void>;
+  };
+  runSprintPlanner(args: Record<string, unknown>): Promise<ModuleResult>;
+  runCompetitive(args: Record<string, unknown>): Promise<ModuleResult>;
+  runAnalyticsLens(args: Record<string, unknown>): Promise<ModuleResult>;
+  runOracle(args: Record<string, unknown>): Promise<ModuleResult>;
+  runExperimentLab(args: Record<string, unknown>): Promise<ModuleResult>;
+  runUXAuditor(args: Record<string, unknown>): Promise<ModuleResult>;
+  runTimeMachine(args: Record<string, unknown>): Promise<ModuleResult>;
+  runFigmaBridge(args: Record<string, unknown>): Promise<ModuleResult>;
+  runBridge(args: Record<string, unknown>): Promise<ModuleResult>;
+  runSwarm(args: Record<string, unknown>): Promise<ModuleResult>;
+  [key: string]: unknown;
+}
+
+type ModulesPackage = ModulesPackageAPI;
 
 // Built-in module registry
 export const BUILTIN_MODULES: ModuleManifest[] = [
@@ -748,7 +772,10 @@ export class ModuleManager {
     }
 
     try {
-      const modulesPkg: ModulesPackage = await import('@phantom-pm/modules');
+      // Use variable indirection so TypeScript doesn't resolve the module at compile time.
+      // @phantom-pm/modules is built AFTER core in the workspace build order.
+      const modulePath = '@phantom-pm/modules';
+      const modulesPkg = (await import(modulePath)) as ModulesPackage;
       const runtime = this.createRuntime(cleanName, modulesPkg);
       this.runtimeModules.set(cleanName, runtime);
     } catch (error) {
@@ -777,7 +804,7 @@ export class ModuleManager {
           args,
         });
       },
-      close: async () => {},
+      close: async () => { },
     };
   }
 }
