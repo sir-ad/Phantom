@@ -61,6 +61,10 @@ phantom-output/
 docs-site/node_modules/
 docs-site/build/
 docs-site/.docusaurus/
+docs-dist/pm/
+docs-dist/PRODUCT_HUNT_LAUNCH.html
+docs-dist/launch-plan.html
+docs-dist/product-hunt-runbook.html
 docs-dist/
 *.vsix
 
