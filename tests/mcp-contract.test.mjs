@@ -9,7 +9,7 @@ mkdirSync(TMP_DIR, { recursive: true });
 writeFileSync(join(TMP_DIR, 'sample.txt'), 'phantom mcp contract fixture');
 
 test('mcp tools list includes required contracts', () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
   const names = server.listTools().map(tool => tool.name).sort();
   const required = [
     'bridge.translate_pm_to_dev',
@@ -28,7 +28,7 @@ test('mcp tools list includes required contracts', () => {
 });
 
 test('mcp resources list/read works', () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
   const resources = server.listResources();
   assert.equal(resources.length >= 3, true);
   const status = server.readResource('phantom://status/summary');
@@ -36,7 +36,7 @@ test('mcp resources list/read works', () => {
 });
 
 test('mcp context.add and context.search contracts', async () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
 
   const addResponse = await server.invoke({
     tool: 'context.add',
@@ -55,7 +55,7 @@ test('mcp context.add and context.search contracts', async () => {
 });
 
 test('mcp phantom_generate_prd contract', async () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
   const response = await server.invoke({
     tool: 'phantom_generate_prd',
     request_id: 'prd-generate',
@@ -66,7 +66,7 @@ test('mcp phantom_generate_prd contract', async () => {
 });
 
 test('mcp phantom_swarm_analyze contract', async () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
   const response = await server.invoke({
     tool: 'phantom_swarm_analyze',
     request_id: 'swarm-analyze',
@@ -77,7 +77,7 @@ test('mcp phantom_swarm_analyze contract', async () => {
 });
 
 test('mcp legacy alias tools still work', async () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
 
   const prdResponse = await server.invoke({
     tool: 'prd.generate',
@@ -95,7 +95,7 @@ test('mcp legacy alias tools still work', async () => {
 });
 
 test('mcp bridge.translate_pm_to_dev contract', async () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
   const response = await server.invoke({
     tool: 'bridge.translate_pm_to_dev',
     request_id: 'bridge',
@@ -106,7 +106,7 @@ test('mcp bridge.translate_pm_to_dev contract', async () => {
 });
 
 test('mcp invalid argument returns typed error', async () => {
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer('all');
   const response = await server.invoke({
     tool: 'context.add',
     request_id: 'invalid',

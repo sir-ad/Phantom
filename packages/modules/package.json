@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/modules",
-  "version": "1.0.1",
+  "version": "1.1.0-beta.1",
   "description": "PHANTOM Built-in Modules - PRD, stories, competitive analysis, and more",
   "type": "module",
   "main": "dist/index.js",

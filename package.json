@@ -1,6 +1,6 @@
 {
   "name": "phantom",
-  "version": "1.0.0",
+  "version": "1.1.0-beta.1",
   "description": "The invisible force behind every great product. Open source PM operating system for the terminal age.",
   "repository": {
     "type": "git",

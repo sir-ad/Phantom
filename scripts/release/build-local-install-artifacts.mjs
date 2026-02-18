@@ -10,7 +10,7 @@ const ROOT = resolve(join(import.meta.dirname, '..', '..'));
 const RELEASE_DIR = join(ROOT, 'releases');
 const LOCAL_DIR = join(RELEASE_DIR, 'local');
 const STAGE_DIR = join(LOCAL_DIR, 'stage');
-const BUNDLE_PATH = join(STAGE_DIR, 'lib', 'phantom-cli.cjs');
+const BUNDLE_PATH = join(STAGE_DIR, 'lib', 'phantom-cli.mjs');
 const LAUNCHER_PATH = join(STAGE_DIR, 'phantom');
 const MANIFEST_PATH = join(RELEASE_DIR, 'manifest.local.json');
 
@@ -56,10 +56,14 @@ async function main() {
     outfile: BUNDLE_PATH,
     platform: 'node',
     target: 'node18',
-    format: 'cjs',
+    format: 'esm',
     bundle: true,
     sourcemap: false,
     legalComments: 'none',
+    external: ['react-devtools-core'],
+    banner: {
+      js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);",
+    },
   }).catch((error) => fail(`esbuild bundle failed: ${String(error)}`));
 
   // 2. Create Launcher Script
@@ -70,8 +74,9 @@ if ! command -v node >/dev/null 2>&1; then
   echo "Node.js 18+ is required to run PHANTOM." >&2
   exit 1
 fi
-exec node "$SCRIPT_DIR/lib/phantom-cli.cjs" "$@"
+exec node "$SCRIPT_DIR/lib/phantom-cli.mjs" "$@"
 `;
+
   writeFileSync(LAUNCHER_PATH, launcher, 'utf8');
   run('chmod', ['+x', LAUNCHER_PATH]);
 
