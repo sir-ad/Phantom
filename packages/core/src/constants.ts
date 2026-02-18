@@ -40,6 +40,13 @@ export const MODULE_QUOTES: Record<string, string> = {
   'time-machine': 'I know the past.',
   'bridge': 'I know both worlds.',
   'swarm': 'We know everything.',
+  // ─── CONSULTING SUPERPOWERS ───────────────────────────────────
+  'mece-lens': 'I know the gaps.',
+  'issue-tree': 'I know the root cause.',
+  'bcg-matrix': 'I know your portfolio.',
+  'deck-forge': 'I know the pyramid.',
+  'exec-brief': 'I know what the C-suite needs.',
+  'porter-scan': 'I know the five forces.',
 };
 
 export const AGENT_TYPES = [
@@ -65,6 +72,7 @@ export const AGENT_DESCRIPTIONS: Record<AgentType, string> = {
 };
 
 export const FRAMEWORKS = [
+  // PM Frameworks
   { name: 'RICE Scoring', desc: 'Reach, Impact, Confidence, Effort' },
   { name: 'MoSCoW', desc: 'Must, Should, Could, Won\'t' },
   { name: 'Kano Model', desc: 'Delight, Performance, Basic' },
@@ -77,6 +85,13 @@ export const FRAMEWORKS = [
   { name: 'Lean Canvas', desc: '1-page business model' },
   { name: 'Value Proposition', desc: 'Gains, Pains, Jobs' },
   { name: 'North Star Framework', desc: 'Metric → Inputs → Work' },
+  // ─── McKinsey / BCG Consulting Frameworks ─────────────────────
+  { name: 'MECE Analysis', desc: 'Mutually Exclusive, Collectively Exhaustive' },
+  { name: 'Pyramid Principle', desc: 'Situation → Complication → Resolution' },
+  { name: 'Issue Tree', desc: 'Hypothesis-driven problem decomposition' },
+  { name: 'BCG Growth-Share Matrix', desc: 'Stars, Cash Cows, Question Marks, Dogs' },
+  { name: 'Porter\'s Five Forces', desc: 'Competitive landscape analysis' },
+  { name: 'McKinsey 7S', desc: 'Strategy, Structure, Systems, Shared Values, Skills, Style, Staff' },
 ] as const;
 
 export const BOOT_SYSTEMS = [

@@ -7,6 +7,7 @@
 // ║                                                                  ║
 // ║  This is where LLMs become Product Managers.                     ║
 // ╚══════════════════════════════════════════════════════════════════╝
+export * from './brand.js';
 export * from './constants.js';
 export * from './config.js';
 export * from './context.js';

@@ -11,16 +11,17 @@
 
 ### `The invisible force behind every great product.`
 
-**Open-source PM Operating System that turns any LLM into a structured Product Manager.**
+**AI-native PM Operating System — 23 modules, local-first, consulting-grade intelligence.**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-00FF41?style=flat-square)](./LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/sir-ad/Phantom/ci.yml?branch=main&style=flat-square&label=build&color=00FF41)](https://github.com/sir-ad/Phantom/actions)
 [![Release](https://img.shields.io/github/v/release/sir-ad/Phantom?style=flat-square&color=00D4FF&label=release)](https://github.com/sir-ad/Phantom/releases)
 [![Docs](https://img.shields.io/badge/docs-live-00FF41?style=flat-square)](https://sir-ad.github.io/Phantom/)
-[![Node](https://img.shields.io/badge/node-%3E%3D18-00D4FF?style=flat-square)](https://nodejs.org)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-333?style=flat-square)](.)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-00D4FF?style=flat-square)](https://nodejs.org)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-333?style=flat-square)](./)
+[![Modules](https://img.shields.io/badge/modules-23-FF6B35?style=flat-square)](./)
 
-[Install](#install) · [Features](#superpowers) · [Docs](https://sir-ad.github.io/Phantom/) · [Contributing](./CONTRIBUTING.md)
+[Install](#install) · [Modules](#module-system--23-superpowers) · [MCP Setup](#mcp-integration) · [Docs](https://sir-ad.github.io/Phantom/) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
@@ -28,20 +29,20 @@
 
 ## What is Phantom?
 
-Phantom is a **terminal-native operating system** that gives LLMs structured product management superpowers. Connect any model — OpenAI, Anthropic, Gemini, or local Ollama — and get an AI-powered PM co-pilot that actually _thinks_ in frameworks.
-
-It's like **Claude Code for Product Management.**
+Phantom is a **terminal-native operating system** that gives LLMs structured product management superpowers. Connect any model — OpenAI, Anthropic, Gemini, or local Ollama — and get an AI PM co-pilot that thinks in **McKinsey/BCG frameworks**.
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                                                          │
-│   You  ──→  Phantom  ──→  LLM  ──→  Structured Output   │
-│                │                                         │
-│         ┌─────┴─────┐                                    │
-│    Frameworks    Agents    Modules                        │
-│    (RICE,JTBD)   (7 PMs)  (17 tools)                     │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                                                                      │
+│   You  ──→  Phantom  ──→  LLM  ──→  Structured Output               │
+│                │                                                     │
+│         ┌─────┼─────────────────┐                                    │
+│    Frameworks  │  Agents         │  Modules                           │
+│    (18 FWs)    │  (7 PMs)        │  (23 tools)                        │
+│    RICE,JTBD   │  Strategist,    │  PRDs, Decks,                     │
+│    MECE,BCG    │  Analyst...     │  BCG Matrix...                    │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -62,59 +63,131 @@ phantom                            # Interactive PM chat
 phantom config setup               # Connect your LLM
 phantom prd "Dark Mode for iOS"    # Generate a PRD
 phantom swarm "Mobile app or PWA?" # 7 agents debate it
+phantom mece analyze "Auth flows"  # MECE validation
+phantom bcg analyze                # BCG matrix analysis
 ```
 
 ---
 
-## Superpowers
-
-### Core Commands
-
-| Command | What it does |
-|---------|-------------|
-| `phantom` | Interactive chat REPL — streaming, philosophy, frameworks |
-| `phantom chat` | Framework-aware PM conversations (RICE, JTBD, MoSCoW) |
-| `phantom swarm` | Deploy 7 specialized PM agents for consensus analysis |
-| `phantom prd` | Generate complete Product Requirements Documents |
-| `phantom simulate` | Run deterministic product simulations with personas |
-| `phantom agents` | Discover & register with local AI agents |
-| `phantom mcp` | Run as MCP server for IDE integration |
-| `phantom doctor` | System health check |
-
-### Module System — 17 Superpowers
+## Module System — 23 Superpowers
 
 Every module is an installable PM superpower. Install with `phantom install <name>`.
 
+### Core PM Modules
+
+| Module | What it does | Quote |
+|--------|-------------|-------|
+| `prd-forge` | Generate full PRDs from natural language | _"I know PRDs."_ |
+| `story-writer` | Auto-generate user stories + acceptance criteria | _"I know user stories."_ |
+| `sprint-planner` | AI sprint planning with velocity tracking | _"I know velocity."_ |
+| `swarm` | 7-agent consensus analysis on any question | _"We know everything."_ |
+| `competitive` | Competitor monitoring + market positioning | _"I know your enemies."_ |
+| `analytics-lens` | Connect analytics → surface actionable insights | _"I know the numbers."_ |
+| `oracle` | Monte Carlo sims, prediction, risk analysis | _"I know the future."_ |
+| `experiment-lab` | Design A/B tests + analyze results | _"I know the truth."_ |
+| `ux-auditor` | Automated UX audits + WCAG compliance | _"I know the user."_ |
+| `time-machine` | Version product decisions, what-if analysis | _"I know the past."_ |
+| `figma-bridge` | Connect Figma designs → PRDs → dev tasks | _"I know design."_ |
+| `bridge` | PM ↔ Dev translation engine | _"I know both worlds."_ |
+
+### Beta Modules
+
+| Module | What it does |
+|--------|-------------|
+| 🆕 `autopilot` | Break goals into steps → execute autonomously |
+| 🆕 `mind-map` | Generate visual concept maps from ideas |
+| 🆕 `scope-guard` | Detect scope creep in PRDs + feature bloat |
+| 🆕 `retro-ai` | AI-powered sprint retrospectives |
+| 🆕 `stakeholder-sim` | Simulate stakeholder reactions before presenting |
+
+### 🧠 Consulting Superpowers _(McKinsey / BCG grade)_
+
+| Module | Framework | What it does |
+|--------|-----------|-------------|
+| 🏛️ `mece-lens` | **MECE Analysis** | Validates feature sets are mutually exclusive & collectively exhaustive |
+| 🌳 `issue-tree` | **Hypothesis-Driven PS** | Decomposes problems into testable hypothesis trees |
+| 📊 `bcg-matrix` | **BCG Growth-Share** | Classifies features as Stars / Cash Cows / Question Marks / Dogs |
+| 📑 `deck-forge` | **Pyramid Principle** | Generates presentation outlines (Situation→Complication→Resolution) |
+| 📋 `exec-brief` | **Executive One-Pager** | Creates C-suite ready briefs from PRDs and analysis |
+| 🔍 `porter-scan` | **Porter's Five Forces** | Competitive landscape analysis for product positioning |
+
+```bash
+# Consulting examples
+phantom mece analyze "Our feature categories"
+phantom issue-tree build "Why is user retention dropping?"
+phantom bcg classify "Dark mode" --growth high --share low
+phantom deck create "Q4 Product Strategy Review"
+phantom brief generate --input prd.md --format ceo
+phantom porter analyze "Project management SaaS market"
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        PHANTOM MODULES                              │
-├───────────────────┬─────────────────────────────────────────────────┤
-│ prd-forge         │ Generate full PRDs from natural language        │
-│ story-writer      │ Auto-generate user stories + acceptance criteria│
-│ sprint-planner    │ AI sprint planning with velocity tracking       │
-│ swarm             │ 7-agent consensus analysis on any question      │
-│ competitive       │ Competitor monitoring + market positioning      │
-│ analytics-lens    │ Connect analytics → surface actionable insights │
-│ oracle            │ Monte Carlo sims, prediction, risk analysis     │
-│ experiment-lab    │ Design A/B tests + analyze results              │
-│ ux-auditor        │ Automated UX audits + WCAG compliance           │
-│ time-machine      │ Version product decisions, what-if analysis     │
-│ figma-bridge      │ Connect Figma designs → PRDs → dev tasks        │
-│ bridge            │ PM ↔ Dev translation engine                     │
-├───────────────────┼─────────────────────────────────────────────────┤
-│ 🆕 autopilot      │ Break goals into steps → execute autonomously   │
-│ 🆕 mind-map       │ Generate visual concept maps from ideas         │
-│ 🆕 scope-guard    │ Detect scope creep in PRDs + feature bloat      │
-│ 🆕 retro-ai       │ AI-powered sprint retrospectives                │
-│ 🆕 stakeholder-sim│ Simulate stakeholder reactions before presenting│
-└───────────────────┴─────────────────────────────────────────────────┘
+
+---
+
+## MCP Integration
+
+Phantom runs as an MCP server — plug it into any AI IDE with a single config.
+
+### Cursor
+
+Add to `~/.cursor/mcp.json` (or `.cursor/mcp.json` per project):
+
+```json
+{
+  "mcpServers": {
+    "phantom-pm": {
+      "command": "npx",
+      "args": ["-y", "@phantom-pm/cli", "mcp", "serve"],
+      "env": {
+        "OPENAI_API_KEY": "YOUR_KEY",
+        "ANTHROPIC_API_KEY": "YOUR_KEY"
+      }
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "phantom-pm": {
+      "command": "npx",
+      "args": ["-y", "@phantom-pm/cli", "mcp", "serve"]
+    }
+  }
+}
+```
+
+### VS Code
+
+Add to `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "phantom-pm": {
+      "command": "npx",
+      "args": ["-y", "@phantom-pm/cli", "mcp", "serve"],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+### Claude Code
+
+```bash
+claude mcp add phantom-pm -- npx -y @phantom-pm/cli mcp serve
 ```
 
 ---
 
 ## Agent Integrations
 
-Phantom auto-detects and integrates with **11 AI development environments**:
+Phantom auto-detects and orchestrates **11 AI development environments**:
 
 ```
  Cursor · Windsurf · VS Code · Claude Desktop · Zed
@@ -145,15 +218,28 @@ ollama pull llama3 && phantom config set provider ollama
 
 ---
 
+## 18 Built-in Frameworks
+
+Phantom thinks in **industry-standard frameworks**:
+
+| Category | Frameworks |
+|----------|-----------|
+| **Prioritization** | RICE Scoring · MoSCoW · ICE Scoring · Opportunity Scoring |
+| **Strategy** | Lean Canvas · Value Proposition · North Star · Story Mapping |
+| **Analysis** | Kano Model · AARRR Pirate Metrics · Jobs-to-be-Done · Impact Mapping |
+| **Consulting** | MECE Analysis · Pyramid Principle · Issue Tree · BCG Matrix · Porter's Five Forces · McKinsey 7S |
+
+---
+
 ## Architecture
 
 ```
 phantom/
 ├── packages/
 │   ├── cli/            # Command-line interface + REPL
-│   ├── core/           # Context engine, AI manager, module system
+│   ├── core/           # Context engine, AI manager, module system, brand config
 │   ├── mcp-server/     # Model Context Protocol server
-│   ├── modules/        # 17 built-in PM modules
+│   ├── modules/        # 23 built-in PM modules
 │   ├── tui/            # Terminal UI (Matrix theme)
 │   └── integrations/   # IDE auto-detection + registration
 ├── docs-site/          # Docusaurus documentation
@@ -168,10 +254,11 @@ phantom/
 | You are... | Phantom gives you... |
 |------------|---------------------|
 | **A developer** | PM superpowers without leaving the terminal |
-| **A PM** | AI agents that think in frameworks you know |
-| **A founder** | Instant PRDs, competitive analysis, sprint plans |
+| **A PM** | AI agents that think in McKinsey/BCG frameworks |
+| **A founder** | Instant PRDs, competitive analysis, executive briefs |
+| **A consultant** | MECE validation, issue trees, Porter's analysis on demand |
 | **An AI engineer** | MCP server that plugs into any agent workflow |
-| **Anyone with an idea** | Structured thinking → actionable output |
+| **Anyone with an idea** | Consulting-grade thinking → actionable output |
 
 ---
 
@@ -193,7 +280,7 @@ cd phantom && npm install && npm run build && npm test
 <div align="center">
 
 ```
- "The Matrix has you... but Phantom has your product."
+ "The Matrix has you... but Phantom has your product strategy."
 ```
 
 **[⬆ Back to top](#)**

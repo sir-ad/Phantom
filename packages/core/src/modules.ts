@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  PHANTOM MODULE SYSTEM — "I know kung fu."                       ║
 // ║                                                                  ║
-// ║  Each module is an installable PM superpower. 17 built-in,       ║
+// ║  Each module is an installable PM superpower. 23 built-in,       ║
 // ║  infinite possible. Every module follows the same contract:      ║
 // ║  take a command + args → return a ModuleResult.                  ║
 // ║                                                                  ║
@@ -542,6 +542,181 @@ export const BUILTIN_MODULES: ModuleManifest[] = [
     ],
     dependencies: [],
     size: '3.2 MB',
+  },
+
+  // ─── CONSULTING SUPERPOWERS ──────────────────────────────────────
+  // "What would McKinsey do? Now you can find out."
+
+  {
+    name: 'mece-lens',
+    version: '0.1.0-beta',
+    description: 'MECE validation — ensures your feature sets, problem breakdowns, and strategies are mutually exclusive & collectively exhaustive',
+    quote: MODULE_QUOTES['mece-lens'] || 'I know the gaps.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'mece analyze',
+        description: 'Validate a feature set or problem breakdown for MECE compliance',
+        usage: 'phantom mece analyze "User authentication features"',
+        args: [{ name: 'topic', description: 'Feature set or problem to validate', required: true, type: 'string' }],
+      },
+      {
+        name: 'mece decompose',
+        description: 'Break a problem into MECE categories',
+        usage: 'phantom mece decompose "Revenue growth strategy"',
+        args: [{ name: 'problem', description: 'Problem to decompose', required: true, type: 'string' }],
+      },
+      {
+        name: 'mece gaps',
+        description: 'Identify missing categories in a breakdown',
+        usage: 'phantom mece gaps --input roadmap.md',
+      },
+    ],
+    dependencies: [],
+    size: '2.1 MB',
+  },
+  {
+    name: 'issue-tree',
+    version: '0.1.0-beta',
+    description: 'Hypothesis-driven problem solving — decomposes complex problems into testable issue trees with structured hypotheses',
+    quote: MODULE_QUOTES['issue-tree'] || 'I know the root cause.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'issue-tree build',
+        description: 'Generate an issue tree from a problem statement',
+        usage: 'phantom issue-tree build "Why is user retention dropping?"',
+        args: [{ name: 'problem', description: 'Problem statement to decompose', required: true, type: 'string' }],
+      },
+      {
+        name: 'issue-tree hypotheses',
+        description: 'Generate testable hypotheses from an issue tree',
+        usage: 'phantom issue-tree hypotheses --tree issue-tree.json',
+      },
+      {
+        name: 'issue-tree prioritize',
+        description: 'Rank hypotheses by impact and testability',
+        usage: 'phantom issue-tree prioritize --tree issue-tree.json',
+      },
+    ],
+    dependencies: [],
+    size: '2.4 MB',
+  },
+  {
+    name: 'bcg-matrix',
+    version: '0.1.0-beta',
+    description: 'BCG Growth-Share Matrix — classifies features/products into Stars, Cash Cows, Question Marks, and Dogs',
+    quote: MODULE_QUOTES['bcg-matrix'] || 'I know your portfolio.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'bcg analyze',
+        description: 'Run BCG matrix analysis on a feature portfolio',
+        usage: 'phantom bcg analyze --features features.json',
+      },
+      {
+        name: 'bcg classify',
+        description: 'Classify a single feature into a BCG quadrant',
+        usage: 'phantom bcg classify "Dark mode" --growth high --share low',
+        args: [
+          { name: 'feature', description: 'Feature name to classify', required: true, type: 'string' },
+          { name: 'growth', description: 'Market growth rate (high/low)', required: true, type: 'string' },
+          { name: 'share', description: 'Market share (high/low)', required: true, type: 'string' },
+        ],
+      },
+      {
+        name: 'bcg recommend',
+        description: 'Generate investment recommendations based on BCG analysis',
+        usage: 'phantom bcg recommend --portfolio analysis.json',
+      },
+    ],
+    dependencies: [],
+    size: '2.6 MB',
+  },
+  {
+    name: 'deck-forge',
+    version: '0.1.0-beta',
+    description: 'Pyramid Principle presentations — generates structured slide outlines using situation→complication→resolution flow',
+    quote: MODULE_QUOTES['deck-forge'] || 'I know the pyramid.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'deck create',
+        description: 'Generate a structured presentation outline from a topic',
+        usage: 'phantom deck create "Q4 Product Strategy Review"',
+        args: [{ name: 'topic', description: 'Presentation topic', required: true, type: 'string' }],
+      },
+      {
+        name: 'deck from-prd',
+        description: 'Generate a stakeholder deck from an existing PRD',
+        usage: 'phantom deck from-prd --input prd.md --audience executives',
+        args: [{ name: 'audience', description: 'Target audience (executives/engineering/board)', required: false, type: 'string' }],
+      },
+      {
+        name: 'deck outline',
+        description: 'Generate a SCR (Situation-Complication-Resolution) outline',
+        usage: 'phantom deck outline "We need to pivot our pricing strategy"',
+        args: [{ name: 'thesis', description: 'Core thesis or message', required: true, type: 'string' }],
+      },
+    ],
+    dependencies: [],
+    size: '3.0 MB',
+  },
+  {
+    name: 'exec-brief',
+    version: '0.1.0-beta',
+    description: 'Executive one-pager generator — creates C-suite ready briefs from PRDs, data, and analysis',
+    quote: MODULE_QUOTES['exec-brief'] || 'I know what the C-suite needs.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'brief generate',
+        description: 'Generate a one-page executive brief',
+        usage: 'phantom brief generate --input prd.md --format ceo',
+        args: [{ name: 'format', description: 'Brief format (ceo/board/investor/team)', required: false, type: 'string' }],
+      },
+      {
+        name: 'brief summarize',
+        description: 'Condense any document into a 5-bullet executive summary',
+        usage: 'phantom brief summarize --input analysis.md',
+      },
+      {
+        name: 'brief kpis',
+        description: 'Extract and format KPIs for executive reporting',
+        usage: 'phantom brief kpis --input metrics.json --period Q4',
+      },
+    ],
+    dependencies: [],
+    size: '2.3 MB',
+  },
+  {
+    name: 'porter-scan',
+    version: '0.1.0-beta',
+    description: 'Porter\'s Five Forces analysis — evaluates competitive landscape, supplier power, buyer power, substitutes, and new entrants',
+    quote: MODULE_QUOTES['porter-scan'] || 'I know the five forces.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'porter analyze',
+        description: 'Run a full Five Forces competitive analysis',
+        usage: 'phantom porter analyze "Project management SaaS market"',
+        args: [{ name: 'market', description: 'Market or industry to analyze', required: true, type: 'string' }],
+      },
+      {
+        name: 'porter threats',
+        description: 'Assess threat level from new entrants and substitutes',
+        usage: 'phantom porter threats --market "AI coding tools"',
+        args: [{ name: 'market', description: 'Market to assess', required: true, type: 'string' }],
+      },
+      {
+        name: 'porter moat',
+        description: 'Evaluate your competitive moat strength',
+        usage: 'phantom porter moat --product "Phantom PM"',
+        args: [{ name: 'product', description: 'Product to evaluate', required: true, type: 'string' }],
+      },
+    ],
+    dependencies: [],
+    size: '2.5 MB',
   },
 ];
 
