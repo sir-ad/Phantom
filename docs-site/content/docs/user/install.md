@@ -2,7 +2,6 @@
 title = "Install"
 +++
 
-# Install Guide
 
 Owner: PhantomPM User Docs Team  
 Last Updated: 2026-02-13  

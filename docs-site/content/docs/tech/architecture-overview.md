@@ -2,7 +2,6 @@
 title = "Architecture Overview"
 +++
 
-# Architecture Overview
 
 Owner: PhantomPM Platform Team  
 Last Updated: 2026-02-13  

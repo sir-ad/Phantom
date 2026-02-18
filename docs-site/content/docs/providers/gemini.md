@@ -6,7 +6,6 @@ title = "Gemini"
 title: Google Gemini
 ---
 
-# Google Gemini
 
 Connect Gemini models via Google AI Studio for fast, cost-effective AI.
 

@@ -7,20 +7,16 @@ sidebar_position: 1
 title: Interactive Chat
 ---
 
-# Interactive Chat
 
 The chat REPL is Phantom's primary interface. It's an intelligent, streaming conversation with your connected LLM, guided by PM frameworks.
 
 ## Launching Chat
 
 ```bash
-# Default — auto-detects best available model
 phantom
 
-# Specify a model
 phantom chat --model gpt-4o
 
-# Specify provider and model
 phantom chat --provider ollama --model llama3.1:8b
 ```
 

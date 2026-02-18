@@ -2,7 +2,6 @@
 title = "Quickstart"
 +++
 
-# Quickstart (First 10 Minutes)
 
 Owner: PhantomPM User Docs Team  
 Last Updated: 2026-02-13  

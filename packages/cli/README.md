@@ -7,6 +7,10 @@ Open-source PM operating system for developers and AI agents.
 ## Installation
 
 ```bash
+# Run instantly with npx
+npx @phantom-pm/cli --tag next
+
+# Or install globally
 npm install -g @phantom-pm/cli
 ```
 
@@ -44,8 +48,17 @@ phantom stories generate "Payment processing"
 ## Links
 
 - Website: https://phantom.pm
-- GitHub: https://github.com/PhantomPM/phantom
+- GitHub: https://github.com/sir-ad/Phantom
 - Discord: https://discord.gg/phantom
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md). We welcome PRs, module ideas, and bug reports.
+
+```bash
+git clone https://github.com/sir-ad/Phantom.git
+cd phantom && npm install && npm run build && npm test
+```
 
 ## License
 

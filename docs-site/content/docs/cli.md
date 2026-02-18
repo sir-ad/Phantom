@@ -2,7 +2,6 @@
 title = "Cli"
 +++
 
-# PHANTOM CLI Reference
 
 Complete reference for all PHANTOM command-line interface commands.
 
@@ -476,61 +475,47 @@ PHANTOM respects the following environment variables:
 ### Basic Workflow
 
 ```bash
-# Initialize PHANTOM with your project
 phantom context add ./my-project
 
-# Generate a PRD
 phantom prd create "User Authentication System"
 
-# Create user stories
 phantom stories generate "Authentication with OAuth support"
 
-# Plan a sprint
 phantom sprint plan --goal "Implement Auth System" --duration 10
 
-# Get expert advice
 phantom swarm "Should we use JWT or session-based auth?"
 ```
 
 ### Module Management
 
 ```bash
-# Browse available modules
 phantom modules
 
-# Install specific modules
 phantom install @phantom/competitive
 phantom install @phantom/analytics-lens
 
-# List installed modules
 phantom modules --installed
 ```
 
 ### Integration Setup
 
 ```bash
-# Scan for available integrations
 phantom integrate scan
 
-# Connect to specific tools
 phantom integrate connect cursor
 phantom integrate connect vscode
 
-# Check integration health
 phantom integrate doctor
 ```
 
 ### Configuration
 
 ```bash
-# Interactive setup
 phantom config setup
 
-# Set specific values
 phantom config set apiKeys.openai sk-...
 phantom config set primaryModel.provider openai
 
-# Check configuration
 phantom config env
 ```
 

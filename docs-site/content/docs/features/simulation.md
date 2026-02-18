@@ -7,7 +7,6 @@ sidebar_position: 4
 title: Simulation
 ---
 
-# Product Simulation
 
 Simulate user behavior, market response, and feature impact before writing a single line of code.
 

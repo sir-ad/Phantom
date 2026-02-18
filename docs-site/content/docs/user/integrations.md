@@ -2,7 +2,6 @@
 title = "Integrations"
 +++
 
-# Integrations Guide
 
 Owner: PhantomPM User Docs Team  
 Last Updated: 2026-02-13  

@@ -37,7 +37,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PhantomPM/phantom.git",
+    "url": "https://github.com/sir-ad/Phantom.git",
     "directory": "packages/mcp-server"
   },
   "homepage": "https://phantom.pm",

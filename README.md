@@ -59,11 +59,11 @@ Phantom is a **terminal-native operating system** that gives LLMs structured pro
 ## Install
 
 ```bash
-# One-liner (recommended)
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
+# Run instantly with npx
+npx @phantom-pm/cli --tag next
 
-# Or via npm
-npm install -g phantom-pm
+# Or install globally
+npm install -g @phantom-pm/cli
 ```
 
 ```bash

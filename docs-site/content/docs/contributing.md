@@ -7,7 +7,6 @@ sidebar_position: 11
 title: Contributing
 ---
 
-# Contributing
 
 Phantom is open source (MIT) and we welcome contributions of all kinds.
 
@@ -35,16 +34,12 @@ Phantom is open source (MIT) and we welcome contributions of all kinds.
 ## Development Workflow
 
 ```bash
-# Run the CLI locally
 npm run phantom
 
-# Or directly
 node packages/cli/dist/index.js
 
-# Run tests
 npm run test
 
-# Format code
 npm run format
 ```
 

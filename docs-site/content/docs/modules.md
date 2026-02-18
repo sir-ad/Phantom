@@ -7,7 +7,6 @@ sidebar_position: 3
 title: Modules
 ---
 
-# Module System
 
 Phantom's functionality is organized into installable modules. Each module adds a specific PM capability.
 
@@ -30,13 +29,10 @@ Phantom's functionality is organized into installable modules. Each module adds 
 ## Installing Modules
 
 ```bash
-# List available modules
 phantom modules list
 
-# Install a module
 phantom modules install prd-forge
 
-# Uninstall a module
 phantom modules uninstall prd-forge
 ```
 

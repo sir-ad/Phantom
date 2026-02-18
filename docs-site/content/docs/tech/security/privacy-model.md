@@ -2,7 +2,6 @@
 title = "Privacy Model"
 +++
 
-# Security and Privacy Model
 
 Owner: PhantomPM Security Team  
 Last Updated: 2026-02-13  

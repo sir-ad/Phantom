@@ -7,7 +7,6 @@ sidebar_position: 10
 title: Configuration
 ---
 
-# Configuration
 
 Phantom stores configuration in `~/.phantom/config.json`.
 
@@ -42,21 +41,16 @@ Environment variables take priority over config file values.
 ## Manual Configuration
 
 ```bash
-# Set API keys
 phantom config set apiKeys.openai sk-...
 phantom config set apiKeys.anthropic sk-ant-...
 phantom config set apiKeys.gemini AIza...
 
-# Set theme
 phantom config set theme matrix    # matrix | cyberpunk | minimal
 
-# View all config
 phantom config get
 
-# View specific key
 phantom config get apiKeys.openai
 
-# Check environment status
 phantom config env
 ```
 
@@ -86,9 +80,7 @@ phantom config env
 ## Resetting Configuration
 
 ```bash
-# Clear only API keys
 phantom config clear --api-keys
 
-# Reset everything to defaults
 phantom config clear
 ```

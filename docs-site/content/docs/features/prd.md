@@ -7,17 +7,14 @@ sidebar_position: 3
 title: PRD Generation
 ---
 
-# PRD Generation
 
 Generate comprehensive Product Requirements Documents from a single sentence.
 
 ## Usage
 
 ```bash
-# From the terminal
 phantom prd "Dark Mode for Mobile App"
 
-# From inside chat
 phantom (openai:gpt-4o) ▸ /prd User onboarding email sequence
 ```
 
@@ -69,7 +66,6 @@ Phantom produces a structured PRD in Markdown format containing:
 ## Example Output
 
 ```markdown
-# PRD: Dark Mode for Mobile App
 
 ## Problem Statement
 72% of mobile users prefer dark mode, but our app only supports light theme.

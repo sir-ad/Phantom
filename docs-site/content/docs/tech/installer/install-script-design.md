@@ -2,7 +2,6 @@
 title = "Install Script Design"
 +++
 
-# Install Script Design
 
 Owner: PhantomPM Platform Team  
 Last Updated: 2026-02-13  

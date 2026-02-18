@@ -2,7 +2,6 @@
 title = "Context Engine Spec"
 +++
 
-# Context Engine Specification
 
 Owner: PhantomPM Core Team  
 Last Updated: 2026-02-13  

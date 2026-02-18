@@ -7,7 +7,6 @@ sidebar_position: 2
 title: Getting Started
 ---
 
-# Getting Started
 
 Get Phantom running in under 60 seconds.
 
@@ -50,7 +49,6 @@ Phantom auto-detects Ollama — no configuration needed.
 Set an API key:
 
 ```bash
-# Pick one (or configure all)
 export OPENAI_API_KEY="sk-..."
 export ANTHROPIC_API_KEY="sk-ant-..."
 export GEMINI_API_KEY="AIza..."
@@ -73,13 +71,10 @@ That's it. Phantom boots up, connects to your model, and drops you into an inter
 ## Step 4: Try It Out
 
 ```bash
-# Ask a PM question
 phantom (ollama:llama3.1) ▸ Should we build a mobile app or focus on PWA?
 
-# Generate a PRD
 phantom (ollama:llama3.1) ▸ /prd Dark Mode for iOS App
 
-# Run a swarm debate
 phantom (ollama:llama3.1) ▸ /swarm Should we pivot to enterprise sales?
 ```
 

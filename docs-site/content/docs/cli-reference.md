@@ -7,7 +7,6 @@ sidebar_position: 4
 title: CLI Reference
 ---
 
-# CLI Reference
 
 Complete reference for all Phantom CLI commands.
 

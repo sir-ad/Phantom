@@ -7,7 +7,6 @@ sidebar_position: 2
 title: MCP Server
 ---
 
-# MCP Server
 
 Phantom implements the [Model Context Protocol](https://modelcontextprotocol.io) (MCP), allowing IDE agents to use Phantom's PM capabilities as tools.
 

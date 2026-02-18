@@ -2,7 +2,6 @@
 title = "Release Manifest Schema"
 +++
 
-# Release Manifest Schema
 
 Owner: PhantomPM Platform Team  
 Last Updated: 2026-02-13  

@@ -2,7 +2,6 @@
 title = "Adapter Specs"
 +++
 
-# Adapter Specifications
 
 Owner: PhantomPM Integrations Team  
 Last Updated: 2026-02-13  

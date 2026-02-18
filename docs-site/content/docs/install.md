@@ -2,7 +2,6 @@
 title = "Install"
 +++
 
-# Installation
 
 Phantom runs on macOS, Linux, and Windows (via WSL2).
 
@@ -46,7 +45,6 @@ cd phantom
 npm install
 npm run build
 
-# Link globally
 npm link packages/cli
 ```
 

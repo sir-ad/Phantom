@@ -7,7 +7,6 @@ sidebar_position: 5
 title: Agent Discovery
 ---
 
-# Agent Discovery
 
 Phantom can detect, register with, and orchestrate other AI agents installed on your system.
 
@@ -68,10 +67,8 @@ Phantom detects and integrates with **16 AI agents**:
 Register Phantom as an MCP server with all detected agents:
 
 ```bash
-# Register with all detected agents
 phantom register --all
 
-# Register with a specific agent
 phantom register --target cursor
 phantom register --target claude-desktop
 ```

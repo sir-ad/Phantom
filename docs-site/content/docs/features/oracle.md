@@ -4,7 +4,6 @@ description = "Context-aware philosophical calibration for developers"
 weight = 40
 +++
 
-# Phantom Oracle (Chrome Extension) 🔮
 
 The **Phantom Oracle** is a universal agent interface that follows you across the web. It bridges the gap between your research in LLM chat interfaces (ChatGPT, Claude, Gemini) and your core product development lifecycle.
 

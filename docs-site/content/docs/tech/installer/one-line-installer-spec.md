@@ -2,7 +2,6 @@
 title = "One Line Installer Spec"
 +++
 
-# One-Line Installer Specification
 
 Owner: PhantomPM Platform Team  
 Last Updated: 2026-02-13  

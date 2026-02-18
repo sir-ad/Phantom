@@ -2,7 +2,6 @@
 title = "Test Strategy"
 +++
 
-# Test Strategy
 
 Owner: PhantomPM QA + Platform Team  
 Last Updated: 2026-02-13  

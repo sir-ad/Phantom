@@ -2,7 +2,6 @@
 title = "Mcp Core Spec"
 +++
 
-# MCP Core Specification
 
 Owner: PhantomPM Integrations Team  
 Last Updated: 2026-02-13  

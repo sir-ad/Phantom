@@ -7,17 +7,14 @@ sidebar_position: 2
 title: Swarm Intelligence
 ---
 
-# Swarm Intelligence
 
 Phantom's swarm mode simulates a room of expert product leaders debating a topic. Instead of relying on a single AI perspective, the swarm generates multi-perspective consensus.
 
 ## Usage
 
 ```bash
-# From the terminal
 phantom swarm "Should we pivot from freemium to enterprise sales?"
 
-# From inside the chat REPL
 phantom (ollama:llama3.1) ▸ /swarm Should we build an API or a UI-first product?
 ```
 

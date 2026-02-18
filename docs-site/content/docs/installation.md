@@ -7,7 +7,6 @@ sidebar_position: 3
 title: Installation
 ---
 
-# Installation
 
 Phantom supports macOS, Linux, and Windows (via WSL2). Choose the method that suits you.
 
@@ -35,7 +34,6 @@ curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install
 
 ```bash
 rm -rf ~/.phantom
-# Remove the PATH entry from your shell RC file
 ```
 
 ---

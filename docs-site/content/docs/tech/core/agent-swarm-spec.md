@@ -2,7 +2,6 @@
 title = "Agent Swarm Spec"
 +++
 
-# Agent Swarm Specification
 
 Owner: PhantomPM Core + Agent Platform Teams  
 Last Updated: 2026-02-13  

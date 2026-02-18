@@ -4,7 +4,6 @@ description = "Recursive task decomposition and complexity assessment"
 weight = 30
 +++
 
-# Deep Task Analysis 🧠
 
 Phantom's Deep Task Analysis engine allows you to break down complex, multi-layered goals into an actionable hierarchy of tasks. Inspired by high-performance engineering practices, it recursively decomposes challenges until they are small enough to be executed by a single agent.
 
