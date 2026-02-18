@@ -2,6 +2,10 @@
   "name": "phantom",
   "version": "1.0.0",
   "description": "The invisible force behind every great product. Open source PM operating system for the terminal age.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sir-ad/Phantom.git"
+  },
   "private": true,
   "bin": {
     "phantom": "dist/phantom.js"
