@@ -101,14 +101,18 @@ export class DocumentationEngine {
 
         const content = fs.readFileSync(inputFile, 'utf-8');
 
-        // Configure marked with highlight.js
-        const htmlContent = await marked.parse(content, {
-            async: true,
-            highlight: (code, lang) => {
-                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                return hljs.highlight(code, { language }).value;
+        // Configure marked with highlight.js via custom renderer
+        marked.use({
+            renderer: {
+                code({ text, lang }: { text: string; lang?: string }) {
+                    const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+                    const highlighted = hljs.highlight(text, { language }).value;
+                    return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+                }
             }
         });
+
+        const htmlContent = await marked.parse(content);
 
         // Ensure output subdir exists
         fs.mkdirSync(path.dirname(outputFile), { recursive: true });
