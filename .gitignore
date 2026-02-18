@@ -30,8 +30,8 @@ node_modules/
 .zencoder/
 
 # local planning scratch files
-AGENTS.md
-SKILL.md
+/AGENTS.md
+/SKILL.md
 LAUNCH_*.md
 PHANTOM_*.md
 *PLAN*.md

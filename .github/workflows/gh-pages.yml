@@ -32,24 +32,12 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
+        run: npm ci
         working-directory: docs-site
-        run: |
-          npm ci
-          echo "✅ npm ci completed"
-          ls -la node_modules/.bin/docusaurus || echo "❌ docusaurus binary not found"
 
       - name: Build Docusaurus
+        run: npm run build
         working-directory: docs-site
-        run: |
-          echo "Node: $(node --version)"
-          echo "npm: $(npm --version)"
-          npx docusaurus build --out-dir build 2>&1 || {
-            echo "❌ Build failed, trying with verbose..."
-            npx docusaurus build --out-dir build --config docusaurus.config.ts 2>&1
-            exit 1
-          }
-          echo "✅ Build completed"
-          ls -la build/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
