@@ -5,6 +5,8 @@ on:
     branches: [main, master]
     paths:
       - 'docs-site/**'
+      - 'docs/**'
+      - 'README.md'
       - '.github/workflows/gh-pages.yml'
   workflow_dispatch:
 

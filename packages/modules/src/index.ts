@@ -1,5 +1,11 @@
-// PHANTOM Modules package
-// This package hosts built-in module implementations.
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PHANTOM MODULES — "Guns. Lots of guns."                         ║
+// ║                                                                  ║
+// ║  17 built-in PM superpowers. Each module is a self-contained     ║
+// ║  capability that takes structured input and returns structured    ║
+// ║  output. PRD generation, story writing, sprint planning,         ║
+// ║  competitive analysis, Monte Carlo simulations, and more.        ║
+// ╚══════════════════════════════════════════════════════════════════╝
 
 export const MODULES_PACKAGE_VERSION = '1.0.0';
 

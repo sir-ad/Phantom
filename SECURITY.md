@@ -1,119 +1,45 @@
 # Security Policy
 
-Owner: PhantomPM Security Team  
-Last Updated: 2026-02-15  
-Status: Beta
+## Reporting Vulnerabilities
 
-## Reporting a Vulnerability
+**Do not open public issues for security vulnerabilities.**
 
-We take security seriously. If you discover a security vulnerability in PHANTOM, please follow these steps:
+Email **security@phantom.pm** with:
+- Description of the vulnerability
+- Steps to reproduce
+- Affected versions
+- Impact assessment
 
-1. **Do NOT create a public issue** for security vulnerabilities
-2. Email security@phantom.pm with the subject line "PHANTOM Security Vulnerability"
-3. Include:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Any suggested fixes (if applicable)
-
-### Response Time
-
-- **Initial Response**: Within 48 hours
-- **Assessment**: Within 1 week
-- **Fix Timeline**: Based on severity (critical issues prioritized)
-- **Disclosure**: Coordinated with reporter
+We respond within 48 hours and patch critical issues within 7 days.
 
 ## Scope
 
-Security-sensitive areas include:
-
-1. **Installer scripts and manifest parsing**
-2. **Configuration and secrets handling**
-3. **MCP server input handling**
-4. **Integration connection and external actions**
-5. **AI provider API key management**
-6. **File system access and permissions**
-7. **Network communication and data transmission**
+| In Scope | Out of Scope |
+|----------|-------------|
+| Core engine (`packages/core/`) | Third-party AI provider APIs |
+| MCP server (`packages/mcp-server/`) | User-configured model outputs |
+| CLI authentication & config (`packages/cli/`) | Ollama/LM Studio local instances |
+| Module execution sandbox | Upstream npm dependencies |
 
 ## Security Features
 
-### Current Implementation
+- **Local-first**: All data stays on your machine by default.
+- **No telemetry**: Zero data collection, zero phone-home.
+- **API key masking**: `phantom config get` redacts sensitive values.
+- **Sandboxed modules**: Modules run in isolated contexts.
+- **No network by default**: Phantom only connects when you explicitly configure an AI provider.
 
-1. **Local-first architecture** - All processing happens on your machine by default
-2. **Installer checksum verification** - Ensures integrity of downloaded artifacts
-3. **API key isolation** - Keys stored securely and never transmitted unnecessarily
-4. **Input validation** - Strict validation of all user inputs and command arguments
-5. **Module sandboxing** - Modules run with restricted permissions
-6. **Audit logging** - Security-relevant actions are logged for review
+## Supported Versions
 
-### Planned Enhancements
+| Version | Supported |
+|---------|-----------|
+| 1.0.x | ✅ Active |
+| < 1.0 | ❌ EOL |
 
-1. **Full keychain and encryption hardening**
-2. **Advanced permission controls for modules**
-3. **Network isolation for sensitive operations**
-4. **Runtime security monitoring**
-5. **Automated security scanning in CI/CD**
-6. **Third-party security audit**
+## Disclosure
 
-## Best Practices for Users
+We follow [coordinated disclosure](https://en.wikipedia.org/wiki/Coordinated_vulnerability_disclosure). Credit to reporters in release notes (unless you prefer anonymity).
 
-### API Key Management
+## License
 
-- Use environment variables instead of config files for sensitive keys
-- Rotate API keys regularly
-- Use role-based access controls where supported
-- Monitor API usage for unusual patterns
-
-### Module Security
-
-- Only install modules from trusted sources
-- Review module code before installation
-- Keep modules updated to latest versions
-- Monitor module permissions and access
-
-### Local Security
-
-- Keep PHANTOM updated to latest version
-- Use secure file permissions for config files
-- Regularly review audit logs
-- Enable security features in configuration
-
-## Dependencies
-
-We regularly audit dependencies for known vulnerabilities:
-
-- **Automated scanning** through GitHub Dependabot
-- **Manual review** of critical dependencies
-- **Quick patching** for high-severity issues
-- **Dependency pinning** to prevent unexpected updates
-
-## Data Privacy
-
-PHANTOM is committed to your privacy:
-
-- **Zero data collection** - No telemetry or usage tracking by default
-- **Local processing** - Your data stays on your machine
-- **Transparent operations** - Clear indication of external communications
-- **User control** - You control what data is processed and transmitted
-
-## Incident Response
-
-In the event of a security incident:
-
-1. **Immediate containment** - Isolate affected systems
-2. **Investigation** - Determine scope and impact
-3. **Remediation** - Develop and deploy fixes
-4. **Communication** - Notify affected users transparently
-5. **Post-mortem** - Document lessons learned and prevent recurrence
-
-## Contact
-
-For security-related questions or concerns:
-
-- **Email**: security@phantom.pm
-- **PGP Key**: Available upon request
-- **Vulnerability Disclosure**: Coordinated disclosure program
-
-## Acknowledgments
-
-We appreciate the security research community and welcome responsible disclosure. Researchers who help improve PHANTOM's security will be acknowledged (with consent) in our release notes.
+MIT. See [LICENSE](./LICENSE).

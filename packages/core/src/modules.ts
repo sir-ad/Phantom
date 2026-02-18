@@ -1,5 +1,13 @@
-// PHANTOM Core - Module System
-// "I know kung fu." — Each module adds PM superpowers
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PHANTOM MODULE SYSTEM — "I know kung fu."                       ║
+// ║                                                                  ║
+// ║  Each module is an installable PM superpower. 17 built-in,       ║
+// ║  infinite possible. Every module follows the same contract:      ║
+// ║  take a command + args → return a ModuleResult.                  ║
+// ║                                                                  ║
+// ║  The ModuleManager loads, validates, and executes modules.       ║
+// ║  Runtime modules are lazy-loaded from @phantom-pm/modules.       ║
+// ╚══════════════════════════════════════════════════════════════════╝
 
 import { MODULE_QUOTES } from './constants.js';
 import { getConfig } from './config.js';
@@ -396,6 +404,144 @@ export const BUILTIN_MODULES: ModuleManifest[] = [
     ],
     dependencies: [],
     size: '5.1 MB',
+  },
+  // ─── BETA SUPERPOWERS ───────────────────────────────────────────
+  // "What if I told you... these modules change everything?"
+  {
+    name: 'autopilot',
+    version: '0.1.0-beta',
+    description: 'Autonomous task execution — breaks goals into steps and executes them without babysitting',
+    quote: MODULE_QUOTES['autopilot'] || 'I do not need your permission.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'autopilot run',
+        description: 'Execute a product goal autonomously',
+        usage: 'phantom autopilot run "Launch dark mode"',
+        args: [{ name: 'goal', description: 'Product goal to achieve', required: true, type: 'string' }],
+      },
+      {
+        name: 'autopilot plan',
+        description: 'Generate execution plan without running',
+        usage: 'phantom autopilot plan "Improve onboarding flow"',
+        args: [{ name: 'goal', description: 'Goal to plan for', required: true, type: 'string' }],
+      },
+      {
+        name: 'autopilot status',
+        description: 'Check status of running autopilot tasks',
+        usage: 'phantom autopilot status',
+      },
+    ],
+    dependencies: [],
+    size: '3.8 MB',
+  },
+  {
+    name: 'mind-map',
+    version: '0.1.0-beta',
+    description: 'Visual product thinking — generate interactive concept maps from ideas, PRDs, or conversations',
+    quote: MODULE_QUOTES['mind-map'] || 'I see the connections you cannot.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'mindmap create',
+        description: 'Generate a mind map from a topic',
+        usage: 'phantom mindmap create "Mobile App Strategy"',
+        args: [{ name: 'topic', description: 'Central topic', required: true, type: 'string' }],
+      },
+      {
+        name: 'mindmap from-prd',
+        description: 'Generate mind map from an existing PRD',
+        usage: 'phantom mindmap from-prd <prd-id>',
+        args: [{ name: 'prd-id', description: 'PRD to visualize', required: true, type: 'string' }],
+      },
+      {
+        name: 'mindmap export',
+        description: 'Export mind map to Markdown or Mermaid',
+        usage: 'phantom mindmap export <id> --format mermaid',
+      },
+    ],
+    dependencies: [],
+    size: '2.5 MB',
+  },
+  {
+    name: 'scope-guard',
+    version: '0.1.0-beta',
+    description: 'Scope creep detection — analyzes PRDs and backlogs for feature bloat, complexity drift, and gold plating',
+    quote: MODULE_QUOTES['scope-guard'] || 'Your scope is showing.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'scope analyze',
+        description: 'Analyze a PRD or backlog for scope creep',
+        usage: 'phantom scope analyze <prd-id>',
+        args: [{ name: 'target', description: 'PRD or backlog to analyze', required: true, type: 'string' }],
+      },
+      {
+        name: 'scope compare',
+        description: 'Compare two versions of a PRD for scope drift',
+        usage: 'phantom scope compare <prd-v1> <prd-v2>',
+      },
+      {
+        name: 'scope guard',
+        description: 'Enable real-time scope monitoring on a project',
+        usage: 'phantom scope guard --watch',
+      },
+    ],
+    dependencies: [],
+    size: '2.2 MB',
+  },
+  {
+    name: 'retro-ai',
+    version: '0.1.0-beta',
+    description: 'AI-powered retrospectives — learns from sprint data to generate insights no human would catch',
+    quote: MODULE_QUOTES['retro-ai'] || 'Those who cannot remember the past are condemned to repeat it.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'retro generate',
+        description: 'Generate AI retrospective from sprint data',
+        usage: 'phantom retro generate',
+      },
+      {
+        name: 'retro trends',
+        description: 'Analyze retrospective trends across sprints',
+        usage: 'phantom retro trends --sprints 5',
+      },
+      {
+        name: 'retro action-items',
+        description: 'Extract and prioritize action items',
+        usage: 'phantom retro action-items',
+      },
+    ],
+    dependencies: [],
+    size: '2.8 MB',
+  },
+  {
+    name: 'stakeholder-sim',
+    version: '0.1.0-beta',
+    description: 'Simulate stakeholder reactions before you present — predict objections, questions, and approval paths',
+    quote: MODULE_QUOTES['stakeholder-sim'] || 'I know what they will say before they say it.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'stakeholder simulate',
+        description: 'Simulate a stakeholder review session',
+        usage: 'phantom stakeholder simulate <prd-id>',
+        args: [{ name: 'prd-id', description: 'PRD to present', required: true, type: 'string' }],
+      },
+      {
+        name: 'stakeholder personas',
+        description: 'Configure stakeholder personas',
+        usage: 'phantom stakeholder personas --add "VP Engineering"',
+      },
+      {
+        name: 'stakeholder brief',
+        description: 'Generate a stakeholder-ready briefing',
+        usage: 'phantom stakeholder brief <prd-id>',
+      },
+    ],
+    dependencies: [],
+    size: '3.2 MB',
   },
 ];
 

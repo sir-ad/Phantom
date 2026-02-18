@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PHANTOM CLI — "Follow the white rabbit."                        ║
+// ║                                                                  ║
+// ║  The command-line gateway to the Phantom PM Operating System.    ║
+// ║  Every `phantom` command starts here — chat, swarm, prd,        ║
+// ║  simulate, agents, mcp, and 17 module superpowers.               ║
+// ╚══════════════════════════════════════════════════════════════════╝
 
 import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { basename, join, resolve } from 'path';

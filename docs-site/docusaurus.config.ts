@@ -7,10 +7,6 @@ const config: Config = {
   tagline: 'The open-source PM Operating System for the terminal age.',
   favicon: 'img/favicon.ico',
 
-  future: {
-    v4: true,
-  },
-
   url: 'https://sir-ad.github.io',
   baseUrl: '/Phantom/',
 

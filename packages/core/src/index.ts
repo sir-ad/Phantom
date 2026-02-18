@@ -1,4 +1,12 @@
-// PHANTOM Core - Main Export
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PHANTOM CORE — "There is no spoon."                            ║
+// ║                                                                  ║
+// ║  The beating heart of Phantom. Everything flows through here:    ║
+// ║  context engine, AI manager, module system, agent discovery,     ║
+// ║  and the runtime that ties it all together.                      ║
+// ║                                                                  ║
+// ║  This is where LLMs become Product Managers.                     ║
+// ╚══════════════════════════════════════════════════════════════════╝
 export * from './constants.js';
 export * from './config.js';
 export * from './context.js';
