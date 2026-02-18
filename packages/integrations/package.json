@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/integrations",
-  "version": "1.1.0-beta.1",
+  "version": "2.0.0",
   "description": "PHANTOM real integrations - GitHub, Figma, Linear, Slack",
   "type": "module",
   "main": "dist/index.js",

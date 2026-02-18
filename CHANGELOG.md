@@ -22,6 +22,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning: [S
 - CI build failure from compile-time dependency on `@phantom-pm/modules`
 - Release workflow using deprecated GitHub Actions
 
+## [2.0.0] - 2026-02-18 "Wings of Depth" 🦅
+
+### 🚀 Major Features
+-   **Universal Agent ("Wings of Depth")**: Phantom now transcends the CLI to become a persistent OS-level agent.
+-   **Phantom Oracle (Chrome Extension)**: A "New Tab" experience that provides philosophical calibration based on your active LLM context.
+-   **Deep Task Analysis**: Recursive, agentic task decomposition engine that breaks down complex goals into executed sub-agents.
+-   **Kailash Nadh-Style CLI**: A complete aesthetic overhaul of the `README` and CLI output to a minimalist, engineering-first "hacker" vibe.
+
+### ✨ Improvements
+-   **Installation**: Rewrote `install.sh` to be robust, NPM-native, and PATH-aware.
+-   **Documentation**: Migrated to a premium Zola-based documentation site with dedicated feature guides.
+-   **Performance**: Optimized startup time and reduced module loading overhead.
+
+### 📦 Distribution
+-   **Standalone Oracle**: The Chrome Extension is now available as a standalone `PhantomOracle` product package.
+-   **NPM-First**: Shifted distribution strategy to rely strictly on NPM/NPX for maximum compatibility.
+
 ## [1.0.0] - 2026-02-18
 
 ### Added

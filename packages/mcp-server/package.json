@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/mcp-server",
-  "version": "1.1.0-beta.1",
+  "version": "2.0.0",
   "description": "PHANTOM MCP Server - Model Connection Protocol implementation",
   "type": "module",
   "main": "dist/index.js",

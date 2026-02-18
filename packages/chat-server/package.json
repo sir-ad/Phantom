@@ -1,6 +1,6 @@
 {
     "name": "@phantom-pm/chat-server",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Telegram Bot Server for Phantom Agent",
     "type": "module",
     "main": "dist/index.js",
