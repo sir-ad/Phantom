@@ -4,6 +4,7 @@
  ░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
  ░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
  ░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀
+
 ```
 
 ### `The invisible force behind every great product.`
@@ -30,11 +31,11 @@ Phantom is a **terminal-native operating system** that gives LLMs structured pro
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                                                                      │
-│   You  ──→  Phantom  ──→  LLM  ──→  Structured Output               │
+│   You  ──→  Phantom  ──→  LLM  ──→  Structured Output                │
 │                │                                                     │
-│         ┌─────┼─────────────────┐                                    │
-│    Frameworks  │  Agents         │  Modules                           │
-│    (18 FWs)    │  (7 PMs)        │  (23 tools)                        │
+│         ┌──── ─┼─────────────────┐                                    │
+│    Frameworks  │  Agents         │  Modules                          │
+│    (18 FWs)    │  (7 PMs)        │  (23 tools)                       │
 │    RICE,JTBD   │  Strategist,    │  PRDs, Decks,                     │
 │    MECE,BCG    │  Analyst...     │  BCG Matrix...                    │
 │                                                                      │
