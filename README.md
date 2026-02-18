@@ -1,12 +1,9 @@
 <div align="center">
 
 ```
- ██████╗ ██╗  ██╗ █████╗ ███╗   ██╗████████╗ ██████╗ ███╗   ███╗
- ██╔══██╗██║  ██║██╔══██╗████╗  ██║╚══██╔══╝██╔═══██╗████╗ ████║
- ██████╔╝███████║███████║██╔██╗ ██║   ██║   ██║   ██║██╔████╔██║
- ██╔═══╝ ██╔══██║██╔══██║██║╚██╗██║   ██║   ██║   ██║██║╚██╔╝██║
- ██║     ██║  ██║██║  ██║██║ ╚████║   ██║   ╚██████╔╝██║ ╚═╝ ██║
- ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝
+ ░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
+ ░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
+ ░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀
 ```
 
 ### `The invisible force behind every great product.`
@@ -20,13 +17,13 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D20-00D4FF?style=flat-square)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-333?style=flat-square)](./)
 
-[Install](#install) · [Modules](#module-system--23-superpowers) · [Phantom Oracle](#-phantom-oracle-chrome-extension) · [Deep Task Analysis](#-deep-task-analysis-level-4-intelligence) · [Docs](https://sir-ad.github.io/Phantom/docs/intro) · [Contributing](./CONTRIBUTING.md)
+[Install](#install) · [Modules](#module-system) · [Phantom Oracle](#phantom-oracle) · [Task Analysis](#deep-task-analysis) · [Docs](https://sir-ad.github.io/Phantom/docs/intro) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
 ---
 
-## What is Phantom?
+## ⚡️ What is Phantom?
 
 Phantom is a **terminal-native operating system** that gives LLMs structured product management superpowers. Connect any model — OpenAI, Anthropic, Gemini, or local Ollama — and get an AI PM co-pilot that thinks in **McKinsey/BCG frameworks**.
 
@@ -46,7 +43,7 @@ Phantom is a **terminal-native operating system** that gives LLMs structured pro
 
 ---
 
-## Install
+## 📥 Install
 
 ```bash
 # Run instantly with npx (Recommended)
@@ -66,33 +63,33 @@ phantom swarm "Mobile app or PWA?" # 7 agents debate it
 
 ---
 
-## 🦅 New in v2.0: Wings of Depth
-
-Phantom has evolved from a CLI tool into a **Universal Agent** that follows you across the web and executes recursive task planning.
+## 🦅 Features
 
 ### 🔮 Phantom Oracle (Chrome Extension)
 
 A "New Tab" experience that connects your web research to your product strategy.
 
--   **Description**: Transforms your new tab into a focus dashboard that analyzes your active LLM chats (ChatGPT, Claude, Gemini) and surfaces relevant philosophical calibration.
+-   **Description**: Transforms your new tab into a focus dashboard that analyzes your active LLM chats and surfaces relevant philosophical calibration.
 -   **Key Benefit**: Keeps you aligned with your core product vision while you research.
 -   **[Read Full Documentation](https://sir-ad.github.io/Phantom/docs/features/oracle)**
+
+#### Installation
+
+1.  **Build**: `cd packages/chrome-extension && npm run build`
+2.  **Load**: Open `chrome://extensions/` -> Enable **Developer Mode** -> Click **Load Unpacked**.
+3.  **Select**: Choose the `packages/chrome-extension/dist` folder.
 
 ### 🧠 Deep Task Analysis (Level 4 Intelligence)
 
 Recursive task decomposition inspired by high-performance engineering teams.
 
 -   **Command**: `phantom task analyze "Build a SaaS"`
--   **How it Works**:
-    1.  Breaks goal into subtasks.
-    2.  Assigns complexity scores (1-10).
-    3.  Recursively breaks down high-complexity nodes.
-    4.  Assigns specialized agents (`Coder`, `Architect`, `Researcher`) to each leaf node.
+-   **How it Works**: breaks goal into subtasks -> assigns complexity scores (1-10) -> recursively breaks down high-complexity nodes -> assigns specialized agents (`Coder`, `Architect`, `Researcher`) to each leaf node.
 -   **[Read Full Documentation](https://sir-ad.github.io/Phantom/docs/features/analyze)**
 
 ---
 
-## Module System — 23 Superpowers
+## 📦 Module System
 
 Every module is an installable PM superpower. Install with `phantom install <name>`.
 
@@ -107,26 +104,20 @@ Every module is an installable PM superpower. Install with `phantom install <nam
 | `competitive` | Competitor monitoring + market positioning | _"I know your enemies."_ |
 | `analytics-lens` | Connect analytics → surface actionable insights | _"I know the numbers."_ |
 | `oracle` | Monte Carlo sims, prediction, risk analysis | _"I know the future."_ |
-| `experiment-lab` | Design A/B tests + analyze results | _"I know the truth."_ |
-| `ux-auditor` | Automated UX audits + WCAG compliance | _"I know the user."_ |
-| `time-machine` | Version product decisions, what-if analysis | _"I know the past."_ |
-| `figma-bridge` | Connect Figma designs → PRDs → dev tasks | _"I know design."_ |
-| `bridge` | PM ↔ Dev translation engine | _"I know both worlds."_ |
 
 ### Consulting Superpowers _(McKinsey / BCG grade)_
 
 | Module | Framework | What it does |
 |--------|-----------|-------------|
-| 🏛️ `mece-lens` | **MECE Analysis** | Validates feature sets are mutually exclusive & collectively exhaustive |
+| 🏛️ `mece-lens` | **MECE Analysis** | Validates feature sets are mutually exclusive |
 | 🌳 `issue-tree` | **Hypothesis-Driven PS** | Decomposes problems into testable hypothesis trees |
 | 📊 `bcg-matrix` | **BCG Growth-Share** | Classifies features as Stars / Cash Cows / Question Marks / Dogs |
 | 📑 `deck-forge` | **Pyramid Principle** | Generates presentation outlines (Situation→Complication→Resolution) |
 | 📋 `exec-brief` | **Executive One-Pager** | Creates C-suite ready briefs from PRDs and analysis |
-| 🔍 `porter-scan` | **Porter's Five Forces** | Competitive landscape analysis for product positioning |
 
 ---
 
-## MCP Integration
+## 🔌 MCP Integration
 
 Phantom runs as an MCP server — plug it into any AI IDE with a single config.
 
@@ -142,7 +133,7 @@ See [**Full MCP Documentation**](https://sir-ad.github.io/Phantom/docs/mcp) for 
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 phantom/
@@ -159,7 +150,7 @@ phantom/
 
 ---
 
-## License
+## 📜 License
 
 [MIT](./LICENSE) — Adarsh Agrahari, 2026.
 
