@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 Allow: /
-Sitemap: https://sir-ad.github.io/Phantom/sitemap.xml
+Sitemap: https://sir-ad.github.io/phantom/sitemap.xml

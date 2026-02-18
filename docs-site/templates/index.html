@@ -1,20 +1,163 @@
-{% extends "base.html" %}
+<!doctype html>
+<html lang="en">
 
-{% block title %}Phantom – Documentation{% endblock %}
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHANTOM | PM Operating System for the Terminal Age</title>
+    <meta name="description"
+        content="The invisible force behind every great product. Open source PM operating system that gives AI agents PM superpowers." />
+    <meta property="og:title" content="PHANTOM — PM Operating System" />
+    <meta property="og:description" content="16 AI agents detected. One command to rule them all." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ config.base_url }}" />
+    <meta name="theme-color" content="#00FF41" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ get_url(path='marketing.css') }}" />
+</head>
 
-{% block content %}
-<h1>Phantom Documentation</h1>
-<p>{{ config.description }}</p>
+<body>
+    <canvas id="matrix-rain" aria-hidden="true"></canvas>
 
-{% set docs = get_section(path="docs/_index.md", metadata_only=true) %}
-<div class="card-grid">
-    {% for page in docs.pages %}
-    <article class="card">
-        <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
-        {% if page.description %}
-        <p>{{ page.description }}</p>
-        {% endif %}
-    </article>
-    {% endfor %}
-</div>
-{% endblock %}
+    <header class="top-nav">
+        <a href="{{ get_url(path='/') }}" class="brand">▲ PHANTOM</a>
+        <nav>
+            <a href="{{ get_url(path='/install') }}">Install</a>
+            <a href="{{ get_url(path='/docs/intro') }}">Docs</a>
+            <a href="{{ get_url(path='/modules') }}">Modules</a>
+            <a href="https://github.com/sir-ad/Phantom" target="_blank" rel="noreferrer">GitHub ↗</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <p class="eyebrow">PM Operating System</p>
+            <pre class="ascii" aria-hidden="true">░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
+░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
+░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀</pre>
+            <h1>The invisible force behind every great product.</h1>
+            <p class="sub">
+                Open source PM operating system for the terminal age.
+                Detects <strong id="agent-count">16</strong> AI agents. Connects to your tools. Turns requests into
+                PM-grade execution.
+            </p>
+
+            <div class="install-block">
+                <code
+                    id="install-cmd">curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh</code>
+                <button id="copy-btn" type="button">Copy</button>
+            </div>
+            <p id="copy-state" class="copy-state" aria-live="polite"></p>
+
+            <div class="hero-ctas">
+                <a class="btn btn-primary" href="{{ get_url(path='/docs/install') }}">Install Now →</a>
+                <a class="btn btn-secondary" href="https://github.com/sir-ad/Phantom" target="_blank" rel="noreferrer">★
+                    Star on GitHub</a>
+            </div>
+
+            <ul class="stats">
+                <li><strong data-counter="16">0</strong> AI Agents Supported</li>
+                <li><strong data-counter="13">0</strong> MCP Tools</li>
+                <li><strong>100%</strong> Local-first</li>
+                <li><strong data-counter="11">0</strong> Integrations</li>
+            </ul>
+        </section>
+
+        <!-- TERMINAL DEMO -->
+        <section class="panel terminal-demo">
+            <div class="terminal-header">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="terminal-title">phantom — AI Agent Orchestration</span>
+            </div>
+            <div id="terminal-output" class="terminal-body">
+                <div class="prompt">$ <span class="typed-text" id="typed-cmd"></span><span class="cursor">▊</span></div>
+            </div>
+        </section>
+
+        <!-- AGENT DISCOVERY -->
+        <section class="agent-grid">
+            <h2>Universal Agent Discovery</h2>
+            <p class="section-sub">Phantom detects every AI agent, IDE, and LLM on your system — automatically.</p>
+            <div class="agents">
+                <div class="agent-card"><span class="agent-icon">🤖</span><strong>Claude Code</strong><span
+                        class="badge full">Full</span></div>
+                <div class="agent-card"><span class="agent-icon">🖥️</span><strong>Claude Desktop</strong><span
+                        class="badge full">Full</span></div>
+                <div class="agent-card"><span class="agent-icon">⚡</span><strong>Cursor</strong><span
+                        class="badge full">Full</span></div>
+                <div class="agent-card"><span class="agent-icon">🌊</span><strong>Windsurf</strong><span
+                        class="badge full">Full</span></div>
+                <div class="agent-card"><span class="agent-icon">💻</span><strong>VS Code</strong><span
+                        class="badge full">Full</span></div>
+                <div class="agent-card"><span class="agent-icon">⚡</span><strong>Zed</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">🚀</span><strong>Antigravity</strong><span
+                        class="badge full">Full</span></div>
+                <div class="agent-card"><span class="agent-icon">🔗</span><strong>Cline</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">➡️</span><strong>Continue</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">🤝</span><strong>Copilot</strong><span
+                        class="badge basic">Basic</span></div>
+                <div class="agent-card"><span class="agent-icon">🦙</span><strong>Ollama</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">🧠</span><strong>LM Studio</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">🖋️</span><strong>Aider</strong><span
+                        class="badge basic">Basic</span></div>
+                <div class="agent-card"><span class="agent-icon">🔓</span><strong>OpenCode</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">📟</span><strong>Codex CLI</strong><span
+                        class="badge enhanced">Enhanced</span></div>
+                <div class="agent-card"><span class="agent-icon">✨</span><strong>Gemini CLI</strong><span
+                        class="badge basic">Basic</span></div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features">
+            <h2>Superpowers</h2>
+            <div class="feature-grid">
+                <article class="panel feature-card">
+                    <h3>🔍 Agent Discovery</h3>
+                    <p>Auto-detect 16 AI agents, IDEs, and LLMs. One scan covers your entire system.</p>
+                </article>
+                <article class="panel feature-card">
+                    <h3>🔌 MCP Auto-Register</h3>
+                    <p>One command injects Phantom into every agent's config. <code>phantom register --all</code></p>
+                </article>
+                <article class="panel feature-card">
+                    <h3>🐝 Swarm Analysis</h3>
+                    <p>7 AI agents analyze your product decisions in parallel with consensus scoring.</p>
+                </article>
+                <article class="panel feature-card">
+                    <h3>📋 PRD Generation</h3>
+                    <p>Generate production-grade PRDs from a single title, powered by your local context.</p>
+                </article>
+                <article class="panel feature-card">
+                    <h3>🔧 13 MCP Tools</h3>
+                    <p>Context engine, PRD generation, swarm analysis, sprint planning, agent discovery, and more.</p>
+                </article>
+                <article class="panel feature-card">
+                    <h3>🔒 100% Local-First</h3>
+                    <p>All data stays on your machine. No cloud required. Full encryption support.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>PHANTOM • Open Source PM Operating System • <a href="https://github.com/sir-ad/Phantom">GitHub</a></p>
+    </footer>
+
+    <script src="{{ get_url(path='marketing.js') }}" defer></script>
+</body>
+
+</html>

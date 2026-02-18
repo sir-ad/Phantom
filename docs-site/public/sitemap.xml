@@ -1,150 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://sir-ad.github.io/Phantom/</loc>
+        <loc>https://sir-ad.github.io/phantom/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/architecture/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/architecture/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/cli-reference/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/cli-reference/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/cli/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/cli/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/configuration/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/configuration/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/contributing/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/contributing/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/agents/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/agents/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/analyze/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/analyze/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/chat/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/chat/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/oracle/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/oracle/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/prd/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/prd/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/simulation/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/simulation/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/features/swarm/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/features/swarm/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/getting-started/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/getting-started/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/install/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/install/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/installation/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/installation/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/intro/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/intro/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/mcp/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/mcp/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/modules/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/modules/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/providers/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/providers/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/providers/anthropic/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/providers/anthropic/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/providers/gemini/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/providers/gemini/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/providers/ollama/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/providers/ollama/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/providers/openai/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/providers/openai/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/providers/overview/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/providers/overview/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/architecture-overview/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/architecture-overview/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/core/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/core/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/core/agent-swarm-spec/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/core/agent-swarm-spec/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/core/context-engine-spec/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/core/context-engine-spec/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/installer/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/installer/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/installer/install-script-design/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/installer/install-script-design/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/installer/one-line-installer-spec/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/installer/one-line-installer-spec/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/installer/release-manifest-schema/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/installer/release-manifest-schema/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/integrations/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/integrations/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/integrations/adapter-specs/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/integrations/adapter-specs/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/integrations/mcp-core-spec/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/integrations/mcp-core-spec/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/security/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/security/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/security/privacy-model/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/security/privacy-model/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/testing/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/testing/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/tech/testing/test-strategy/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/tech/testing/test-strategy/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/user/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/user/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/user/install/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/user/install/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/user/integrations/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/user/integrations/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/user/modules/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/user/modules/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/user/quickstart/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/user/quickstart/</loc>
     </url>
     <url>
-        <loc>https://sir-ad.github.io/Phantom/docs/user/troubleshooting/</loc>
+        <loc>https://sir-ad.github.io/phantom/docs/user/troubleshooting/</loc>
     </url>
 </urlset>
