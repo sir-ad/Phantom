@@ -63,3 +63,5 @@ docs-site/build/
 docs-site/.docusaurus/
 docs-dist/
 *.vsix
+
+.npmrc
