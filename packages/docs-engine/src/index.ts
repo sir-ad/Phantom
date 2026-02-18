@@ -11,6 +11,7 @@ export { SlideEngine, type SlideConfig, type Slide, type SlideContent } from './
 export { SheetEngine, type SheetConfig, type SheetData, type SheetColumn } from './sheets.js';
 export { ReportEngine, type ReportConfig, type ReportSection } from './reports.js';
 export { DashboardEngine, type DashboardConfig, type DashboardWidget } from './dashboard.js';
+export { DocumentationEngine, type DocumentationConfig } from './documentation.js';
 
 // Re-export a convenience factory
 export { createDocsEngine, type DocsEngine } from './factory.js';

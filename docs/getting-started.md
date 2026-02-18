@@ -1,164 +1,86 @@
-# Getting Started with PHANTOM
+---
+sidebar_position: 2
+title: Getting Started
+---
 
-Welcome to PHANTOM - the invisible force behind every great product. This guide will help you get up and running with PHANTOM in minutes.
+# Getting Started
 
-## Installation
+Get Phantom running in under 60 seconds.
 
-### Prerequisites
+## Prerequisites
 
-Before installing PHANTOM, ensure you have:
+- **Node.js 18+** — Required for all installation methods.
+- **An LLM** — Either a local model via [Ollama](https://ollama.com) or an API key for OpenAI / Anthropic / Gemini.
 
-- **Node.js 18+** installed on your system
-- (Optional) **Ollama** for local AI capabilities
+## Step 1: Install Phantom
 
-### Installation Methods
-
-#### One-Line Install (Recommended)
-
-```bash
-curl -fsSL https://phantom.pm/install | sh
-```
-
-#### npm Global Install
+The fastest way to install:
 
 ```bash
-npm install -g @phantompm/cli
+curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
 ```
 
-#### Homebrew (macOS)
+Or via npm:
 
 ```bash
-brew tap phantompm/tap
-brew install phantom
+npm install -g phantom-pm
 ```
 
-#### Windows PowerShell
+See the [Installation Guide](/docs/installation) for Docker, manual builds, and upgrade instructions.
 
-```powershell
-irm https://phantom.pm/install.ps1 | iex
-```
+## Step 2: Connect a Model
 
-## First Run
+### Option A: Local Model (Free)
 
-After installation, run PHANTOM to see the operator console:
+Install [Ollama](https://ollama.com), then:
 
 ```bash
-phantom
+ollama pull llama3.1:8b
+ollama serve
 ```
 
-On first run, you'll be guided through a quick setup wizard to configure your preferred AI providers and settings.
+Phantom auto-detects Ollama — no configuration needed.
 
-## Basic Commands
+### Option B: Cloud Model
 
-### Add Project Context
-
-Feed PHANTOM your codebase to give it deep understanding of your product:
+Set an API key:
 
 ```bash
-phantom context add ./my-project
+# Pick one (or configure all)
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+export GEMINI_API_KEY="AIza..."
 ```
 
-### Generate a PRD
-
-Create a comprehensive Product Requirements Document in seconds:
-
-```bash
-phantom prd create "User Authentication System"
-```
-
-### Run Swarm Analysis
-
-Get multi-agent product analysis for any decision:
-
-```bash
-phantom swarm "Should we add dark mode to our app?"
-```
-
-### Generate User Stories
-
-Create user stories from features or PRDs:
-
-```bash
-phantom stories generate "Payment processing integration"
-phantom stories from-prd ./my-prd.md
-```
-
-### Plan Sprints
-
-Organize stories into optimized sprint plans:
-
-```bash
-phantom sprint plan --goal "Q2 Features" --duration 14
-```
-
-## AI Provider Configuration
-
-PHANTOM supports multiple AI providers. Configure your preferred provider:
+Or run the interactive setup wizard:
 
 ```bash
 phantom config setup
 ```
 
-Or set API keys manually:
+## Step 3: Launch Phantom
 
 ```bash
-phantom config set apiKeys.openai YOUR_OPENAI_KEY
-phantom config set apiKeys.anthropic YOUR_ANTHROPIC_KEY
+phantom
 ```
 
-## Module System
+That's it. Phantom boots up, connects to your model, and drops you into an interactive PM chat.
 
-PHANTOM's power comes from its modular architecture. Install modules as needed:
+## Step 4: Try It Out
 
 ```bash
-phantom install @phantom/prd          # PRD generation
-phantom install @phantom/stories      # User story creation
-phantom install @phantom/competitive  # Competitive analysis
-phantom install @phantom/analytics    # Analytics insights
+# Ask a PM question
+phantom (ollama:llama3.1) ▸ Should we build a mobile app or focus on PWA?
+
+# Generate a PRD
+phantom (ollama:llama3.1) ▸ /prd Dark Mode for iOS App
+
+# Run a swarm debate
+phantom (ollama:llama3.1) ▸ /swarm Should we pivot to enterprise sales?
 ```
-
-See all available modules:
-
-```bash
-phantom modules
-```
-
-## MCP Integration
-
-PHANTOM works invisibly with popular AI coding tools:
-
-- **Claude Code**
-- **Cursor**
-- **VS Code**
-- **Zed Editor**
-
-These tools automatically discover and use PHANTOM when available, enhancing their capabilities with PM intelligence.
 
 ## Next Steps
 
-1. [CLI Commands Reference](cli.md) - Complete command documentation
-2. [Modules Guide](modules.md) - Detailed module documentation
-3. [MCP Integration](mcp.md) - Integration with AI coding tools
-4. [Advanced Configuration](configuration.md) - Customizing PHANTOM
-5. [Community](https://discord.gg/phantom) - Join our Discord
-
-## Troubleshooting
-
-If you encounter issues:
-
-1. Run the diagnostic tool:
-   ```bash
-   phantom doctor
-   ```
-
-2. Check your configuration:
-   ```bash
-   phantom config env
-   ```
-
-3. Clear cache if needed:
-   ```bash
-   phantom config clear --api-keys
-   ```
-
-For additional help, visit our [Discord community](https://discord.gg/phantom) or check the [GitHub issues](https://github.com/PhantomPM/phantom/issues).
+- Read about [Chat](/docs/features/chat) to learn all slash commands.
+- Explore [Swarm Intelligence](/docs/features/swarm) for multi-agent analysis.
+- Set up [MCP integration](/docs/mcp) for IDE connectivity.

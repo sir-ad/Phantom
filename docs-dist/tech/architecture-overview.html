@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Overview - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>Architecture Overview</h1>
+        <h1>Architecture Overview</h1>
+<p>Owner: PhantomPM Platform Team<br>Last Updated: 2026-02-13<br>Status: Real</p>
+<h2>Current Implementation State</h2>
+<p>PHANTOM is currently a TypeScript monorepo with these active packages:</p>
+<ol>
+<li><code>packages/cli</code>: command orchestration</li>
+<li><code>packages/core</code>: config, context, modules, swarm, PRD</li>
+<li><code>packages/tui</code>: terminal rendering and themed screens</li>
+<li><code>packages/modules</code>: baseline built-in modules package</li>
+<li><code>packages/mcp-server</code>: MCP core server and tool contracts</li>
+</ol>
+<p>Current runtime model:</p>
+<ol>
+<li>local CLI process</li>
+<li>local filesystem indexing for context</li>
+<li>local JSON configuration in <code>~/.phantom/config.json</code></li>
+</ol>
+<h2>Target State</h2>
+<p>Target architecture adds:</p>
+<ol>
+<li>one-line installer pipeline and release manifest</li>
+<li>MCP core server with adapter layer</li>
+<li>deterministic swarm pipeline with evidence provenance</li>
+<li>stronger security and audit model</li>
+</ol>
+<h2>Config Schema Additions (Public Interface)</h2>
+<p>Required config keys in persisted user config:</p>
+<ol>
+<li><code>installation.channel</code></li>
+<li><code>installation.version</code></li>
+<li><code>mcp.enabled</code></li>
+<li><code>mcp.server_mode</code></li>
+<li><code>integrations[]</code></li>
+<li><code>security.audit_log_path</code></li>
+</ol>
+<p>Current implementation state:</p>
+<ol>
+<li>configuration includes installation metadata and integrations list</li>
+<li>MCP and security keys are available in config model</li>
+<li>compatibility path accepts legacy camelCase keys while writing canonical keys</li>
+</ol>
+<p>Target state:</p>
+<ol>
+<li>schema validation gate for config load/save</li>
+<li><code>phantom doctor</code> includes config schema diagnostics</li>
+<li>migration tooling for older config payloads</li>
+</ol>
+<h2>Logical Layers</h2>
+<h2>Interface Layer</h2>
+<ol>
+<li>CLI commands</li>
+<li>TUI outputs</li>
+<li>future website and API docs reference</li>
+</ol>
+<h2>CLI Contract Additions (Foundation)</h2>
+<p>Required command surface:</p>
+<ol>
+<li><code>phantom doctor</code></li>
+<li><code>phantom integrate scan</code></li>
+<li><code>phantom integrate &lt;target&gt;</code></li>
+<li><code>phantom integrate doctor</code></li>
+<li><code>phantom status --json</code></li>
+</ol>
+<p><code>phantom status --json</code> contract (current):</p>
+<ol>
+<li><code>version</code></li>
+<li><code>firstRun</code></li>
+<li><code>activeProject</code></li>
+<li><code>installedModules</code></li>
+<li><code>integrations</code></li>
+<li><code>dataMode</code></li>
+<li><code>permissionLevel</code></li>
+<li><code>theme</code></li>
+</ol>
+<h2>Domain Layer</h2>
+<ol>
+<li>context management</li>
+<li>module registry and lifecycle</li>
+<li>agent swarm orchestration</li>
+<li>artifact generation (PRD and future outputs)</li>
+</ol>
+<h2>Integration Layer</h2>
+<ol>
+<li>MCP core contracts</li>
+<li>adapter-specific configuration surfaces</li>
+</ol>
+<h2>Storage Layer</h2>
+<ol>
+<li>config store</li>
+<li>local context index store</li>
+<li>future artifact store and audit log</li>
+</ol>
+<h2>Cross-Cutting Concerns</h2>
+<ol>
+<li>permission policy</li>
+<li>reliability gates</li>
+<li>status-tagged documentation parity</li>
+</ol>
+<h2>Data Flow (High-Level)</h2>
+<ol>
+<li>user command enters CLI</li>
+<li>CLI routes to core service</li>
+<li>core reads context/config/module state</li>
+<li>core produces deterministic response/artifact</li>
+<li>CLI/TUI renders result and writes output when applicable</li>
+</ol>
+<h2>Architectural Constraints</h2>
+<ol>
+<li>local-first default behavior</li>
+<li>explicit external action paths</li>
+<li>deterministic behavior for all <code>Real</code> features</li>
+<li>docs and implementation must remain synchronized</li>
+</ol>
+<h2>Acceptance Criteria</h2>
+<ol>
+<li>architecture document reflects current code structure</li>
+<li>includes current and target states explicitly</li>
+<li>references installer and MCP as planned extensions</li>
+</ol>
+
+    </main>
+</body>
+</html>

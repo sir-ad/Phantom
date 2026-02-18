@@ -11,6 +11,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "tsx watch src/index.ts",
+        "build:docs": "tsx scripts/build-docs.ts",
         "prepublishOnly": "npm run build"
     },
     "publishConfig": {
@@ -18,13 +19,17 @@
     },
     "dependencies": {
         "@phantom-pm/core": "file:../core",
-        "pptxgenjs": "^3.12.0",
-        "exceljs": "^4.4.0"
+        "@types/highlight.js": "^9.12.4",
+        "@types/marked": "^5.0.2",
+        "exceljs": "^4.4.0",
+        "highlight.js": "^11.11.1",
+        "marked": "^17.0.3",
+        "pptxgenjs": "^3.12.0"
     },
     "devDependencies": {
-        "typescript": "^5.5.0",
+        "@types/node": "^20.14.0",
         "tsx": "^4.16.0",
-        "@types/node": "^20.14.0"
+        "typescript": "^5.5.0"
     },
     "keywords": [
         "phantom",

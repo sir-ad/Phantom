@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>Design System</h1>
+        <h1>Web Design System</h1>
+<p>Owner: PhantomPM Design Team<br>Last Updated: 2026-02-13<br>Status: Planned</p>
+<h2>Brand Direction</h2>
+<p>Matrix-cyberpunk identity with practical readability and credibility.</p>
+<h2>Color Tokens</h2>
+<ol>
+<li><code>--bg-primary: #0D1117</code></li>
+<li><code>--bg-secondary: #161B22</code></li>
+<li><code>--text-primary: #E6EDF3</code></li>
+<li><code>--text-secondary: #8B949E</code></li>
+<li><code>--matrix-green: #00FF41</code></li>
+<li><code>--cyber-blue: #00D4FF</code></li>
+<li><code>--phantom-orange: #FF6B35</code></li>
+<li><code>--neon-red: #FF2D55</code></li>
+</ol>
+<h2>Typography</h2>
+<ol>
+<li>display/headline: monospace expressive family</li>
+<li>body: high-legibility sans-serif</li>
+<li>code/install snippets: monospace with strong contrast</li>
+</ol>
+<h2>Motion Principles</h2>
+<ol>
+<li>purposeful motion only (entry transitions, demo sequencing)</li>
+<li>avoid distracting continuous effects on critical CTA blocks</li>
+<li>support reduced-motion preferences</li>
+</ol>
+<h2>Components</h2>
+<ol>
+<li>Install command block with copy interaction</li>
+<li>Status badge component (<code>Real/Beta/Planned</code>)</li>
+<li>Terminal transcript container</li>
+<li>Feature card</li>
+<li>Integration card</li>
+<li>Docs callout block</li>
+</ol>
+<h2>Accessibility Requirements</h2>
+<ol>
+<li>WCAG AA contrast minimum</li>
+<li>keyboard operable controls</li>
+<li>visible focus states</li>
+<li>semantic structure for screen readers</li>
+</ol>
+<h2>Content Style</h2>
+<ol>
+<li>high-energy but clear</li>
+<li>avoid unsupported absolutes</li>
+<li>always pair bold claims with evidence links</li>
+</ol>
+<h2>Acceptance Criteria</h2>
+<ol>
+<li>design tokens are centralized and documented</li>
+<li>status badge usage is consistent across pages</li>
+<li>CTA components are accessible and testable</li>
+</ol>
+
+    </main>
+</body>
+</html>

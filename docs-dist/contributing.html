@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributing - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>Contributing</h1>
+        <hr>
+<h2>sidebar_position: 11
+title: Contributing</h2>
+<h1>Contributing</h1>
+<p>Phantom is open source (MIT) and we welcome contributions of all kinds.</p>
+<h2>Getting Started</h2>
+<ol>
+<li><strong>Fork</strong> the repository on GitHub.</li>
+<li><strong>Clone</strong> your fork:<pre><code class="language-bash">git clone https://github.com/YOUR_USERNAME/Phantom.git
+cd phantom
+</code></pre>
+</li>
+<li><strong>Install</strong> dependencies:<pre><code class="language-bash">npm install
+</code></pre>
+</li>
+<li><strong>Build</strong> the project:<pre><code class="language-bash">npm run build
+</code></pre>
+</li>
+<li><strong>Run tests</strong>:<pre><code class="language-bash">npm run test
+</code></pre>
+</li>
+</ol>
+<h2>Development Workflow</h2>
+<pre><code class="language-bash"># Run the CLI locally
+npm run phantom
+
+# Or directly
+node packages/cli/dist/index.js
+
+# Run tests
+npm run test
+
+# Format code
+npm run format
+</code></pre>
+<h2>Project Structure</h2>
+<pre><code>phantom/
+├── packages/
+│   ├── core/           # AI providers, config, context
+│   ├── cli/            # Terminal interface &amp; commands
+│   ├── mcp-server/     # Model Context Protocol server
+│   ├── tui/            # Terminal UI components
+│   ├── modules/        # PM capability plugins
+│   └── integrations/   # External tool connectors
+├── tests/              # Smoke &amp; contract tests
+├── scripts/            # Build &amp; release scripts
+├── website/            # Static website (GitHub Pages)
+└── docs-site/          # This documentation (Docusaurus)
+</code></pre>
+<h2>Adding a New AI Provider</h2>
+<ol>
+<li>Create <code>packages/core/src/ai/providers/your-provider.ts</code>.</li>
+<li>Extend <code>BaseAIProvider</code> and implement <code>complete()</code>, <code>stream()</code>, <code>isAvailable()</code>.</li>
+<li>Add the provider to <code>AIManager.initializeProviders()</code> in <code>packages/core/src/ai/manager.ts</code>.</li>
+<li>Add a config entry in <code>createAIManagerFromConfig()</code>.</li>
+</ol>
+<h2>Adding a New Module</h2>
+<ol>
+<li>Create <code>packages/modules/src/your-module.ts</code>.</li>
+<li>Export a class implementing the module interface.</li>
+<li>Register the module in <code>packages/modules/src/index.ts</code>.</li>
+</ol>
+<h2>Pull Request Guidelines</h2>
+<ul>
+<li>Keep PRs focused on a single change.</li>
+<li>Add tests for new functionality.</li>
+<li>Follow existing code style (Prettier + ESLint).</li>
+<li>Update documentation if behavior changes.</li>
+</ul>
+<h2>Code Style</h2>
+<ul>
+<li><strong>TypeScript</strong> for all source code.</li>
+<li><strong>Prettier</strong> for formatting (<code>npm run format</code>).</li>
+<li><strong>No <code>any</code></strong> unless absolutely necessary.</li>
+<li><strong>Descriptive names</strong> over comments.</li>
+</ul>
+<h2>Reporting Issues</h2>
+<ul>
+<li>Use <a href="https://github.com/sir-ad/Phantom/issues">GitHub Issues</a>.</li>
+<li>Include your OS, Node.js version, and steps to reproduce.</li>
+<li>Tag with appropriate labels (<code>bug</code>, <code>feature</code>, <code>docs</code>).</li>
+</ul>
+
+    </main>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>Modules</h1>
+        <hr>
+<h2>sidebar_position: 3
+title: Modules</h2>
+<h1>Module System</h1>
+<p>Phantom&#39;s functionality is organized into installable modules. Each module adds a specific PM capability.</p>
+<h2>Available Modules</h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Description</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>prd-forge</code></td>
+<td>PRD generation engine</td>
+<td><code>phantom prd</code></td>
+</tr>
+<tr>
+<td><code>swarm</code></td>
+<td>Multi-agent consensus</td>
+<td><code>phantom swarm</code></td>
+</tr>
+<tr>
+<td><code>story-writer</code></td>
+<td>User story generation</td>
+<td><code>phantom stories</code></td>
+</tr>
+<tr>
+<td><code>ux-auditor</code></td>
+<td>UX/accessibility analysis</td>
+<td><code>phantom screen</code></td>
+</tr>
+<tr>
+<td><code>sprint-planner</code></td>
+<td>Sprint planning assistance</td>
+<td><code>phantom sprint</code></td>
+</tr>
+<tr>
+<td><code>competitive</code></td>
+<td>Competitive analysis</td>
+<td><code>phantom compete</code></td>
+</tr>
+<tr>
+<td><code>oracle</code></td>
+<td>Product prediction engine</td>
+<td><code>phantom oracle</code></td>
+</tr>
+<tr>
+<td><code>bridge</code></td>
+<td>PM-to-dev translation</td>
+<td><code>phantom bridge</code></td>
+</tr>
+<tr>
+<td><code>analytics-lens</code></td>
+<td>Metrics analysis</td>
+<td><code>phantom metrics</code></td>
+</tr>
+<tr>
+<td><code>time-machine</code></td>
+<td>Feature timeline simulation</td>
+<td><code>phantom timeline</code></td>
+</tr>
+<tr>
+<td><code>experiment-lab</code></td>
+<td>A/B test design</td>
+<td><code>phantom experiment</code></td>
+</tr>
+</tbody></table>
+<h2>Installing Modules</h2>
+<pre><code class="language-bash"># List available modules
+phantom modules list
+
+# Install a module
+phantom modules install prd-forge
+
+# Uninstall a module
+phantom modules uninstall prd-forge
+</code></pre>
+<h2>Creating Custom Modules</h2>
+<p>Modules are TypeScript files in <code>packages/modules/src/</code>. Each module exports a standard interface:</p>
+<pre><code class="language-typescript">export interface PhantomModule {
+  name: string;
+  description: string;
+  version: string;
+  execute(input: ModuleInput): Promise&lt;ModuleOutput&gt;;
+}
+</code></pre>
+<p>See <code>packages/modules/src/prd-forge.ts</code> for a reference implementation.</p>
+
+    </main>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prd - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>Prd</h1>
+        <hr>
+<h2>sidebar_position: 3
+title: PRD Generation</h2>
+<h1>PRD Generation</h1>
+<p>Generate comprehensive Product Requirements Documents from a single sentence.</p>
+<h2>Usage</h2>
+<pre><code class="language-bash"># From the terminal
+phantom prd &quot;Dark Mode for Mobile App&quot;
+
+# From inside chat
+phantom (openai:gpt-4o) ▸ /prd User onboarding email sequence
+</code></pre>
+<h2>What Gets Generated</h2>
+<p>Phantom produces a structured PRD in Markdown format containing:</p>
+<h3>1. Overview</h3>
+<ul>
+<li><strong>Problem Statement</strong>: What user pain point does this solve?</li>
+<li><strong>Objective</strong>: What does success look like?</li>
+<li><strong>Target Audience</strong>: Who benefits from this feature?</li>
+</ul>
+<h3>2. User Stories</h3>
+<ul>
+<li>As a [persona], I want [action] so that [outcome].</li>
+<li>Acceptance criteria for each story.</li>
+<li>Edge cases and error states.</li>
+</ul>
+<h3>3. Functional Requirements</h3>
+<ul>
+<li>Detailed feature specifications.</li>
+<li>Input/output definitions.</li>
+<li>API contracts (if applicable).</li>
+</ul>
+<h3>4. Non-Functional Requirements</h3>
+<ul>
+<li>Performance targets (e.g., &lt; 200ms response time).</li>
+<li>Security considerations.</li>
+<li>Accessibility (WCAG 2.1 AA compliance).</li>
+<li>Scalability expectations.</li>
+</ul>
+<h3>5. Technical Approach</h3>
+<ul>
+<li>Recommended technology stack.</li>
+<li>Architecture considerations.</li>
+<li>Integration points.</li>
+</ul>
+<h3>6. Success Metrics</h3>
+<ul>
+<li>Primary KPIs with target values.</li>
+<li>Secondary metrics.</li>
+<li>How to measure (instrumentation plan).</li>
+</ul>
+<h3>7. Risk Assessment</h3>
+<ul>
+<li>Riskiest assumptions.</li>
+<li>Mitigation strategies.</li>
+<li>Dependencies and blockers.</li>
+</ul>
+<h3>8. Timeline</h3>
+<ul>
+<li>Phased rollout plan.</li>
+<li>Sprint-level breakdown.</li>
+<li>MVP vs. Full Feature scope.</li>
+</ul>
+<h2>Example Output</h2>
+<pre><code class="language-markdown"># PRD: Dark Mode for Mobile App
+
+## Problem Statement
+72% of mobile users prefer dark mode, but our app only supports light theme.
+This results in poor nighttime UX and accessibility complaints.
+
+## User Stories
+
+### US-1: Toggle Dark Mode
+- **As a** mobile user
+- **I want** to switch between light and dark themes
+- **So that** I can use the app comfortably in low-light environments
+
+**Acceptance Criteria:**
+- [ ] Toggle accessible from Settings &gt; Appearance
+- [ ] System default option (follows OS setting)
+- [ ] Persists across sessions
+- [ ] All screens render correctly in both modes
+
+## Success Metrics
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Adoption rate | 40% of MAU | Analytics toggle events |
+| Session duration (night) | +15% | Compare pre/post |
+| App store rating | +0.2 stars | Monitor reviews |
+
+## Timeline
+- **Sprint 1**: Design system tokens + core screens
+- **Sprint 2**: Remaining screens + settings UI
+- **Sprint 3**: QA + beta rollout
+</code></pre>
+<h2>Options</h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--output &lt;path&gt;</code></td>
+<td>Save PRD to a specific file</td>
+</tr>
+<tr>
+<td><code>--json</code></td>
+<td>Output as structured JSON</td>
+</tr>
+<tr>
+<td><code>--model &lt;name&gt;</code></td>
+<td>Use a specific model for generation</td>
+</tr>
+</tbody></table>
+<h2>Tips</h2>
+<ul>
+<li><strong>More context = better PRDs</strong>: Include your product name, target market, and constraints.</li>
+<li><strong>Iterate</strong>: Use the chat REPL to refine sections after generation.</li>
+<li><strong>Version control</strong>: Save PRDs to your repo and track changes over time.</li>
+</ul>
+
+    </main>
+</body>
+</html>

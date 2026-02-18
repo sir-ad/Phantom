@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISCORD_SETUP - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>DISCORD_SETUP</h1>
+        <h1>PHANTOM Discord Community Setup</h1>
+<p>Complete guide for setting up and managing the PHANTOM Discord community server.</p>
+<h2>Server Setup</h2>
+<h3>1. Create Discord Server</h3>
+<ol>
+<li>Open Discord (web or app)</li>
+<li>Click &quot;+&quot; to add server</li>
+<li>Select &quot;Create My Own&quot;</li>
+<li>Choose &quot;For a club or community&quot;</li>
+<li>Name it: &quot;PHANTOM&quot;</li>
+<li>Upload server icon (logo)</li>
+</ol>
+<h3>2. Server Settings</h3>
+<p><strong>Overview:</strong></p>
+<ul>
+<li>Server Name: PHANTOM</li>
+<li>Icon: Phantom logo (512x512px)</li>
+<li>Splash Background: Banner image (1920x1080px)</li>
+<li>Server Description: &quot;The invisible force behind every great product. Open-source PM operating system.&quot;</li>
+<li>Default Notification Settings: Only @mentions</li>
+</ul>
+<p><strong>Moderation:</strong></p>
+<ul>
+<li>Verification Level: Medium (email required)</li>
+<li>2FA Requirement: For Moderator+ roles</li>
+<li>Explicit Content Filter: Scan media from all members</li>
+</ul>
+<p><strong>Community Settings:</strong></p>
+<ul>
+<li>Enable Community: ON</li>
+<li>Rules Channel: #rules</li>
+<li>Updates Channel: #announcements</li>
+<li>Safety Setup: Review and configure</li>
+</ul>
+<h2>Channel Structure</h2>
+<h3>Category: 📢 INFORMATION</h3>
+<p><strong>#welcome</strong></p>
+<ul>
+<li>Purpose: Welcome new members</li>
+<li>Content: Server rules, quick start guide</li>
+<li>Permissions: Read-only for @everyone</li>
+</ul>
+<p><strong>#rules</strong></p>
+<ul>
+<li>Purpose: Community guidelines</li>
+<li>Content: Code of conduct, moderation policy</li>
+<li>Pin message with full rules</li>
+</ul>
+<p><strong>#announcements</strong></p>
+<ul>
+<li>Purpose: Official announcements</li>
+<li>Content: Releases, updates, events</li>
+<li>Permissions: Post only by @Admin @Moderator</li>
+</ul>
+<p><strong>#releases</strong></p>
+<ul>
+<li>Purpose: New version announcements</li>
+<li>Content: Changelog highlights, download links</li>
+</ul>
+<h3>Category: 💬 GENERAL</h3>
+<p><strong>#general</strong></p>
+<ul>
+<li>Purpose: General discussion</li>
+<li>Content: Anything PHANTOM-related</li>
+</ul>
+<p><strong>#introductions</strong></p>
+<ul>
+<li>Purpose: New member introductions</li>
+<li>Content: Who you are, what you build</li>
+<li>Pin template message</li>
+</ul>
+<p><strong>#showcase</strong></p>
+<ul>
+<li>Purpose: Share projects using PHANTOM</li>
+<li>Content: Demos, screenshots, success stories</li>
+</ul>
+<p><strong>#random</strong></p>
+<ul>
+<li>Purpose: Off-topic discussion</li>
+<li>Content: Non-PHANTOM chat</li>
+</ul>
+<h3>Category: 🛠️ SUPPORT</h3>
+<p><strong>#help</strong></p>
+<ul>
+<li>Purpose: General help and questions</li>
+<li>Content: Installation, usage, troubleshooting</li>
+</ul>
+<p><strong>#troubleshooting</strong></p>
+<ul>
+<li>Purpose: Technical issues</li>
+<li>Content: Bug reports, error messages</li>
+</ul>
+<p><strong>#feature-requests</strong></p>
+<ul>
+<li>Purpose: Suggest new features</li>
+<li>Content: Ideas, use cases, proposals</li>
+</ul>
+<h3>Category: 👥 DEVELOPMENT</h3>
+<p><strong>#contributors</strong></p>
+<ul>
+<li>Purpose: Contributor discussion</li>
+<li>Content: PR reviews, architecture decisions</li>
+</ul>
+<p><strong>#module-development</strong></p>
+<ul>
+<li>Purpose: Building PHANTOM modules</li>
+<li>Content: Module ideas, development help</li>
+</ul>
+<p><strong>#architecture</strong></p>
+<ul>
+<li>Purpose: Technical architecture discussion</li>
+<li>Content: Core system design</li>
+</ul>
+<p><strong>#good-first-issues</strong></p>
+<ul>
+<li>Purpose: Help newcomers contribute</li>
+<li>Content: Beginner-friendly tasks</li>
+</ul>
+<h3>Category: 🎯 SPECIAL</h3>
+<p><strong>#beta-testing</strong></p>
+<ul>
+<li>Purpose: Beta feedback</li>
+<li>Content: Pre-release testing, feedback</li>
+</ul>
+<p><strong>#integrations</strong></p>
+<ul>
+<li>Purpose: IDE/tool integration discussion</li>
+<li>Content: MCP, Cursor, VS Code, etc.</li>
+</ul>
+<p><strong>#ideas</strong></p>
+<ul>
+<li>Purpose: Share ideas</li>
+<li>Content: Wild ideas, brainstorming</li>
+</ul>
+<h2>Roles Structure</h2>
+<h3>Administrative Roles</h3>
+<p><strong>@Admin</strong></p>
+<ul>
+<li>Color: Red (#FF0000)</li>
+<li>Permissions: All</li>
+<li>Members: Core team only</li>
+</ul>
+<p><strong>@Moderator</strong></p>
+<ul>
+<li>Color: Orange (#FFA500)</li>
+<li>Permissions: Manage messages, kick, ban, timeout</li>
+<li>Members: Trusted community managers</li>
+</ul>
+<p><strong>@Bot</strong></p>
+<ul>
+<li>Color: Gray (#808080)</li>
+<li>Permissions: Bot-specific</li>
+<li>Members: Server bots only</li>
+</ul>
+<h3>Special Roles</h3>
+<p><strong>@Core Team</strong></p>
+<ul>
+<li>Color: Matrix Green (#00FF41)</li>
+<li>Permissions: Post in announcements</li>
+<li>Members: PHANTOM maintainers</li>
+</ul>
+<p><strong>@Contributor</strong></p>
+<ul>
+<li>Color: Blue (#0000FF)</li>
+<li>Permissions: None special (recognition only)</li>
+<li>Members: Code contributors</li>
+</ul>
+<p><strong>@Beta Tester</strong></p>
+<ul>
+<li>Color: Purple (#800080)</li>
+<li>Permissions: Access to beta channels</li>
+<li>Members: Active testers</li>
+</ul>
+<p><strong>@Module Developer</strong></p>
+<ul>
+<li>Color: Cyan (#00FFFF)</li>
+<li>Permissions: Post in module channels</li>
+<li>Members: Module creators</li>
+</ul>
+<h3>Level Roles (Automatic)</h3>
+<p><strong>@Newcomer</strong> (Level 0-2)</p>
+<ul>
+<li>Just joined</li>
+</ul>
+<p><strong>@Member</strong> (Level 3-9)</p>
+<ul>
+<li>Active participant</li>
+</ul>
+<p><strong>@Regular</strong> (Level 10-19)</p>
+<ul>
+<li>Established member</li>
+</ul>
+<p><strong>@Veteran</strong> (Level 20+)</p>
+<ul>
+<li>Long-time community member</li>
+</ul>
+<h2>Bot Configuration</h2>
+<h3>1. Carl-bot (Moderation &amp; Levels)</h3>
+<p><strong>Setup:</strong></p>
+<ol>
+<li>Invite: <a href="https://carl.gg/">https://carl.gg/</a></li>
+<li>Permissions: Manage Roles, Manage Messages, Embed Links</li>
+</ol>
+<p><strong>Configuration:</strong></p>
+<pre><code>!automod antispam on
+!automod invites on
+!levels on
+!levels set announcement #announcements
+</code></pre>
+<p><strong>Auto-Moderation:</strong></p>
+<ul>
+<li>Max 5 messages per 5 seconds</li>
+<li>Block invite links in #general</li>
+<li>Filter profanity (optional)</li>
+</ul>
+<h3>2. Dyno (Logging &amp; Custom Commands)</h3>
+<p><strong>Setup:</strong></p>
+<ol>
+<li>Invite: <a href="https://dyno.gg/">https://dyno.gg/</a></li>
+<li>Configure logging channel: #logs</li>
+</ol>
+<p><strong>Custom Commands:</strong></p>
+<pre><code>?addrule
+?addcommand phantom &quot;Check out https://phantom.pm for installation and docs!&quot;
+?addcommand install &quot;Install with: curl -fsSL https://phantom.pm/install | sh&quot;
+</code></pre>
+<h3>3. GitHub Bot (Repository Updates)</h3>
+<p><strong>Setup:</strong></p>
+<ol>
+<li>Invite GitHub bot</li>
+<li>Subscribe to PhantomPM/phantom</li>
+<li>Configure notifications for:<ul>
+<li>New issues</li>
+<li>New PRs</li>
+<li>Releases</li>
+<li>Stars milestones</li>
+</ul>
+</li>
+</ol>
+<p><strong>Channels:</strong></p>
+<ul>
+<li>#github-updates</li>
+<li>#releases (mirror)</li>
+</ul>
+<h3>4. Welcome Bot</h3>
+<p><strong>Setup:</strong></p>
+<ol>
+<li>Use Carl-bot or Dyno</li>
+<li>Configure welcome message:</li>
+</ol>
+<pre><code>Welcome to PHANTOM, {user}! 🎭
+
+The invisible force behind every great product.
+
+🚀 Get started: https://phantom.pm/install
+📚 Read docs: https://phantom.pm/docs
+💬 Introduce yourself in #introductions
+❓ Need help? Check #help
+
+Enjoy your stay!
+</code></pre>
+<h2>Welcome Message Template</h2>
+<p><strong>Pin in #welcome:</strong></p>
+<pre><code>Welcome to PHANTOM! 🎭
+
+The invisible force behind every great product.
+
+━━━ QUICK START ━━━
+🚀 Install: curl -fsSL https://phantom.pm/install | sh
+📚 Docs: https://phantom.pm/docs
+⭐ GitHub: https://github.com/PhantomPM/phantom
+
+━━━ CHANNELS ━━━
+💬 #general - General discussion
+🛠️ #help - Get help
+🎯 #feature-requests - Suggest features
+👥 #contributors - Contribute to PHANTOM
+🎨 #showcase - Share your projects
+
+━━━ RULES ━━━
+1. Be respectful and inclusive
+2. No spam or self-promotion
+3. Stay on topic in specialized channels
+4. Use threads for long discussions
+5. Have fun! 🚀
+
+Questions? Ask in #help or check our FAQ.
+</code></pre>
+<h2>Moderation Guidelines</h2>
+<h3>Moderation Team</h3>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Enforce community guidelines</li>
+<li>Answer questions</li>
+<li>Welcome new members</li>
+<li>Manage spam/off-topic content</li>
+<li>Escalate serious issues to admins</li>
+</ul>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Be friendly but firm</li>
+<li>Explain actions taken</li>
+<li>Use timeouts before bans</li>
+<li>Document serious incidents</li>
+<li>Stay neutral in disputes</li>
+</ul>
+<h3>Enforcement Actions</h3>
+<p><strong>1. Warning</strong></p>
+<ul>
+<li>First offense: Verbal warning</li>
+<li>Second offense: Written warning</li>
+<li>Document in #mod-log</li>
+</ul>
+<p><strong>2. Timeout (1 hour - 1 day)</strong></p>
+<ul>
+<li>Spam</li>
+<li>Mild toxicity</li>
+<li>Off-topic persistence</li>
+</ul>
+<p><strong>3. Kick</strong></p>
+<ul>
+<li>Repeated rule violations</li>
+<li>Serious toxicity</li>
+<li>Can rejoin with invite</li>
+</ul>
+<p><strong>4. Ban</strong></p>
+<ul>
+<li>Harassment</li>
+<li>Hate speech</li>
+<li>Bot/spam accounts</li>
+<li>Serious violations</li>
+</ul>
+<h3>Auto-Moderation Rules</h3>
+<p><strong>Word Filter:</strong></p>
+<ul>
+<li>Slurs: Auto-delete + timeout</li>
+<li>Spam keywords: Auto-delete</li>
+<li>ALL CAPS messages &gt; 50 chars: Warning</li>
+</ul>
+<p><strong>Raid Protection:</strong></p>
+<ul>
+<li>Detect mass joins</li>
+<li>Enable verification gate</li>
+<li>Temporarily require phone verification</li>
+</ul>
+<h2>Events &amp; Activities</h2>
+<h3>Weekly Events</h3>
+<p><strong>Monday: Module Monday</strong></p>
+<ul>
+<li>Highlight community modules</li>
+<li>Share module ideas</li>
+<li>Q&amp;A with module developers</li>
+</ul>
+<p><strong>Wednesday: Workshop Wednesday</strong></p>
+<ul>
+<li>Live coding sessions</li>
+<li>Tutorial streams</li>
+<li>Deep dives into features</li>
+</ul>
+<p><strong>Friday: Feature Friday</strong></p>
+<ul>
+<li>Preview upcoming features</li>
+<li>Gather feedback</li>
+<li>Beta testing announcements</li>
+</ul>
+<h3>Monthly Events</h3>
+<p><strong>Community Call</strong></p>
+<ul>
+<li>Voice channel meetup</li>
+<li>Product updates</li>
+<li>Open Q&amp;A</li>
+<li>Record and share</li>
+</ul>
+<p><strong>Hackathon</strong></p>
+<ul>
+<li>24-48 hour event</li>
+<li>Build modules/tools</li>
+<li>Prizes for winners</li>
+<li>Showcase results</li>
+</ul>
+<h3>Special Events</h3>
+<p><strong>Launch Events</strong></p>
+<ul>
+<li>Major version releases</li>
+<li>New feature announcements</li>
+<li>Live demos</li>
+</ul>
+<p><strong>AMA Sessions</strong></p>
+<ul>
+<li>Invite special guests</li>
+<li>Industry experts</li>
+<li>Core team AMA</li>
+</ul>
+<h2>Growth Strategy</h2>
+<h3>Month 1: Foundation (Target: 100 members)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Set up server structure</li>
+<li><input disabled="" type="checkbox"> Configure bots</li>
+<li><input disabled="" type="checkbox"> Invite core contributors</li>
+<li><input disabled="" type="checkbox"> Create initial content</li>
+<li><input disabled="" type="checkbox"> Soft launch on social media</li>
+</ul>
+<h3>Month 2: Growth (Target: 500 members)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Launch on Product Hunt</li>
+<li><input disabled="" type="checkbox"> Twitter campaign</li>
+<li><input disabled="" type="checkbox"> Partner with influencers</li>
+<li><input disabled="" type="checkbox"> Host first community call</li>
+<li><input disabled="" type="checkbox"> Share in relevant subreddits</li>
+</ul>
+<h3>Month 3: Engagement (Target: 1000 members)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Regular events established</li>
+<li><input disabled="" type="checkbox"> Active moderation team</li>
+<li><input disabled="" type="checkbox"> Community spotlight program</li>
+<li><input disabled="" type="checkbox"> Contributor recognition</li>
+<li><input disabled="" type="checkbox"> Module ecosystem growing</li>
+</ul>
+<h2>Metrics to Track</h2>
+<p><strong>Discord Server Insights:</strong></p>
+<ul>
+<li>Total members</li>
+<li>Active members (daily/weekly)</li>
+<li>Message count</li>
+<li>Retention rate</li>
+<li>New joins per day</li>
+</ul>
+<p><strong>Engagement:</strong></p>
+<ul>
+<li>Messages per channel</li>
+<li>Event attendance</li>
+<li>Help request resolution time</li>
+<li>Contributor activity</li>
+</ul>
+<p><strong>Growth:</strong></p>
+<ul>
+<li>Invite conversion rate</li>
+<li>Social media referrals</li>
+<li>Organic vs invited members</li>
+</ul>
+<h2>Promotion Strategy</h2>
+<h3>Onboarding New Users</h3>
+<ol>
+<li><p><strong>From CLI</strong>: Add to <code>phantom doctor</code> or welcome message</p>
+<pre><code>💬 Join our community: https://discord.gg/phantom
+</code></pre>
+</li>
+<li><p><strong>From Website</strong>: Prominent link in header/footer</p>
+</li>
+<li><p><strong>From GitHub</strong>: Badge in README</p>
+<pre><code class="language-markdown">[![Discord](https://img.shields.io/discord/SERVER_ID)](https://discord.gg/phantom)
+</code></pre>
+</li>
+<li><p><strong>From Docs</strong>: &quot;Get Help&quot; section</p>
+</li>
+<li><p><strong>Social Media</strong>: Regular posts about community</p>
+</li>
+</ol>
+<h3>Content Calendar</h3>
+<p><strong>Daily:</strong></p>
+<ul>
+<li>Welcome new members</li>
+<li>Answer questions</li>
+<li>Share tips/tricks</li>
+</ul>
+<p><strong>Weekly:</strong></p>
+<ul>
+<li>Community spotlight</li>
+<li>Module showcase</li>
+<li>Development updates</li>
+</ul>
+<p><strong>Monthly:</strong></p>
+<ul>
+<li>Community stats</li>
+<li>Contributor recognition</li>
+<li>Event announcements</li>
+</ul>
+<h2>Server Boosting</h2>
+<p><strong>Benefits to Unlock:</strong></p>
+<ul>
+<li>Level 1 (2 boosts): 128kbps audio, animated server icon</li>
+<li>Level 2 (7 boosts): 256kbps audio, server banner, 50MB uploads</li>
+<li>Level 3 (14 boosts): 384kbps audio, vanity URL, 100MB uploads</li>
+</ul>
+<p><strong>Perks for Boosters:</strong></p>
+<ul>
+<li>Special @Server Booster role</li>
+<li>Exclusive channel access</li>
+<li>Early access to features</li>
+<li>Recognition in #announcements</li>
+</ul>
+<h2>Integration with Other Platforms</h2>
+<h3>GitHub Integration</h3>
+<ul>
+<li>Auto-post releases</li>
+<li>Issue/PR notifications</li>
+<li>Star milestones</li>
+</ul>
+<h3>Twitter Integration</h3>
+<ul>
+<li>Cross-post announcements</li>
+<li>Share community highlights</li>
+</ul>
+<h3>Website Integration</h3>
+<ul>
+<li>Embed Discord widget</li>
+<li>&quot;Join Discord&quot; CTAs</li>
+<li>Community stats display</li>
+</ul>
+<h2>Emergency Procedures</h2>
+<h3>Server Raid</h3>
+<ol>
+<li>Enable verification gate</li>
+<li>Lock down channels</li>
+<li>Ban raiders in bulk</li>
+<li>Contact Discord Trust &amp; Safety</li>
+<li>Post announcement when resolved</li>
+</ol>
+<h3>Bot Compromise</h3>
+<ol>
+<li>Revoke bot permissions</li>
+<li>Remove bot from server</li>
+<li>Audit recent actions</li>
+<li>Re-add with new credentials</li>
+<li>Review security practices</li>
+</ol>
+<h3>Moderator Issue</h3>
+<ol>
+<li>Remove moderation permissions</li>
+<li>Investigate incident</li>
+<li>Consult with core team</li>
+<li>Take appropriate action</li>
+<li>Communicate with community</li>
+</ol>
+<h2>Resources</h2>
+<p><strong>Discord Support:</strong></p>
+<ul>
+<li>Discord Support: <a href="https://support.discord.com">https://support.discord.com</a></li>
+<li>Discord Developers: <a href="https://discord.dev">https://discord.dev</a></li>
+<li>Discord Status: <a href="https://discordstatus.com">https://discordstatus.com</a></li>
+</ul>
+<p><strong>Bot Documentation:</strong></p>
+<ul>
+<li>Carl-bot: <a href="https://carl.gg/documentation">https://carl.gg/documentation</a></li>
+<li>Dyno: <a href="https://dyno.gg/docs">https://dyno.gg/docs</a></li>
+<li>GitHub Bot: <a href="https://github.com/apps/github">https://github.com/apps/github</a></li>
+</ul>
+<p><strong>Community Management:</strong></p>
+<ul>
+<li>Discord Moderator Academy</li>
+<li>Community Guidelines Best Practices</li>
+</ul>
+<hr>
+<p><strong>Server Invite Link:</strong></p>
+<pre><code>https://discord.gg/phantom
+</code></pre>
+<p><strong>Quick Setup Checklist:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Server created and named</li>
+<li><input disabled="" type="checkbox"> Icon and banner uploaded</li>
+<li><input disabled="" type="checkbox"> Channel structure configured</li>
+<li><input disabled="" type="checkbox"> Roles set up</li>
+<li><input disabled="" type="checkbox"> Bots invited and configured</li>
+<li><input disabled="" type="checkbox"> Welcome message pinned</li>
+<li><input disabled="" type="checkbox"> Rules channel created</li>
+<li><input disabled="" type="checkbox"> Moderation team assigned</li>
+<li><input disabled="" type="checkbox"> Vanity URL configured (if boosted)</li>
+<li><input disabled="" type="checkbox"> Integration with GitHub/Twitter</li>
+<li><input disabled="" type="checkbox"> Promotion strategy ready</li>
+</ul>
+<p><strong>Launch Ready!</strong> 🎭</p>
+
+    </main>
+</body>
+</html>

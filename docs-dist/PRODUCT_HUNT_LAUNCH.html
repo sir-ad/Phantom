@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRODUCT_HUNT_LAUNCH - Phantom Documentation</title>
+    <link rel="stylesheet" href="assets/oat.min.css">
+    <script src="assets/oat.min.js"></script>
+    <style>
+        /* Custom tweaks for docs */
+        body { display: flex; }
+        .sidebar { width: 250px; border-right: 1px solid var(--border); padding: 1rem; height: 100vh; overflow-y: auto; position: fixed; }
+        .main-content { margin-left: 250px; padding: 2rem; max-width: 800px; }
+        div.code-block { background: var(--bg-alt); padding: 1rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1rem; }
+        /* Oat specific overrides if needed */
+        [data-theme='dark'] { --bg: #111; --text: #eee; }
+    </style>
+</head>
+<body data-theme="dark">
+    <nav class="sidebar">
+        <h3>Phantom</h3>
+        <ul class="sidebar-list"><li><a href="/DISCORD_SETUP.html" class="">DISCORD_SETUP</a></li><li><a href="/PRODUCT_HUNT_LAUNCH.html" class="">PRODUCT_HUNT_LAUNCH</a></li><li><a href="/PUBLISHING.html" class="">PUBLISHING</a></li><li><a href="/README.html" class="">README</a></li><li><a href="/VISUAL_ASSETS_GUIDE.html" class="">VISUAL_ASSETS_GUIDE</a></li><li><a href="/architecture.html" class="">Architecture</a></li><li><a href="/cli-reference.html" class="">Cli Reference</a></li><li><a href="/cli.html" class="">Cli</a></li><li><a href="/configuration.html" class="">Configuration</a></li><li><a href="/contributing.html" class="">Contributing</a></li><li><a href="/features.html" class="">Features</a></li><li><a href="/getting-started.html" class="">Getting Started</a></li><li><a href="/install.html" class="">Install</a></li><li><a href="/installation.html" class="">Installation</a></li><li><a href="/intro.html" class="">Intro</a></li><li><a href="/mcp.html" class="">Mcp</a></li><li><a href="/modules.html" class="">Modules</a></li><li class="sidebar-header">Features</li><li><a href="/features/agents.html" class="">Agents</a></li><li><a href="/features/chat.html" class="">Chat</a></li><li><a href="/features/prd.html" class="">Prd</a></li><li><a href="/features/simulation.html" class="">Simulation</a></li><li><a href="/features/swarm.html" class="">Swarm</a></li><li class="sidebar-header">Pm</li><li><a href="/pm/launch-plan.html" class="">Launch Plan</a></li><li><a href="/pm/metrics-kpi-framework.html" class="">Metrics Kpi Framework</a></li><li><a href="/pm/personas-jtbd.html" class="">Personas Jtbd</a></li><li><a href="/pm/prd-phantom-v1.html" class="">Prd Phantom V1</a></li><li><a href="/pm/product-hunt-runbook.html" class="">Product Hunt Runbook</a></li><li><a href="/pm/roadmap-quarterly.html" class="">Roadmap Quarterly</a></li><li class="sidebar-header">Providers</li><li><a href="/providers/anthropic.html" class="">Anthropic</a></li><li><a href="/providers/gemini.html" class="">Gemini</a></li><li><a href="/providers/index.html" class="">Index</a></li><li><a href="/providers/ollama.html" class="">Ollama</a></li><li><a href="/providers/openai.html" class="">Openai</a></li><li class="sidebar-header">Status</li><li><a href="/status/capability-matrix.html" class="">Capability Matrix</a></li><li><a href="/status/demo-vs-real.html" class="">Demo Vs Real</a></li><li><a href="/status/roadmap-status.html" class="">Roadmap Status</a></li><li class="sidebar-header">Tech</li><li><a href="/tech/architecture-overview.html" class="">Architecture Overview</a></li><li class="sidebar-header">Tech/Core</li><li><a href="/tech/core/agent-swarm-spec.html" class="">Agent Swarm Spec</a></li><li><a href="/tech/core/context-engine-spec.html" class="">Context Engine Spec</a></li><li class="sidebar-header">Tech/Installer</li><li><a href="/tech/installer/install-script-design.html" class="">Install Script Design</a></li><li><a href="/tech/installer/one-line-installer-spec.html" class="">One Line Installer Spec</a></li><li><a href="/tech/installer/release-manifest-schema.html" class="">Release Manifest Schema</a></li><li class="sidebar-header">Tech/Integrations</li><li><a href="/tech/integrations/adapter-specs.html" class="">Adapter Specs</a></li><li><a href="/tech/integrations/mcp-core-spec.html" class="">Mcp Core Spec</a></li><li class="sidebar-header">Tech/Security</li><li><a href="/tech/security/privacy-model.html" class="">Privacy Model</a></li><li class="sidebar-header">Tech/Testing</li><li><a href="/tech/testing/test-strategy.html" class="">Test Strategy</a></li><li class="sidebar-header">User</li><li><a href="/user/install.html" class="">Install</a></li><li><a href="/user/integrations.html" class="">Integrations</a></li><li><a href="/user/modules.html" class="">Modules</a></li><li><a href="/user/quickstart.html" class="">Quickstart</a></li><li><a href="/user/troubleshooting.html" class="">Troubleshooting</a></li><li class="sidebar-header">Vision</li><li><a href="/vision/2-year-vision.html" class="">2 Year Vision</a></li><li><a href="/vision/agent-personas.html" class="">Agent Personas</a></li><li><a href="/vision/magic-moments.html" class="">Magic Moments</a></li><li><a href="/vision/phantom-magical-os.html" class="">Phantom Magical Os</a></li><li class="sidebar-header">Web</li><li><a href="/web/design-system.html" class="">Design System</a></li><li><a href="/web/launch-runbook.html" class="">Launch Runbook</a></li><li><a href="/web/page-spec-docs.html" class="">Page Spec Docs</a></li><li><a href="/web/page-spec-home.html" class="">Page Spec Home</a></li><li><a href="/web/page-spec-install.html" class="">Page Spec Install</a></li><li><a href="/web/page-spec-modules.html" class="">Page Spec Modules</a></li><li><a href="/web/seo-analytics.html" class="">Seo Analytics</a></li><li><a href="/web/website-prd.html" class="">Website Prd</a></li></ul>
+    </nav>
+    <main class="main-content">
+        <h1>PRODUCT_HUNT_LAUNCH</h1>
+        <h1>Product Hunt Launch Preparation</h1>
+<p>Complete guide for launching PHANTOM on Product Hunt successfully.</p>
+<h2>Pre-Launch Checklist</h2>
+<h3>2 Weeks Before Launch</h3>
+<p><strong>Product Hunt Profile Setup:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Create Product Hunt account (if new)</li>
+<li><input disabled="" type="checkbox"> Complete profile with photo and bio</li>
+<li><input disabled="" type="checkbox"> Connect Twitter and GitHub</li>
+<li><input disabled="" type="checkbox"> Join relevant discussions</li>
+<li><input disabled="" type="checkbox"> Build follower count (comment on other launches)</li>
+</ul>
+<p><strong>Product Page Preparation:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Product name: &quot;PHANTOM&quot;</li>
+<li><input disabled="" type="checkbox"> Tagline: &quot;AI-powered PM operating system for your terminal&quot;</li>
+<li><input disabled="" type="checkbox"> Description (260 chars): Written</li>
+<li><input disabled="" type="checkbox"> Thumbnail (240x240px): Designed</li>
+<li><input disabled="" type="checkbox"> Gallery images (6-8): Created</li>
+<li><input disabled="" type="checkbox"> Demo video (60s): Recorded and edited</li>
+<li><input disabled="" type="checkbox"> Topics selected: Developer Tools, AI, Productivity, Open Source</li>
+</ul>
+<p><strong>First Comment Draft:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Written and reviewed</li>
+<li><input disabled="" type="checkbox"> Includes maker story</li>
+<li><input disabled="" type="checkbox"> Clear value proposition</li>
+<li><input disabled="" type="checkbox"> Call to action</li>
+</ul>
+<p><strong>Team Coordination:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Team members added to PH</li>
+<li><input disabled="" type="checkbox"> Roles assigned</li>
+<li><input disabled="" type="checkbox"> Launch day schedule confirmed</li>
+<li><input disabled="" type="checkbox"> Communication channels established</li>
+</ul>
+<h3>1 Week Before Launch</h3>
+<p><strong>Technical Preparation:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> All features tested and working</li>
+<li><input disabled="" type="checkbox"> No critical bugs</li>
+<li><input disabled="" type="checkbox"> Website live and fast (phantom.pm)</li>
+<li><input disabled="" type="checkbox"> GitHub repo polished</li>
+<li><input disabled="" type="checkbox"> Documentation complete</li>
+<li><input disabled="" type="checkbox"> Install scripts tested</li>
+</ul>
+<p><strong>Marketing Assets:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Demo GIF optimized (&lt;5MB)</li>
+<li><input disabled="" type="checkbox"> Demo video hosted (YouTube/Vimeo)</li>
+<li><input disabled="" type="checkbox"> Screenshots compressed</li>
+<li><input disabled="" type="checkbox"> Social media assets ready</li>
+<li><input disabled="" type="checkbox"> Email templates prepared</li>
+</ul>
+<p><strong>Community Preparation:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Beta users briefed</li>
+<li><input disabled="" type="checkbox"> Discord server active</li>
+<li><input disabled="" type="checkbox"> Contributors ready to support</li>
+<li><input disabled="" type="checkbox"> Influencers notified</li>
+</ul>
+<h3>Day Before Launch</h3>
+<p><strong>Final Checks:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Test all links</li>
+<li><input disabled="" type="checkbox"> Verify website uptime</li>
+<li><input disabled="" type="checkbox"> Check GitHub repo</li>
+<li><input disabled="" type="checkbox"> Test installation commands</li>
+<li><input disabled="" type="checkbox"> Review all assets</li>
+<li><input disabled="" type="checkbox"> Confirm team availability</li>
+<li><input disabled="" type="checkbox"> Get good sleep!</li>
+</ul>
+<h2>Product Hunt Page Content</h2>
+<h3>Product Name</h3>
+<pre><code>PHANTOM
+</code></pre>
+<h3>Tagline (60 characters max)</h3>
+<pre><code>AI-powered PM operating system for your terminal
+</code></pre>
+<h3>Description (260 characters max)</h3>
+<pre><code>PHANTOM gives developers product management superpowers. Feed it your codebase, get AI-generated PRDs in minutes. Run 7 PM agents to analyze decisions. Works invisibly with Claude Code, Cursor, and other AI tools. 100% open source.
+</code></pre>
+<h3>Maker Comment (Post within 5 minutes of launch)</h3>
+<pre><code class="language-markdown">Hey Product Hunt! 👋
+
+I built PHANTOM because developers and PMs speak different languages.
+
+**The Problem:**
+• Switching between 10+ PM tools
+• Writing PRDs takes hours
+• Guessing product decisions
+• PM/Dev communication gaps
+
+**PHANTOM Solution:**
+🧠 **Context Engine** — Feed it your codebase, it understands everything
+🤖 **Agent Swarm** — 7 AI PMs analyze decisions in parallel  
+📦 **Module System** — Install capabilities like &quot;I know kung fu&quot;
+🔒 **100% Local** — Your data never leaves your machine
+🌉 **The Bridge** — Translates PM ↔ Dev automatically
+⚡ **MCP Magic** — Works invisibly with Claude Code, Cursor, etc.
+
+**Try it:**
+```bash
+npm install -g @phantompm/cli
+phantom swarm &quot;Your product question&quot;
+</code></pre>
+<p><strong>What&#39;s different:</strong>
+Unlike other PM tools, PHANTOM:
+• Runs in your terminal (where devs live)
+• Works offline with local AI models
+• Integrates invisibly with AI coding tools
+• Open source (MIT license)</p>
+<p>We&#39;ve been in private beta with 50 users for 2 weeks. Today we&#39;re open sourcing everything.</p>
+<p><strong>GitHub:</strong> <a href="https://github.com/PhantomPM/phantom">https://github.com/PhantomPM/phantom</a>
+<strong>Docs:</strong> <a href="https://phantom.pm/docs">https://phantom.pm/docs</a><br><strong>Discord:</strong> <a href="https://discord.gg/phantom">https://discord.gg/phantom</a></p>
+<p>Would love your feedback! 🚀</p>
+<hr>
+<p><strong>Maker:</strong> @your_name — Creator, Developer</p>
+<pre><code>
+### Gallery Images (Upload in this order)
+
+**1. Hero Shot (Most important)**
+- 1200x630px
+- Logo + tagline
+- Matrix rain effect
+- &quot;Terminal-first PM OS&quot;
+
+**2. Boot Sequence**
+- Show &quot;I know kung fu&quot; moment
+- System loading animation
+- Matrix aesthetic
+
+**3. Agent Swarm**
+- 7 agents analyzing
+- Real-time output
+- Consensus display
+
+**4. PRD Generation Demo**
+- Command input
+- Generation progress
+- Final output preview
+
+**5. Module Installation**
+- &quot;phantom install @phantom/prd&quot;
+- Download animation
+- Success message
+
+**6. MCP Integration**
+- Show with Claude Code/Cursor
+- Invisible operation
+- Result appears
+
+**7. Dashboard**
+- Full TUI interface
+- Metrics and status
+- Beautiful Matrix theme
+
+**8. Architecture**
+- How components connect
+- Module system diagram
+- Integration points
+
+### Demo Video (60 seconds)
+
+**Script:**
+</code></pre>
+<p>[0-5s] Matrix boot animation with logo
+&quot;PHANTOM: Product Management Superpowers&quot;</p>
+<p>[5-15s] Terminal demo
+&quot;One command installation&quot;
+$ curl -fsSL <a href="https://phantom.pm/install">https://phantom.pm/install</a> | sh</p>
+<p>[15-25s] Context addition<br>&quot;Feed it your codebase&quot;
+$ phantom context add ./my-app
+✓ Indexed 2,847 files</p>
+<p>[25-35s] PRD generation
+&quot;Generate PRDs in 60 seconds&quot;
+$ phantom prd create &quot;Authentication&quot;
+[Show generation progress]</p>
+<p>[35-45s] Agent swarm
+&quot;Get AI-powered insights&quot;
+$ phantom swarm &quot;Should we add dark mode?&quot;
+[Show 7 agents analyzing]</p>
+<p>[45-55s] Results
+[Show consensus and recommendation]</p>
+<p>[55-60s] Call to action
+&quot;100% open source. 100% local. 100% free.&quot;
+github.com/PhantomPM/phantom</p>
+<pre><code>
+**Technical Specs:**
+- Resolution: 1920x1080 or 1280x720
+- Format: MP4 or MOV
+- File size: &lt; 50MB
+- Audio: Optional (music + voiceover)
+- Captions: Recommended
+
+## Launch Day Strategy
+
+### Timeline (Pacific Time)
+
+**12:01 AM - Launch**
+- [ ] Hit &quot;Publish&quot; button
+- [ ] Verify page is live
+- [ ] Check all links work
+- [ ] Ensure video plays
+
+**12:05 AM - First Comment**
+- [ ] Post maker comment
+- [ ] Pin important info
+- [ ] Respond to early questions
+
+**12:10 AM - Initial Engagement**
+- [ ] Team upvotes (only if genuine users)
+- [ ] Team comments with unique insights
+- [ ] Share in team Slack/Discord
+
+**12:15 AM - Social Media Blitz**
+- [ ] Tweet announcement
+- [ ] LinkedIn post
+- [ ] Discord announcement
+- [ ] Share in relevant communities
+
+**2:00 AM - Reddit Posts**
+- [ ] r/SideProject
+- [ ] r/opensource
+- [ ] r/programming
+- [ ] r/webdev
+- [ ] Relevant niche subreddits
+
+**8:00 AM - HackerNews**
+- [ ] Submit &quot;Show HN&quot; post
+- [ ] Monitor comments
+- [ ] Respond to technical questions
+
+**10:00 AM - Dev Communities**
+- [ ] Dev.to article
+- [ ] Hashnode article
+- [ ] Indie Hackers post
+- [ ] Lobsters (if applicable)
+
+**12:00 PM - Email Campaign**
+- [ ] Send to beta users
+- [ ] Personal network
+- [ ] Waitlist subscribers
+
+**2:00 PM - Twitter Thread**
+- [ ] Detailed feature thread
+- [ ] Demo GIFs/videos
+- [ ] Community engagement
+
+**4:00 PM - Live Demo (Optional)**
+- [ ] YouTube Live or Twitch
+- [ ] Show features live
+- [ ] Q&amp;A session
+- [ ] Record for later
+
+**6:00 PM - Final Push**
+- [ ] Last social media posts
+- [ ] Thank supporters
+- [ ] Share current ranking
+- [ ] Encourage final upvotes
+
+**9:00 PM - Wrap Up**
+- [ ] Thank everyone
+- [ ] Share results
+- [ ] Analyze performance
+- [ ] Plan follow-up
+
+### Response Templates
+
+**Thanking Upvoters:**
+</code></pre>
+<p>Thanks for the upvote! 🙏 Really appreciate the support. </p>
+<p>If you try it out, I&#39;d love to hear your feedback!</p>
+<pre><code>
+**Answering Questions:**
+</code></pre>
+<p>Great question! [Provide detailed answer]</p>
+<p>Let me know if you need clarification on anything else.</p>
+<pre><code>
+**Feature Requests:**
+</code></pre>
+<p>Love this idea! 💡 Added to our roadmap.</p>
+<p>Feel free to open an issue on GitHub with more details: [link]</p>
+<pre><code>
+**Bug Reports:**
+</code></pre>
+<p>Thanks for reporting! Looking into it now.</p>
+<p>Could you share:</p>
+<ol>
+<li>Your OS and version</li>
+<li>Node version</li>
+<li>Error message/screenshot</li>
+</ol>
+<p>Tracking here: [GitHub issue link]</p>
+<pre><code>
+**Comparison Questions:**
+</code></pre>
+<p>Great question! Here&#39;s how PHANTOM differs:</p>
+<ol>
+<li>[Key difference 1]</li>
+<li>[Key difference 2]  </li>
+<li>[Key difference 3]</li>
+</ol>
+<p>Happy to dive deeper on any of these!</p>
+<pre><code>
+## Promotion Channels
+
+### Social Media
+
+**Twitter:**
+</code></pre>
+<p>🎭 Launching PHANTOM on @ProductHunt today!</p>
+<p>Open-source PM operating system that:
+• Generates PRDs in 60 seconds
+• Runs 7 AI agents to analyze decisions
+• Works with Claude Code, Cursor, etc.
+• 100% local, 100% free</p>
+<p>Try it: npm install -g @phantompm/cli</p>
+<p>[Link + Demo GIF]</p>
+<pre><code>
+**LinkedIn:**
+</code></pre>
+<p>Today we&#39;re launching PHANTOM - an open-source PM operating system for developers.</p>
+<p>After months of development and 2 weeks of private beta with 50 users, we&#39;re excited to share it with the world.</p>
+<p>What makes PHANTOM different:
+✅ Terminal-native (where developers live)
+✅ Works offline with local AI
+✅ Integrates with existing AI coding tools
+✅ Completely open source (MIT)</p>
+<p>Check it out on Product Hunt: [link]</p>
+<p>#opensource #productmanagement #ai #developer #producthunt</p>
+<pre><code>
+### Communities
+
+**HackerNews (Show HN):**
+</code></pre>
+<p>Show HN: PHANTOM – Open-source PM operating system for developers</p>
+<p>PHANTOM gives developers product management superpowers through a terminal-based interface. It includes:</p>
+<p>• Context engine for understanding codebases
+• 7 AI agents for multi-perspective analysis
+• Module system for extensible capabilities
+• MCP integration with AI coding tools
+• 100% local-first architecture</p>
+<p>We&#39;ve been building this for 6 months with a small team. Would love feedback from the HN community!</p>
+<p>GitHub: <a href="https://github.com/PhantomPM/phantom">https://github.com/PhantomPM/phantom</a>
+Demo: [video link]</p>
+<pre><code>
+**Reddit Posts:**
+
+r/SideProject:
+</code></pre>
+<p>I built an open-source PM operating system that runs in the terminal</p>
+<p>After years of switching between PM tools, I built PHANTOM - a CLI tool that gives developers PM superpowers.</p>
+<p>Key features:
+• AI-generated PRDs in seconds
+• Multi-agent analysis (7 PMs in parallel)
+• Works with Claude Code, Cursor, etc.
+• 100% local and open source</p>
+<p>Would love feedback from fellow side project builders!</p>
+<p>[Link to Product Hunt]</p>
+<pre><code>
+r/opensource:
+</code></pre>
+<p>PHANTOM - Open source PM operating system (launched today!)</p>
+<p>We&#39;re excited to share PHANTOM, an open-source terminal tool for product management.</p>
+<p>Built with:
+• TypeScript
+• Node.js
+• Modular architecture
+• MCP protocol support</p>
+<p>MIT licensed. Check it out!</p>
+<p>[GitHub link]
+[Product Hunt link]</p>
+<pre><code>
+## Email Templates
+
+**Beta Users:**
+</code></pre>
+<p>Subject: PHANTOM is live on Product Hunt! 🚀</p>
+<p>Hey [Name],</p>
+<p>Remember when you tried PHANTOM during our beta? </p>
+<p>Today we&#39;re launching publicly on Product Hunt!</p>
+<p>Your early feedback was invaluable. If you enjoyed using PHANTOM, we&#39;d love your support:</p>
+<ol>
+<li>Check out our launch: [Product Hunt link]</li>
+<li>Upvote if you found it valuable</li>
+<li>Share with your network</li>
+</ol>
+<p>Thanks for being part of the journey!</p>
+<p>Best,
+[Your name]</p>
+<pre><code>
+**Personal Network:**
+</code></pre>
+<p>Subject: I launched something today!</p>
+<p>Hey friends,</p>
+<p>After months of work, I&#39;m launching PHANTOM on Product Hunt today.</p>
+<p>It&#39;s an open-source PM operating system for developers - think of it as giving developers product management superpowers in their terminal.</p>
+<p>If you have 2 minutes, I&#39;d appreciate your support:
+[Product Hunt link]</p>
+<p>No pressure at all, just wanted to share what I&#39;ve been working on!</p>
+<p>Thanks,
+[Your name]</p>
+<pre><code>
+## Success Metrics
+
+### Primary Goals
+
+- [ ] **Top 5 Product of the Day**
+- [ ] **1,000+ upvotes**
+- [ ] **100+ comments**
+- [ ] **50+ reviews**
+- [ ] **Featured in newsletter** (bonus)
+
+### Secondary Goals
+
+- [ ] **GitHub stars**: +5,000
+- [ ] **npm installs**: +1,000
+- [ ] **Discord members**: +500
+- [ ] **Website traffic**: +10,000 visits
+- [ ] **Press coverage**: 1-2 articles
+
+### Post-Launch Analysis
+
+Track these metrics:
+- Upvotes over time
+- Comment sentiment
+- Feature requests
+- Bug reports
+- Traffic sources
+- Conversion rates
+
+## Contingency Plans
+
+### If Technical Issues Arise
+
+1. **Website Down**
+   - Switch to GitHub Pages backup
+   - Post update on PH
+   - Focus on GitHub repo
+
+2. **Install Issues**
+   - Pin troubleshooting comment
+   - Update install docs
+   - Provide manual install instructions
+
+3. **Bugs Reported**
+   - Acknowledge quickly
+   - Provide workarounds
+   - Commit to fix timeline
+
+### If Launch Underperforms
+
+1. Don&#39;t panic - launches can pick up later
+2. Engage more in comments
+3. Reach out to influencers directly
+4. Extend promotion period
+5. Learn and iterate for next launch
+
+### If Launch Exceeds Expectations
+
+1. Ensure infrastructure can handle load
+2. Scale support team
+3. Capture all feedback
+4. Plan follow-up communications
+5. Prepare for media interest
+
+## Post-Launch Actions
+
+### Day 2-7
+
+- [ ] Thank all supporters individually
+- [ ] Respond to all comments
+- [ ] Fix reported bugs quickly
+- [ ] Implement quick wins from feedback
+- [ ] Share results on social media
+
+### Week 2-4
+
+- [ ] Publish launch retrospective blog post
+- [ ] Analyze what worked/didn&#39;t work
+- [ ] Plan next major feature
+- [ ] Continue community engagement
+- [ ] Reach out to press with results
+
+## Resources
+
+**Product Hunt:**
+- Maker Guidelines: https://www.producthunt.com/makers
+- Launch Checklist: https://blog.producthunt.com/
+- Best Practices: Product Hunt blog
+
+**Tools:**
+- Screen Recording: ScreenFlow, OBS
+- Video Editing: iMovie, Premiere, DaVinci Resolve
+- Image Editing: Figma, Photoshop, Canva
+- Scheduling: Buffer, Hootsuite, TweetDeck
+
+---
+
+**Launch Day Command Center:**
+- Product Hunt Page: https://www.producthunt.com/products/phantom
+- GitHub Repo: https://github.com/PhantomPM/phantom
+- Discord: https://discord.gg/phantom
+- Twitter: https://twitter.com/phantom_pm
+- Website: https://phantom.pm
+
+**Ready to launch! 🚀🎭**
+</code></pre>
+
+    </main>
+</body>
+</html>

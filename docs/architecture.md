@@ -1,63 +1,89 @@
+---
+sidebar_position: 1
+title: Architecture
+---
+
 # Architecture
 
-Phantom is built as a modular "Operating System" for Product Management, designed to run in the terminal and integrate with other tools via MCP.
+Phantom is built as a modular monorepo with 6 packages. Each package has a single responsibility and communicates through well-defined TypeScript interfaces.
 
-## System Overview
+## System Diagram
 
 ```mermaid
 graph TD
-    User[User Terminal] --> CLI[Phantom CLI]
-    IDE[IDE / Agent] --> MCP[MCP Server]
+    User[User Terminal] --> CLI["@phantom-pm/cli"]
+    IDE[IDE / Agent] --> MCP["@phantom-pm/mcp-server"]
     
-    subgraph "Phantom OS"
-        CLI --> Core[Core Engine]
+    subgraph "Phantom Core"
+        CLI --> Core["@phantom-pm/core"]
         MCP --> Core
+        CLI --> TUI["@phantom-pm/tui"]
         
         Core --> AI[AI Manager]
         Core --> Context[Context Engine]
         Core --> Discovery[Agent Discovery]
+        Core --> Config[Configuration]
         
         AI --> Providers[LLM Providers]
-        Context --> LocalDB[Local Vector/JSON DB]
+        
+        Modules["@phantom-pm/modules"] --> Core
+        Integrations["@phantom-pm/integrations"] --> Core
     end
     
-    Providers --> OpenAI
-    Providers --> Anthropic
-    Providers --> Ollama
-    Providers --> Gemini
+    Providers --> Ollama[Ollama]
+    Providers --> OpenAI[OpenAI]
+    Providers --> Anthropic[Anthropic]
+    Providers --> Gemini[Gemini]
 ```
 
-## Key Components
+## Package Overview
 
-### 1. Core Engine (`@phantom-pm/core`)
-The brain. Handles:
-- **AI Abstraction**: Unified interface for OpenAI, Anthropic, Gemini, Ollama.
-- **Context Management**: Storing and retrieving project context.
-- **Agent Orchestration**: Managing the "Swarm" of virtual agents.
+| Package | Purpose | Key Files |
+|---------|---------|-----------|
+| `@phantom-pm/core` | AI providers, config, context, discovery | `ai/manager.ts`, `config.ts`, `context.ts` |
+| `@phantom-pm/cli` | Terminal interface, commands, chat REPL | `index.tsx`, `commands/chat.ts` |
+| `@phantom-pm/mcp-server` | Model Context Protocol server | `index.ts`, `discovery.ts` |
+| `@phantom-pm/tui` | Terminal UI components (Ink/React) | `screens/boot.ts`, `screens/swarm.ts` |
+| `@phantom-pm/modules` | Functional plugins (PRD, Swarm, etc.) | `prd-forge.ts`, `swarm.ts` |
+| `@phantom-pm/integrations` | External tool connectors | `github.ts` |
 
-### 2. CLI (`@phantom-pm/cli`)
-The interface.
-- Built with `commander` and `ink` (React for CLI).
-- Handles user input, rendering TUI components, and streaming output.
+## AI Manager
 
-### 3. MCP Server (`@phantom-pm/mcp-server`)
-The bridge.
-- Implements the [Model Context Protocol](https://modelcontextprotocol.io).
-- Exposes Phantom tools (PRD gen, Swarm) to external agents like Claude Desktop and IDEs.
+The `AIManager` class is the central abstraction for LLM communication:
 
-### 4. Modules (`@phantom-pm/modules`)
-The plugins.
-- Specific functional blocks like `prd-forge`, `story-writer`, `ux-auditor`.
-- Can be installed/uninstalled to customize the OS.
+```typescript
+class AIManager {
+  providers: Map<ProviderType, BaseAIProvider>;
+  defaultProvider: BaseAIProvider;
+  fallbackChain: BaseAIProvider[];
+  
+  async complete(request: AIRequest): Promise<AIResponse>;
+  async stream(request: AIRequest): Promise<StreamingAIResponse>;
+}
+```
+
+**Key design decisions:**
+- **Provider abstraction**: All providers implement `BaseAIProvider`, making it trivial to add new ones.
+- **Automatic fallback**: If the primary provider fails, the manager tries the next in the chain.
+- **Streaming-first**: The chat REPL uses `stream()` for real-time output.
+- **Rate limiting**: Built-in per-provider rate limiting prevents API throttling.
 
 ## Data Storage
 
-Phantom stores configuration and local context in `~/.phantom/` (or platform equivalent).
-- `config.json`: User preferences & API keys.
-- `brain/`: Project-specific context and memory.
+All data is stored locally in `~/.phantom/`:
 
-## Security
+```
+~/.phantom/
+├── config.json     # User configuration & API keys
+├── brain/          # Project context and memory
+└── modules/        # Installed module data
+```
 
-- API keys are stored in the local config file (user-readable only).
-- No data is sent to Phantom servers (there are no Phantom servers).
-- All AI calls go directly from your machine to the provider API.
+No data is sent to Phantom servers. All AI calls go directly from your machine to the provider API.
+
+## Build System
+
+- **TypeScript** throughout, compiled with `tsc`.
+- **npm workspaces** for monorepo management.
+- **esbuild** for release binary bundling.
+- Dependencies flow: `core` → `mcp-server` / `modules` / `tui` → `cli`.
