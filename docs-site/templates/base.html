@@ -19,6 +19,9 @@
         {% set docs = get_section(path="docs/_index.md", metadata_only=true) %}
         <ul>
             <li><a href="{{ get_url(path='/') }}">← Home</a></li>
+            <li><a href="{{ get_url(path='/docs/install') }}">Install</a></li>
+            <li><a href="{{ get_url(path='/docs/modules') }}">Modules</a></li>
+            <hr>
             {% for page in docs.pages %}
             <li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
             {% endfor %}

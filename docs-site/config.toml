@@ -1,5 +1,5 @@
 # Phantom Documentation - Zola Config
-base_url = "https://sir-ad.github.io/phantom/"
+base_url = "https://sir-ad.github.io/Phantom/"
 title = "Phantom"
 description = "The invisible force behind every great product"
 compile_sass = true
