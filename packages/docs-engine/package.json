@@ -1,0 +1,48 @@
+{
+    "name": "@phantom-pm/docs-engine",
+    "version": "1.0.0",
+    "description": "Document generation engine for Phantom — PPTX slides, Excel workbooks, PDF reports, and HTML dashboards",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/**/*"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsx watch src/index.ts",
+        "prepublishOnly": "npm run build"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@phantom-pm/core": "file:../core",
+        "pptxgenjs": "^3.12.0",
+        "exceljs": "^4.4.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.5.0",
+        "tsx": "^4.16.0",
+        "@types/node": "^20.14.0"
+    },
+    "keywords": [
+        "phantom",
+        "docs-engine",
+        "pptx",
+        "excel",
+        "pdf",
+        "dashboard",
+        "product-management"
+    ],
+    "author": "PhantomPM",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sir-ad/Phantom.git",
+        "directory": "packages/docs-engine"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

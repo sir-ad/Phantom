@@ -251,6 +251,37 @@ const RESOURCES: ResourceDefinition[] = [
   },
 ];
 
+export type MCPMode = 'core' | 'standard' | 'all';
+
+const CORE_TOOLS: PhantomToolName[] = [
+  'context.add',
+  'context.search',
+  'phantom_analyze_product',
+  'phantom_discover_agents',
+  'phantom_register_self',
+];
+
+const STANDARD_TOOLS: PhantomToolName[] = [
+  ...CORE_TOOLS,
+  'prd.generate',
+  'phantom_generate_prd',
+  'phantom_create_stories',
+  'phantom_plan_sprint',
+  'phantom_simulate',
+];
+
+const ALL_TOOLS: PhantomToolName[] = [
+  ...STANDARD_TOOLS,
+  'swarm.analyze',
+  'phantom_swarm_analyze',
+  'bridge.translate_pm_to_dev',
+];
+
+function getToolsForMode(mode: MCPMode): ToolDefinition[] {
+  const allowed = mode === 'all' ? ALL_TOOLS : mode === 'standard' ? STANDARD_TOOLS : CORE_TOOLS;
+  return TOOL_DEFINITIONS.filter(t => allowed.includes(t.name));
+}
+
 function parseStringArg(args: Record<string, unknown>, key: string): string {
   const value = args[key];
   if (typeof value !== 'string' || value.trim().length === 0) {
@@ -474,8 +505,14 @@ function isToolRequest(payload: unknown): payload is ToolRequest {
 }
 
 export class PhantomMCPServer {
+  private mode: MCPMode;
+
+  constructor(mode: MCPMode = 'standard') {
+    this.mode = mode;
+  }
+
   listTools(): ToolDefinition[] {
-    return TOOL_DEFINITIONS;
+    return getToolsForMode(this.mode);
   }
 
   listResources(): ResourceDefinition[] {
@@ -892,8 +929,8 @@ async function handleJsonRpcRequest(server: PhantomMCPServer, request: JsonRpcRe
   return jsonRpcErr(id, -32601, `Method not found: ${method}`);
 }
 
-export async function runLegacyJsonlServer(): Promise<void> {
-  const server = new PhantomMCPServer();
+export async function runLegacyJsonlServer(toolMode: MCPMode = 'standard'): Promise<void> {
+  const server = new PhantomMCPServer(toolMode);
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -958,13 +995,13 @@ export async function runLegacyJsonlServer(): Promise<void> {
   }
 }
 
-export async function runStdioServer(mode: 'stdio' | 'legacy-jsonl' = 'stdio'): Promise<void> {
-  if (mode === 'legacy-jsonl') {
-    await runLegacyJsonlServer();
+export async function runStdioServer(transportMode: 'stdio' | 'legacy-jsonl' = 'stdio', toolMode: MCPMode = 'standard'): Promise<void> {
+  if (transportMode === 'legacy-jsonl') {
+    await runLegacyJsonlServer(toolMode);
     return;
   }
 
-  const server = new PhantomMCPServer();
+  const server = new PhantomMCPServer(toolMode);
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout,

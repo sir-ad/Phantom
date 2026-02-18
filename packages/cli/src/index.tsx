@@ -43,7 +43,7 @@ import {
 import { registerConfigCommands } from './commands/config.js';
 import { registerStoriesCommands } from './commands/stories.js';
 import { startChat } from './commands/chat.js';
-import { PhantomMCPServer, runStdioServer, PhantomDiscovery } from '@phantom-pm/mcp-server';
+import { PhantomMCPServer, runStdioServer, PhantomDiscovery, MCPMode } from '@phantom-pm/mcp-server';
 import {
   theme,
   box,
@@ -387,15 +387,24 @@ mcpCommand
 mcpCommand
   .command('serve')
   .description('Run MCP server over stdio')
-  .option('--mode <mode>', 'transport mode', 'stdio')
-  .action(async (options: { mode: string }) => {
-    const mode = options.mode === 'legacy-jsonl' ? 'legacy-jsonl' : 'stdio';
+  .option('--mode <mode>', 'Transport mode (stdio, legacy-jsonl)', 'stdio')
+  .option('--tools <mode>', 'Tool loading mode (core, standard, all)', 'standard')
+  .action(async (options: { mode: string; tools: string }) => {
+    const transportMode = options.mode === 'legacy-jsonl' ? 'legacy-jsonl' : 'stdio';
     if (options.mode !== 'stdio' && options.mode !== 'legacy-jsonl') {
       console.log('');
-      console.log(theme.warning(`  Unsupported mode '${options.mode}', using stdio or legacy-jsonl.`));
+      console.log(theme.warning(`  Unsupported transport mode '${options.mode}', using stdio.`));
       console.log('');
     }
-    await runStdioServer(mode);
+
+    // Validate tool mode
+    const validToolModes = ['core', 'standard', 'all'];
+    const toolMode = validToolModes.includes(options.tools) ? options.tools as MCPMode : 'standard';
+    if (!validToolModes.includes(options.tools)) {
+      console.log(theme.warning(`  Unsupported tool mode '${options.tools}', using standard.`));
+    }
+
+    await runStdioServer(transportMode, toolMode);
   });
 
 mcpCommand
@@ -2286,42 +2295,6 @@ program
       process.exitCode = 1;
       return;
     }
-
-    process.exitCode = 1;
-  });
-
-program
-  .command('dashboard')
-  .alias('dash')
-  .description('Show concise runtime summary')
-  .option('--json', 'Output as JSON')
-  .action((options: { json?: boolean }) => {
-    const cfg = getConfig().get();
-    const stats = getContextEngine().getStats();
-    const health = getRuntimeHealth(process.cwd());
-    const payload = {
-      activeProject: cfg.activeProject || null,
-      contextFiles: stats.totalFiles,
-      contextHealth: stats.healthScore,
-      installedModules: cfg.installedModules.length,
-      connectedIntegrations: health.integrations.filter(i => i.connected).length,
-      primaryModel: health.primaryModel,
-    };
-    if (options.json) {
-      printJson(payload);
-      return;
-    }
-    console.log('');
-    console.log(box([
-      '',
-      `  Active Project: ${payload.activeProject || 'none'}`,
-      `  Context Files: ${payload.contextFiles} (health ${payload.contextHealth}%)`,
-      `  Installed Modules: ${payload.installedModules}`,
-      `  Connected Integrations: ${payload.connectedIntegrations}`,
-      `  Primary Model: ${payload.primaryModel.provider}/${payload.primaryModel.model} (${payload.primaryModel.status})`,
-      '',
-    ].join('\n'), 'PHANTOM DASHBOARD', 78));
-    console.log('');
   });
 
 // Agent Matrix Commands
@@ -2749,6 +2722,20 @@ if (
 }
 
 // ── Default: no command → launch interactive chat ──
+import React from 'react';
+import { render } from 'ink';
+import { Dashboard } from './commands/dashboard.js';
+// Check if command already exists to prevent duplicate registration in case of re-execution
+if (!program.commands.find((c: any) => c.name() === 'dashboard')) {
+  const dashboardCommand = program.command('dashboard')
+    .description('Launch localhost configuration dashboard')
+    .option('-p, --port <number>', 'Port to run on', '3333')
+    .action(async (options) => {
+      const { waitUntilExit } = render(React.createElement(Dashboard, { port: parseInt(options.port) }));
+      await waitUntilExit();
+    });
+}
+
 const knownCommands = program.commands.map((c: any) => c.name());
 const userCommand = argv[2];
 if (
