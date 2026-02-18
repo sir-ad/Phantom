@@ -47,6 +47,15 @@ Phantom is a **terminal-native operating system** that gives LLMs structured pro
 
 ---
 
+### 🔮 Chrome Extension (Development)
+1. Navigate to `packages/chrome-extension`.
+2. Run `npm install && npm run build`.
+3. Open Chrome and go to `chrome://extensions/`.
+4. Enable **Developer Mode**.
+5. Click **Load Unpacked** and select the `packages/chrome-extension/dist` folder.
+
+---
+
 ## Install
 
 ```bash
