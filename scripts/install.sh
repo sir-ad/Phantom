@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 # PHANTOM installer
-# Installs Phantom via npm
+# Installs Phantom via npm and ensures PATH is correct
 
-set -eu
+set -e
 
 PHANTOM_COLOR="${PHANTOM_COLOR:-1}"
 NPM_PACKAGE="@phantom-pm/cli"
@@ -48,22 +48,54 @@ check_environment() {
   fi
 }
 
+setup_path() {
+  # Try to find where npm installs global binaries
+  npm_bin_dir="$(npm prefix -g)/bin"
+  
+  # Check if this directory is in PATH
+  case ":$PATH:" in
+    *":$npm_bin_dir:"*) 
+      log "NPM bin directory ($npm_bin_dir) is already in PATH."
+      ;;
+    *)
+      warn "NPM bin directory ($npm_bin_dir) is NOT in your PATH."
+      warn "You may need to add it manually to your shell configuration."
+      log ""
+      log "  export PATH=\"$npm_bin_dir:\$PATH\""
+      log ""
+      ;;
+  esac
+}
+
 install_phantom() {
   log "Installing $NPM_PACKAGE globally via npm..."
   
+  # Try simple install first
   if npm install -g "$NPM_PACKAGE"; then
     log "Successfully installed Phantom!"
-    log ""
-    log "Run 'phantom --help' to get started."
   else
     log ""
     warn "Global installation failed (likely permission issues)."
-    log "Try running with sudo:"
-    log "  sudo npm install -g $NPM_PACKAGE"
+    log "Trying again with sudo..."
+    if sudo npm install -g "$NPM_PACKAGE"; then
+      log "Successfully installed Phantom with sudo!"
+    else
+      fail "Installation failed. Please try running 'sudo npm install -g $NPM_PACKAGE' manually."
+    fi
+  fi
+
+  setup_path
+
+  if command -v phantom >/dev/null 2>&1; then
     log ""
-    log "Or run instantly without installation using npx:"
-    log "  npx $NPM_PACKAGE --help"
-    exit 1
+    log "Verified: 'phantom' command is available."
+    log "Run 'phantom --help' to get started."
+  else
+    log ""
+    warn "The 'phantom' command is not yet available in your current shell."
+    log "You may need to restart your terminal or source your profile."
+    log "Alternatively, run instantly with npx:"
+    log "  npx $NPM_PACKAGE"
   fi
 }
 
