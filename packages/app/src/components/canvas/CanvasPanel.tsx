@@ -35,10 +35,16 @@ export function CanvasPanel() {
                         {activeArtifact.status === 'synced' ? 'SYNCED' : 'DRAFT'}
                     </div>
                     <div className="h-4 w-px bg-border/50"></div>
-                    <button className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
+                    <button
+                        onClick={() => alert("Edit mode activated (Phase 0 stub)")}
+                        className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+                    >
                         [EDIT]
                     </button>
-                    <button className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
+                    <button
+                        onClick={() => alert("Share link copied to clipboard (Phase 0 stub)")}
+                        className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+                    >
                         [SHARE]
                     </button>
                 </div>

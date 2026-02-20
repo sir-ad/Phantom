@@ -1,5 +1,5 @@
 // PHANTOM AI - Ollama Provider (Local)
-import { BaseAIProvider, type AIRequest, type AIResponse, type StreamingAIResponse, type AIMessage, type AIModelInfo, type ProviderHealth } from './base.js';
+import { BaseAIProvider, ProviderUnavailableError, type AIRequest, type AIResponse, type StreamingAIResponse, type AIMessage, type AIModelInfo, type ProviderHealth } from './base.js';
 
 export interface OllamaProviderConfig {
   baseUrl?: string;
@@ -63,6 +63,11 @@ export class OllamaProvider extends BaseAIProvider {
   async complete(request: AIRequest): Promise<AIResponse> {
     const startTime = Date.now();
 
+    const running = await this.isAvailable();
+    if (!running) {
+      throw new ProviderUnavailableError('Ollama not running at localhost:11434. Start with: ollama serve');
+    }
+
     return this.rateLimit(async () => {
       const response = await this.timeoutPromise(
         this.makeRequest(request),
@@ -94,6 +99,11 @@ export class OllamaProvider extends BaseAIProvider {
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
     const startTime = Date.now();
     const chunks: string[] = [];
+
+    const running = await this.isAvailable();
+    if (!running) {
+      throw new ProviderUnavailableError('Ollama not running at localhost:11434. Start with: ollama serve');
+    }
 
     return this.rateLimit(async () => {
       const streamResponse = await this.makeRequest(request, true);

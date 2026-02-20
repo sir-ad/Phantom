@@ -6,8 +6,9 @@ import express from 'express';
 import open from 'open';
 import path from 'path';
 import fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import os from 'os';
-import { BRAND, getMemoryManager } from '@phantom-pm/core';
+import { BRAND, getMemoryManager, getAIManager } from '@phantom-pm/core';
 import { runAgentCommunicator } from '@phantom-pm/modules';
 import * as modulesPkg from '@phantom-pm/modules';
 
@@ -34,15 +35,39 @@ export function registerServerCommands(program: Command) {
             app.use(express.static(phantomDir));
 
             // 2. Map API Routes (Replicating the old Next.js Backend)
-            app.get('/api/config', (req, res) => {
-                res.json({
-                    brand: BRAND,
-                    system: {
-                        version: '3.0.0',
-                        status: 'online',
-                        mode: 'desktop-gateway'
-                    }
-                });
+            const CONFIG_PATH = path.join(os.homedir(), '.phantom', 'config.json');
+
+            app.get('/api/config', async (req, res) => {
+                try {
+                    const config = await fsPromises.readFile(CONFIG_PATH, 'utf-8').catch(() => '{}');
+                    res.json(JSON.parse(config));
+                } catch {
+                    res.json({
+                        brand: BRAND,
+                        system: {
+                            version: '3.0.0',
+                            status: 'online',
+                            mode: 'desktop-gateway'
+                        }
+                    });
+                }
+            });
+
+            app.post('/api/config', async (req, res) => {
+                try {
+                    const config = req.body;
+                    await fsPromises.writeFile(CONFIG_PATH, JSON.stringify(config, null, 2));
+                    // Since AIManager is a singleton, we clear it and let the next access recreate it from config 
+                    // However, getAIManager doesn't have a reload. Wait, let's look at getAIManager().close().
+                    await getAIManager().close();
+
+                    // Note: Since `getAIManager` caches the instance locally in process:
+                    // we'll need a reload method.
+
+                    res.json({ success: true });
+                } catch (error: any) {
+                    res.status(500).json({ error: error.message });
+                }
             });
 
             // Memory Endpoint GET

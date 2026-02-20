@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SettingsOverlayProps {
     isOpen: boolean;
@@ -7,6 +7,30 @@ interface SettingsOverlayProps {
 
 export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
     const [activeTab, setActiveTab] = useState<'models' | 'mcp' | 'os'>('models');
+    const [config, setConfig] = useState<any>({});
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            fetch('/api/config')
+                .then(res => res.json())
+                .then(data => setConfig(data || {}))
+                .catch(err => console.error('Failed to load config', err));
+        }
+    }, [isOpen]);
+
+    const saveConfig = async (newConfig: any) => {
+        setConfig(newConfig);
+        try {
+            await fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newConfig)
+            });
+        } catch (error) {
+            console.error('Failed to save config', error);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -43,7 +67,7 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 
                     {/* Content */}
                     <div className="w-2/3 p-6 overflow-y-auto">
-                        {activeTab === 'models' && <ModelsView />}
+                        {activeTab === 'models' && <ModelsView config={config} saveConfig={saveConfig} />}
                         {activeTab === 'mcp' && <McpView />}
                         {activeTab === 'os' && <OSView />}
                     </div>
@@ -53,12 +77,21 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
     );
 }
 
-function ModelsView() {
+function ModelsView({ config, saveConfig }: { config: any, saveConfig: (config: any) => void }) {
+
+    // Helper to safely update nested apiKeys
+    const updateApiKey = (provider: string, value: string) => {
+        const newConfig = { ...config };
+        if (!newConfig.apiKeys) newConfig.apiKeys = {};
+        newConfig.apiKeys[provider] = value;
+        saveConfig(newConfig);
+    };
+
     return (
         <div className="space-y-6">
             <div>
                 <h3 className="text-lg font-semibold mb-1">Local & Offline (Ollama)</h3>
-                <p className="text-xs text-muted-foreground mb-4">Run entirely private, uncensored intelligence locally.</p>
+                <p className="text-xs text-muted-foreground mb-4">Run entirely private, uncensored intelligence locally. (http://localhost:11434)</p>
                 <div className="grid grid-cols-2 gap-3">
                     {['llama3.1:70b', 'qwen2.5:72b', 'deepseek-coder-v2', 'phi3:mini', 'gemma2:27b', 'mistral-nemo'].map(m => (
                         <div key={m} className="px-3 py-2 border border-border/40 rounded-md bg-muted/30 text-sm font-mono flex items-center justify-between">
@@ -76,16 +109,34 @@ function ModelsView() {
                 <p className="text-xs text-muted-foreground mb-4">API keys for state-of-the-art superintelligence.</p>
                 <div className="space-y-3">
                     <div>
-                        <label className="text-xs font-medium text-muted-foreground">Anthropic API Key (claude-3-7-sonnet)</label>
-                        <input type="password" placeholder="sk-ant-..." className="w-full mt-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary/50" value="************************" readOnly />
+                        <label className="text-xs font-medium text-muted-foreground">Anthropic API Key (claude-...)</label>
+                        <input
+                            type="password"
+                            placeholder="sk-ant-..."
+                            className="w-full mt-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                            value={config.apiKeys?.anthropic || ''}
+                            onChange={(e) => updateApiKey('anthropic', e.target.value)}
+                        />
                     </div>
                     <div>
-                        <label className="text-xs font-medium text-muted-foreground">OpenAI API Key (o3-mini)</label>
-                        <input type="password" placeholder="sk-proj-..." className="w-full mt-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary/50" />
+                        <label className="text-xs font-medium text-muted-foreground">OpenAI API Key (gpt/o3)</label>
+                        <input
+                            type="password"
+                            placeholder="sk-proj-..."
+                            className="w-full mt-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                            value={config.apiKeys?.openai || ''}
+                            onChange={(e) => updateApiKey('openai', e.target.value)}
+                        />
                     </div>
                     <div>
-                        <label className="text-xs font-medium text-muted-foreground">Google API Key (gemini-3.1-pro)</label>
-                        <input type="password" placeholder="AIzaSy..." className="w-full mt-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary/50" />
+                        <label className="text-xs font-medium text-muted-foreground">Google API Key (gemini-...)</label>
+                        <input
+                            type="password"
+                            placeholder="AIzaSy..."
+                            className="w-full mt-1 bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                            value={config.apiKeys?.gemini || ''}
+                            onChange={(e) => updateApiKey('gemini', e.target.value)}
+                        />
                     </div>
                 </div>
             </div>

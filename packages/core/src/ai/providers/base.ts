@@ -143,3 +143,10 @@ export abstract class BaseAIProvider implements AIProvider {
     };
   }
 }
+
+export class ProviderUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ProviderUnavailableError';
+  }
+}

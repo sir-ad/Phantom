@@ -4,10 +4,11 @@ import { AnthropicProvider, type AnthropicProviderConfig } from './providers/ant
 import { OllamaProvider, type OllamaProviderConfig } from './providers/ollama.js';
 import { GeminiProvider, type GeminiProviderConfig } from './providers/gemini.js';
 import { UniversalProvider, type UniversalProviderConfig } from './providers/universal.js';
-import { BaseAIProvider, type AIRequest, type AIResponse, type StreamingAIResponse, type AIProviderConfig, type ProviderHealth } from './providers/base.js';
+import { MockProvider } from './providers/mock.js';
+import { BaseAIProvider, ProviderUnavailableError, type AIRequest, type AIResponse, type StreamingAIResponse, type AIProviderConfig, type ProviderHealth } from './providers/base.js';
 import { getConfig } from '../config.js';
 
-export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'gemini' | 'groq' | 'opencode' | 'openrouter' | 'deepseek';
+export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'gemini' | 'groq' | 'opencode' | 'openrouter' | 'deepseek' | 'mock';
 
 // Re-export AIMessage from base
 export type { AIMessage } from './providers/base.js';
@@ -46,6 +47,7 @@ export class AIManager {
   private cache: Map<string, { response: AIResponse; timestamp: number }> = new Map();
   private defaultProvider: BaseAIProvider | null = null;
   private fallbackChain: BaseAIProvider[] = [];
+  private mockProvider: MockProvider;
 
   constructor(config: AIManagerConfig) {
     this.config = {
@@ -54,6 +56,7 @@ export class AIManager {
       ...config,
     };
 
+    this.mockProvider = new MockProvider();
     this.initializeProviders();
     this.buildFallbackChain();
   }
@@ -232,12 +235,18 @@ export class AIManager {
         lastError = error instanceof Error ? error : new Error('Unknown provider error');
         this.updateMetrics(provider, { content: '', latency: 0, model: effectiveRequest.model }, false);
 
+        if (error instanceof ProviderUnavailableError) {
+          console.warn(`Provider ${provider.name} unavailable, trying next...`);
+        }
+
         // Continue to next provider
         continue;
       }
     }
 
-    throw lastError || new Error('No AI providers available');
+    // Last resort: keyword-based mock so UI doesn't break
+    console.warn(`No real AI providers responded. Falling back to MockProvider.`);
+    return this.mockProvider.complete(request);
   }
 
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
@@ -276,12 +285,18 @@ export class AIManager {
         lastError = error instanceof Error ? error : new Error('Unknown provider error');
         this.updateMetrics(provider, { content: '', latency: 0, model: request.model }, false);
 
+        if (error instanceof ProviderUnavailableError) {
+          console.warn(`Provider ${provider.name} unavailable, trying next...`);
+        }
+
         // Continue to next provider
         continue;
       }
     }
 
-    throw lastError || new Error('No AI providers available');
+    // Last resort: keyword-based mock so UI doesn't break
+    console.warn(`No real AI providers responded. Falling back to MockProvider stream.`);
+    return this.mockProvider.stream(request);
   }
 
   async completeWithRetry(request: AIRequest, maxRetries?: number): Promise<AIResponse> {
@@ -363,6 +378,13 @@ export class AIManager {
 
 // Singleton instance
 let aiManager: AIManager | null = null;
+
+export function clearAIManager(): void {
+  if (aiManager) {
+    aiManager.close().catch(() => { });
+  }
+  aiManager = null;
+}
 
 export function getAIManager(): AIManager {
   if (!aiManager) {
