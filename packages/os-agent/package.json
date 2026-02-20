@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/os-agent",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Phantom Local OS Edge Node",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

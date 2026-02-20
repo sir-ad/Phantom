@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/core",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "PHANTOM Core Engine - Context, swarm, discovery, runtime engines",
   "type": "module",
   "main": "dist/index.js",
@@ -19,7 +19,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.74.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "@phantom-pm/memory": "3.0.2",
+    "@phantom-pm/memory": "3.0.3",
     "better-sqlite3": "^11.1.0",
     "chokidar": "^3.6.0",
     "conf": "^13.0.1",

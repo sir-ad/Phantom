@@ -2,7 +2,7 @@
   "name": "phantom-vscode",
   "displayName": "Phantom PM",
   "description": "The AI-native PM Operating System for VS Code",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "publisher": "phantom-pm",
   "repository": {
     "type": "git",
