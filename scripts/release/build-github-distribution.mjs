@@ -29,6 +29,7 @@ async function main() {
     target: 'node18',
     format: 'cjs',
     bundle: true,
+    external: ['playwright', 'playwright-core', 'chromium-bidi'],
     sourcemap: false,
     legalComments: 'none',
   }).catch((error) => fail(`esbuild bundle failed: ${String(error)}`));

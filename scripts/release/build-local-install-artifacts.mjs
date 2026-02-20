@@ -60,7 +60,7 @@ async function main() {
     bundle: true,
     sourcemap: false,
     legalComments: 'none',
-    external: ['react-devtools-core'],
+    external: ['react-devtools-core', 'playwright', 'playwright-core', 'chromium-bidi'],
     banner: {
       js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);",
     },
