@@ -47,7 +47,7 @@ Phantom's monorepo is ruthlessly pruned. There is no bloat. Only signal.
 The fastest way to install Phantom OS is via our one-line installer:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/sir-ad/Phantom/master/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/sir-ad/Phantom/main/install.sh | bash
 ```
 
 Alternatively, you can install via NPM:
