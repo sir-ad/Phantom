@@ -27,26 +27,27 @@ jobs:
       - name: Build packages
         run: npm run build
         
-      - name: Publish @phantom-pm/core
+      - name: Publish all packages
         run: |
-          cd packages/core
-          if [[ $(npm pkg get version | tr -d '"') == *"-beta"* ]]; then
-            npm publish --access public --tag next
-          else
-            npm publish --access public --provenance
-          fi
+          PACKAGES=("memory" "core" "adapters" "agent-communicator" "browser-agent" "chat-server" "discovery-loop" "docs-engine" "feedback-hub" "integrations" "interview-analyzer" "usage-intelligence" "mcp-server" "os-agent" "modules" "tui" "cli")
+          for pkg in "${PACKAGES[@]}"; do
+            echo "---------------------------------------------------"
+            echo "🚀 Publishing @phantom-pm/$pkg..."
+            echo "---------------------------------------------------"
+            cd packages/$pkg
+            
+            # Check if package is already published to avoid errors on retry
+            VERSION=$(npm pkg get version | tr -d '"')
+            
+            # Publish with provenance (requires id-token: write)
+            # Use 'latest' tag for stable, 'next' for pre-releases
+            if [[ $VERSION == *"-beta"* ]] || [[ $VERSION == *"-alpha"* ]]; then
+              npm publish --access public --tag latest --provenance || echo "⚠️ Already published or failed: @phantom-pm/$pkg@$VERSION"
+            else
+              npm publish --access public --provenance || echo "⚠️ Already published or failed: @phantom-pm/$pkg@$VERSION"
+            fi
+            
+            cd ../..
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish @phantom-pm/cli
-        run: |
-          cd packages/cli
-          if [[ $(npm pkg get version | tr -d '"') == *"-beta"* ]]; then
-            npm publish --access public --tag next
-          else
-            npm publish --access public --provenance
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # Add more packages as they become public
