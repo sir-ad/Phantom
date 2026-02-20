@@ -9,7 +9,6 @@
     "test": "node --test dist/**/*.test.js"
   },
   "dependencies": {
-    "@phantom-pm/core": "2.0.0-alpha.2",
     "fs-extra": "^11.2.0",
     "gray-matter": "^4.0.3",
     "zod": "^3.22.4"
