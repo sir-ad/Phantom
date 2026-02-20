@@ -16,7 +16,7 @@
   "scripts": {
     "build": "npm run build --workspace=@phantom-pm/memory && npm run build --workspace=@phantom-pm/core && npm run build --workspace=@phantom-pm/browser-agent && npm run build --workspace=@phantom-pm/docs-engine && npm run build --workspace=@phantom-pm/mcp-server && npm run build --workspace=@phantom-pm/interview-analyzer && npm run build --workspace=@phantom-pm/feedback-hub && npm run build --workspace=@phantom-pm/usage-intelligence && npm run build --workspace=@phantom-pm/discovery-loop && npm run build --workspace=@phantom-pm/agent-communicator && npm run build --workspace=@phantom-pm/modules && npm run build --workspace=@phantom-pm/os-agent && npm run build --workspace=@phantom-pm/tui && npm run build --workspace=@phantom-pm/integrations && npm run build --workspace=@phantom-pm/cli",
     "build:github-dist": "node scripts/release/build-github-distribution.mjs",
-    "dev": "npm run dev --workspace=packages/cli",
+    "dev": "npm run dev --workspace=@phantom-pm/app",
     "website:dev": "node scripts/serve-website.mjs",
     "phantom": "node packages/cli/dist/index.js",
     "typecheck": "npm run build",
