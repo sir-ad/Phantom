@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/browser-agent",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Autonomous UI manipulation and crawling agent (OpenClaws layer)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@phantom-pm/core": "3.0.1",
+    "@phantom-pm/core": "3.0.2",
     "playwright": "^1.42.1"
   },
   "devDependencies": {

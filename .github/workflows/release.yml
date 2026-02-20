@@ -34,6 +34,14 @@ jobs:
       - name: Build release artifacts
         run: npm run release:local
 
+      - name: Build Web UI Artifact
+        run: |
+          cd packages/app
+          npm run build
+          cd out
+          zip -r ../../../phantom-web-ui.zip .
+          cd ../../..
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -43,6 +51,7 @@ jobs:
             releases/local/phantom-macos-x64.tar.gz
             releases/local/phantom-linux-x64.tar.gz
             releases/local/phantom-win-x64.zip
+            phantom-web-ui.zip
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

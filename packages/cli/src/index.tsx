@@ -44,6 +44,8 @@ import { registerConfigCommands } from './commands/config.js';
 import { registerStoriesCommands } from './commands/stories.js';
 import { startChat } from './commands/chat.js';
 import { TaskAnalyze } from './commands/task.js';
+import { registerBootCommands } from './commands/boot.js';
+import { registerServerCommands } from './commands/server.js';
 import { PhantomMCPServer, runStdioServer, PhantomDiscovery, MCPMode } from '@phantom-pm/mcp-server';
 import {
   theme,
@@ -672,6 +674,10 @@ registerConfigCommands(program);
 
 // Register stories commands
 registerStoriesCommands(program);
+
+// Register Boot & Server commands
+registerBootCommands(program);
+registerServerCommands(program);
 
 prdCommand
   .command('create <title>')
@@ -2689,14 +2695,6 @@ agentsCommand
     console.log('');
     console.log(theme.dim('  Supported agents: Claude Code, Cursor, Codex, Gemini, ChatGPT, VS Code, Zed'));
     console.log('');
-  });
-
-program
-  .command('boot')
-  .description('Run onboarding boot sequence')
-  .action(async () => {
-    await runBootSequence();
-    await showFirstRunSetup();
   });
 
 program

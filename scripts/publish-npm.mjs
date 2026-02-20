@@ -96,15 +96,16 @@ for (const pkg of PACKAGES) {
 
 // Build all packages
 console.log('\n🔨 Building packages...');
+const buildOrder = [
+  'memory', 'core', 'adapters', 'agent-communicator',
+  'browser-agent', 'chat-server', 'discovery-loop',
+  'docs-engine', 'feedback-hub', 'integrations',
+  'interview-analyzer', 'usage-intelligence',
+  'mcp-server', 'os-agent', 'modules', 'tui', 'cli'
+];
+
 try {
   // Build in order using folder paths
-  const buildOrder = [
-    'memory', 'core', 'adapters', 'agent-communicator',
-    'browser-agent', 'chat-server', 'discovery-loop',
-    'docs-engine', 'feedback-hub', 'integrations',
-    'interview-analyzer', 'usage-intelligence',
-    'mcp-server', 'os-agent', 'modules', 'tui', 'cli'
-  ];
   for (const folder of buildOrder) {
     console.log(`  Building packages/${folder}...`);
     execSync(`cd packages/${folder} && npm run build`, { stdio: 'inherit' });
