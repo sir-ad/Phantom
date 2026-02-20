@@ -9,8 +9,8 @@
   <h1>Phantom OS</h1>
   <p><em>The Super Intellect Operating System for Product Managers.</em></p>
   <p>
-    <a href="https://phantom.pm">Website</a> •
-    <a href="https://docs.phantom.pm">Documentation</a> •
+    <a href="https://sir-ad.github.io/Phantom/">Website</a> •
+    <a href="https://sir-ad.github.io/Phantom/docs.html">Documentation</a> •
     <a href="https://github.com/sir-ad/Phantom">GitHub</a>
   </p>
 </div>
