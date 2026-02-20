@@ -1,121 +1,56 @@
----
-sidebar_position: 3
-title: Installation
----
+# The Matrix Boot Sequence: Installation Guide
 
-# Installation
+Forget cloning. Forget compiling. Phantom operates with YC-level speed.
 
-Phantom supports macOS, Linux, and Windows (via WSL2). Choose the method that suits you.
+We have engineered a **1-Click No Clone** architecture that pulls the pre-compiled OS directly into your environment. It drops a hidden `.phantom` directory into your host machine and natively wraps it in a Node gateway.
 
-## One-Line Installer (Recommended)
+## Step 1: Initialize the Boot Sequence
 
-Downloads the latest release binary and installs it to your system PATH.
+Phantom is published directly to the Global NPM Registry. You don't need to install anything permanently. You can stream the installer locally.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh
-```
-
-**What it does:**
-1. Detects your OS and architecture (macOS Arm/Intel, Linux x64).
-2. Downloads the latest release tarball from GitHub Releases.
-3. Extracts the `phantom` binary to `~/.phantom/bin/`.
-4. Adds `~/.phantom/bin` to your PATH (via `.bashrc` / `.zshrc`).
-
-### Upgrading
+Open your terminal and execute the boot sequence:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh -s -- --upgrade
+npx @phantom-pm/cli@latest boot
 ```
 
-### Uninstalling
+### What happens here?
+1. Phantom detects your host OS.
+2. It reaches out to the GitHub Releases API.
+3. It downloads the `phantom-web-ui.zip` (the Matrix UI artifact).
+4. It unzips it securely into `~/.phantom/web`.
+
+*No Node.js build steps. No Webpack compilation. Just pure, standalone static intelligence.*
+
+## Step 2: Ignite the Server
+
+With the Matrix downloaded, you must boot the local Gateway.
 
 ```bash
-rm -rf ~/.phantom
-# Remove the PATH entry from your shell RC file
+npx @phantom-pm/cli@latest server
 ```
 
----
+The Server daemon will boot. It instantly:
+- Mounts the static UI out of `~/.phantom/web`.
+- Express-routes the Core AI interactions (Anthropic, DeepSeek, OpenAI).
+- Connects the SQLite Persistence graph (`~/.phantom/phantom.db`).
 
-## npm Global Install
-
-If you have Node.js 18+ installed:
-
-```bash
-npm install -g phantom-pm
-```
-
-This installs the `phantom` command globally.
-
-### Upgrading via npm
-
-```bash
-npm update -g phantom-pm
-```
+Open [http://localhost:3333](http://localhost:3333) in your browser.
+**The Matrix is awake.**
 
 ---
 
-## Docker
-
-For isolated environments or CI/CD pipelines:
-
-```bash
-docker pull phantompm/phantom:latest
-docker run -it \
-  -e OPENAI_API_KEY="sk-..." \
-  phantompm/phantom:latest
-```
-
-To use Ollama from Docker, mount the host's Ollama socket:
-
-```bash
-docker run -it \
-  --network host \
-  phantompm/phantom:latest
-```
-
----
-
-## Build from Source
-
-For contributors or custom builds:
+## Fallback: The Engineer's Path
+If you are a developer looking to contribute to the Swarm or execute the compiler manually:
 
 ```bash
 git clone https://github.com/sir-ad/Phantom.git
-cd phantom
+cd Phantom
 npm install
+
+# Build the ecosystem topographically
 npm run build
+
+# Start the Next.js Developer Server natively
+npm run dev
 ```
-
-Run locally:
-
-```bash
-node packages/cli/dist/index.js
-```
-
-Or link globally:
-
-```bash
-npm link packages/cli
-phantom --version
-```
-
----
-
-## System Requirements
-
-| Requirement | Minimum | Recommended |
-|------------|---------|-------------|
-| Node.js | 18.0.0 | 20.x LTS |
-| RAM | 512 MB | 2 GB (for local Ollama models) |
-| Disk | 50 MB | 500 MB (with Ollama models) |
-| OS | macOS 12+, Ubuntu 20.04+, WSL2 | macOS 14+, Ubuntu 22.04+ |
-
-## Post-Installation
-
-After installing, configure your AI providers:
-
-```bash
-phantom config setup
-```
-
-This walks you through setting API keys for OpenAI, Anthropic, Gemini, and GitHub OAuth.

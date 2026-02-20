@@ -88,21 +88,18 @@
   const terminalOutput = document.getElementById('terminal-output');
 
   if (typedCmd && terminalOutput) {
-    const command = 'phantom agents scan --json';
+    const command = 'npx @phantom-pm/cli@latest boot';
     const outputLines = [
       '',
-      '<span class="dim">[scanning system for AI agents...]</span>',
+      '<span class="dim">[Initializing Phantom OS 1-Click Sequence...]</span>',
       '',
-      '<span class="green bold">  ✓ Claude Code</span>        <span class="dim">confidence: 95%  status: active</span>',
-      '<span class="green bold">  ✓ Cursor</span>             <span class="dim">confidence: 92%  status: active</span>',
-      '<span class="cyan bold">  ✓ Antigravity</span>        <span class="dim">confidence: 90%  status: active</span>',
-      '<span class="green bold">  ✓ Windsurf</span>           <span class="dim">confidence: 88%  status: installed</span>',
-      '<span class="green bold">  ✓ Ollama</span>             <span class="dim">confidence: 100% status: running</span>',
-      '<span class="green bold">  ✓ VS Code</span>            <span class="dim">confidence: 85%  status: installed</span>',
+      '<span class="green bold">  ✓ Target Directory: </span>  <span class="dim">~/.phantom</span>',
+      '<span class="green bold">  ✓ Downloading Matrix UI from GitHub...</span>',
+      '<span class="cyan bold">  ✓ Extracting assets...</span>',
+      '<span class="green bold">  ✓ Phantom OS Matrix UI successfully booted to ~/.phantom/web</span>',
       '',
-      '<span class="orange bold">  Detected: 6 agents  |  Registered: 3  |  MCP: ready</span>',
-      '',
-      '<span class="dim">  Run "phantom register --all" to register with all agents.</span>',
+      '<span class="orange bold">  Next Steps:</span>',
+      '<span class="dim">  Run "npx @phantom-pm/cli@latest server" to activate the Matrix Interface</span>',
     ];
 
     let charIndex = 0;
