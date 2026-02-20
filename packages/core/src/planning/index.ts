@@ -1,7 +1,7 @@
 // PHANTOM Autonomous Planning Engine
 // Breaks down tasks into executable steps using available tools
 
-import { ComputerUseSystem, Tool } from '../tools';
+import { ComputerUseSystem, Tool } from '../tools/index.js';
 
 export interface TaskContext {
   projectType?: string;
@@ -48,19 +48,19 @@ export class PlanningEngine {
   async planTask(userRequest: string, context: TaskContext): Promise<ExecutionPlan> {
     // 1. Understand user intent
     const intent = await this.analyzeIntent(userRequest);
-    
+
     // 2. Break down into subtasks
     const subtasks = await this.decomposeTask(intent);
-    
+
     // 3. Determine required tools
     const toolsNeeded = await this.determineTools(subtasks);
-    
+
     // 4. Create execution graph
     const graph = await this.buildExecutionGraph(subtasks, toolsNeeded);
-    
+
     // 5. Optimize for efficiency
     const optimized = await this.optimizeExecution(graph);
-    
+
     return {
       intent,
       subtasks,
@@ -77,19 +77,19 @@ export class PlanningEngine {
   async executePlan(plan: ExecutionPlan): Promise<TaskResult> {
     const results: any[] = [];
     const startTime = Date.now();
-    
+
     // Show plan to user
     await this.displayPlan(plan);
-    
+
     // Execute each step
     for (const step of plan.executionOrder) {
       // Show progress
       this.updateProgress(step);
-      
+
       // Execute step
       const result = await this.executeStep(step);
       results.push(result);
-      
+
       // If step failed, try to recover
       if (!result.success) {
         const recovered = await this.attemptRecovery(step, result.error);
@@ -103,10 +103,10 @@ export class PlanningEngine {
         }
       }
     }
-    
+
     // Verify final result
     const verified = await this.verifyResult(results, plan.intent);
-    
+
     return {
       success: true,
       results,
@@ -133,25 +133,25 @@ export class PlanningEngine {
   private async determineTools(subtasks: string[]): Promise<string[]> {
     // Simple tool determination based on keywords
     const tools = new Set<string>();
-    
+
     const taskText = subtasks.join(' ').toLowerCase();
-    
+
     if (taskText.includes('research') || taskText.includes('search')) {
       tools.add('browser');
     }
-    
+
     if (taskText.includes('file') || taskText.includes('create') || taskText.includes('write')) {
       tools.add('filesystem');
     }
-    
+
     if (taskText.includes('execute') || taskText.includes('run') || taskText.includes('build')) {
       tools.add('terminal');
     }
-    
+
     if (taskText.includes('screenshot') || taskText.includes('analyze') || taskText.includes('ui')) {
       tools.add('vision');
     }
-    
+
     return Array.from(tools);
   }
 
@@ -169,23 +169,23 @@ export class PlanningEngine {
 
   private getActionForTask(task: string): string {
     const taskLower = task.toLowerCase();
-    
+
     if (taskLower.includes('research') || taskLower.includes('search')) {
       return 'search';
     }
-    
+
     if (taskLower.includes('create') || taskLower.includes('write')) {
       return 'create';
     }
-    
+
     if (taskLower.includes('execute') || taskLower.includes('run')) {
       return 'execute';
     }
-    
+
     if (taskLower.includes('analyze')) {
       return 'analyze';
     }
-    
+
     return 'default';
   }
 
@@ -240,7 +240,7 @@ Proceeding with execution...
     try {
       // In a real implementation, this would call the actual tool
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate execution
-      
+
       return {
         success: true,
         stepId: step.id,
@@ -264,7 +264,7 @@ Proceeding with execution...
   private async verifyResult(results: any[], intent: string): Promise<any> {
     const successful = results.filter(r => r.success).length;
     const total = results.length;
-    
+
     return {
       successRate: successful / total,
       summary: `Successfully completed ${successful} out of ${total} steps for: ${intent}`
