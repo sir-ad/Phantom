@@ -26,7 +26,7 @@ if ! command -v npm >/dev/null 2>&1; then
 fi
 
 echo "🚀 Installing @phantom-pm/cli globally..."
-npm install -g @phantom-pm/cli --quiet
+npm install -g @phantom-pm/cli@latest --no-cache --quiet
 
 echo "✅ Phantom OS installed successfully!"
 echo "👉 Run 'phantom --help' to get started."
