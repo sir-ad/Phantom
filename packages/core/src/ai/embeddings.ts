@@ -9,7 +9,7 @@ export interface Embedding {
   id: string;
   path: string;
   relativePath: string;
-  type: 'code' | 'document' | 'image' | 'design' | 'data';
+  type: 'code' | 'document' | 'image' | 'design' | 'data' | 'ticket' | 'message' | 'person';
   content: string;
   vector: number[];
   metadata: {
@@ -103,7 +103,7 @@ export class EmbeddingEngine {
         try {
           const ollamaConfig = (provider as any).config;
           const baseUrl = ollamaConfig?.baseUrl || 'http://localhost:11434';
-          
+
           const response = await fetch(`${baseUrl}/api/embeddings`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -134,7 +134,7 @@ export class EmbeddingEngine {
     const words = content.toLowerCase().split(/\W+/).filter(Boolean);
     const uniqueWords = [...new Set(words)];
     const embedding = new Array(128).fill(0);
-    
+
     uniqueWords.forEach((word, idx) => {
       const hash = createHash('sha256').update(word).digest('hex');
       const position = parseInt(hash.slice(0, 2), 16) % 128;
@@ -160,8 +160,8 @@ export class EmbeddingEngine {
   ): Promise<void> {
     // Truncate content for embedding (token limits)
     const maxChars = 8000;
-    const truncatedContent = content.length > maxChars 
-      ? content.substring(0, maxChars) + '...' 
+    const truncatedContent = content.length > maxChars
+      ? content.substring(0, maxChars) + '...'
       : content;
 
     const vector = await this.createEmbedding(truncatedContent);
@@ -200,17 +200,17 @@ export class EmbeddingEngine {
 
   private cosineSimilarity(vecA: number[], vecB: number[]): number {
     if (vecA.length !== vecB.length || vecA.length === 0) return 0;
-    
+
     let dot = 0;
     let normA = 0;
     let normB = 0;
-    
+
     for (let i = 0; i < vecA.length; i++) {
       dot += vecA[i] * vecB[i];
       normA += vecA[i] * vecA[i];
       normB += vecB[i] * vecB[i];
     }
-    
+
     const norm = Math.sqrt(normA) * Math.sqrt(normB);
     return norm > 0 ? dot / norm : 0;
   }

@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TerminalHero from '../components/TerminalHero';
+---
+
+<Layout title="Phantom - The Invisible OS">
+	<main class="flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden relative">
+        <div class="absolute inset-0 bg-[linear-gradient(to_bottom,#09090b_0%,transparent_100%)] z-0 pointer-events-none"></div>
+        <div class="z-10 w-full max-w-4xl">
+            <TerminalHero client:load />
+        </div>
+	</main>
+</Layout>

@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="The Memorandum | Phantom">
+	<main class="max-w-3xl mx-auto px-6 py-20 min-h-screen">
+        <a href="/" class="text-muted-foreground hover:text-primary mb-12 block text-sm">&larr; system_root</a>
+        
+        <article class="prose prose-invert prose-green">
+            <h1 class="text-4xl font-bold mb-6 text-primary tracking-tight">The Best Interface is No Interface.</h1>
+            <div class="h-px w-20 bg-primary mb-10"></div>
+            
+            <p class="text-xl text-foreground leading-relaxed mb-8">
+                Product Managers spend 40% of their time acting as human routers. Copying data from Linear to Slack. Summarizing Zoom calls into Notion. Updating stakeholders who could have just checked the dashboard.
+            </p>
+            
+            <p class="text-lg text-muted-foreground mb-8">
+                We built Phantom to kill that job.
+            </p>
+            
+            <h2 class="text-2xl font-bold mt-12 mb-4 text-white">The Invisible OS</h2>
+            <p class="text-muted-foreground mb-6">
+                Phantom is not a destination. It doesn't want you to log in. It doesn't want your eyeballs.
+            </p>
+            <p class="text-muted-foreground mb-6">
+                It lives in the accessibility tree of your browser. It tailing your logs in Terminal. It's a ghost in your Slack channels.
+            </p>
+            
+            <ul class="list-disc pl-6 space-y-2 text-muted-foreground mb-10">
+                <li><strong class="text-white">Channel Native:</strong> We meet you where you work.</li>
+                <li><strong class="text-white">Lane-Based Execution:</strong> Predictable, serial task queues. No async chaos.</li>
+                <li><strong class="text-white">Zero Decay Memory:</strong> A markdown-based second brain that never forgets context.</li>
+            </ul>
+
+            <div class="bg-muted/30 border border-muted p-6 rounded-lg my-12">
+                <code class="text-sm text-green-400">
+                    > "Phantom is not a tool you use.<br/>
+                    > It is a member of your team."
+                </code>
+            </div>
+            
+            <div class="mt-16 pt-8 border-t border-muted flex justify-between items-center">
+                <span class="text-sm text-muted-foreground">End of Transmission.</span>
+                <a href="/protocols" class="bg-primary text-black px-6 py-2 rounded font-bold hover:bg-green-400 transition-colors">
+                    Read Protocols
+                </a>
+            </div>
+        </article>
+	</main>
+</Layout>

@@ -123,11 +123,11 @@ function resolveModel(input: string): ResolvedModel {
         'claude': { provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
         'sonnet': { provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
         'haiku': { provider: 'anthropic', model: 'claude-3-5-haiku-20241022' },
-        'opus': { provider: 'anthropic', model: 'claude-3-opus-20240229' },
+        'opus': { provider: 'anthropic', model: 'claude-4.6-opus' },
         'anthropic': { provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
-        'gemini': { provider: 'gemini', model: 'gemini-2.0-flash' },
-        'gemini-pro': { provider: 'gemini', model: 'gemini-2.5-pro' },
-        'gemini-flash': { provider: 'gemini', model: 'gemini-2.0-flash' },
+        'gemini': { provider: 'gemini', model: 'gemini-3.1-pro' },
+        'gemini-pro': { provider: 'gemini', model: 'gemini-3.1-pro' },
+        'gemini-flash': { provider: 'gemini', model: 'gemini-3.1-pro' },
     };
 
     if (providerMap[lc]) return providerMap[lc];
@@ -144,7 +144,7 @@ function detectDefaultModel(): ResolvedModel {
     }
     if (process.env.ANTHROPIC_API_KEY) return { provider: 'anthropic', model: 'claude-sonnet-4-20250514' };
     if (process.env.OPENAI_API_KEY) return { provider: 'openai', model: 'gpt-4o' };
-    if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) return { provider: 'gemini', model: 'gemini-2.0-flash' };
+    if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) return { provider: 'gemini', model: 'gemini-3.1-pro' };
     return { provider: 'ollama', model: 'llama3.1:8b' };
 }
 

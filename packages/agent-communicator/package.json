@@ -1,0 +1,33 @@
+{
+  "name": "@phantom-pm/agent-communicator",
+  "version": "2.0.0-alpha.2",
+  "description": "Natural language interface for Phantom - chatting with your product data",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "test": "tsx test/index.test.ts",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@phantom-pm/core": "2.0.0-alpha.2",
+    "@phantom-pm/interview-analyzer": "2.0.0-alpha.2",
+    "@phantom-pm/feedback-hub": "2.0.0-alpha.2",
+    "@phantom-pm/usage-intelligence": "2.0.0-alpha.2",
+    "@phantom-pm/discovery-loop": "2.0.0-alpha.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

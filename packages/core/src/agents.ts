@@ -309,7 +309,7 @@ export class Agent {
       ];
 
       const request = {
-        model: 'gpt-4-turbo-preview', // Will be overridden by provider
+        model: 'o3-mini', // Will be overridden by provider
         messages,
         temperature: 0.3,
         maxTokens: 1000,
@@ -436,7 +436,7 @@ export class AgentSwarm {
       'engine=ai.manager',
       'engine=parallel.agents',
       'engine=context.rag',
-      'model=gpt-4-turbo-preview',
+      'model=o3-mini',
     ];
 
     return {

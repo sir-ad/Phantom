@@ -166,7 +166,7 @@ Generate relevant analytics metrics.`;
 
     try {
       const response = await this.aiManager.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -216,7 +216,7 @@ Generate 8-12 business insights from this data.`;
 
     try {
       const response = await this.aiManager.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -267,7 +267,7 @@ Create an executive summary for leadership.`;
 
     try {
       const response = await this.aiManager.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },

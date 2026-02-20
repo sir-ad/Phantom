@@ -1,166 +1,90 @@
 <div align="center">
-
-```
- ░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
- ░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
- ░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀
-
-```
-
-### `The invisible force behind every great product.`
-
-**AI-native PM Operating System — 23 modules, local-first, consulting-grade intelligence.**
-
-[![License: MIT](https://img.shields.io/badge/license-MIT-00FF41?style=flat-square)](./LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/sir-ad/Phantom/ci.yml?branch=main&style=flat-square&label=build&color=00FF41)](https://github.com/sir-ad/Phantom/actions)
-[![Release](https://img.shields.io/github/v/release/sir-ad/Phantom?style=flat-square&color=00D4FF&label=release)](https://github.com/sir-ad/Phantom/releases)
-[![Docs](https://img.shields.io/badge/docs-live-00FF41?style=flat-square)](https://sir-ad.github.io/Phantom/)
-[![Node](https://img.shields.io/badge/node-%3E%3D20-00D4FF?style=flat-square)](https://nodejs.org)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-333?style=flat-square)](./)
-
-[Install](#install) · [Modules](#module-system) · [Phantom Oracle](#phantom-oracle) · [Task Analysis](#deep-task-analysis) · [Docs](https://sir-ad.github.io/Phantom/docs/intro) · [Contributing](./CONTRIBUTING.md)
-
+  <img src="packages/app/public/phantom-logo.png" alt="Phantom Logo" width="120" />
+  <h1>Phantom OS</h1>
+  <p><em>The Super Intellect Operating System for Product Managers.</em></p>
+  <p>
+    <a href="https://phantom.pm">Website</a> •
+    <a href="https://docs.phantom.pm">Documentation</a> •
+    <a href="https://github.com/sir-ad/Phantom">GitHub</a>
+  </p>
 </div>
 
 ---
 
-## ⚡️ What is Phantom?
+## 👁️ The Vision: Cursor for PMs
 
-Phantom is a **terminal-native operating system** that gives LLMs structured product management superpowers. Connect any model — OpenAI, Anthropic, Gemini, or local Ollama — and get an AI PM co-pilot that thinks in **McKinsey/BCG frameworks**.
+Phantom is an open-source, AI-native operating system designed to automate and elevate the entire product discovery and execution loop. It is not just a web application; it is an intelligent **Product Management Swarm**.
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                                                                      │
-│   You  ──→  Phantom  ──→  LLM  ──→  Structured Output                │
-│                │                                                     │
-│         ┌──── ─┼─────────────────┐                                    │
-│    Frameworks  │  Agents         │  Modules                          │
-│    (18 FWs)    │  (7 PMs)        │  (23 tools)                       │
-│    RICE,JTBD   │  Strategist,    │  PRDs, Decks,                     │
-│    MECE,BCG    │  Analyst...     │  BCG Matrix...                    │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘
-```
+Built with the extreme engineering simplicity championed by **Kailash Nadh** (Zerodha) and the deep, philosophical AI-first design of **Paras Chopra**, Phantom acts as a "Super Intellect". It absorbs enterprise context, translates spoken brainstorming into deterministic product specifications, visualizes code natively via Generative Sandboxes, and can physically pilot your desktop OS.
 
----
+**We believe the future of software creation is context.** If developers have Cursor, Product Managers have Phantom.
 
-## 📥 Install
+## 🚀 The Super Intellect Architecture
+
+Phantom is designed as a central **Brain** that drives various **Hands** (Agents). 
+
+1. **Universal SOTA Models:** Natively routes reasoning tasks to the absolute frontier of open-source and proprietary models: `deepseek-r1`, `o3-mini`, `claude-3.7-sonnet`, `gemini-2.5-pro`, and exhaustive local Ollama support (`llama3.1`, `qwen2.5`, `phi3`).
+2. **Rowboat Semantic Knowledge Graph:** Instead of simple vector search, Phantom ingests your Jira backlog, Slack histories, and Notion PRDs into a 1st-degree connected **Semantic Knowledge Graph**. It knows *who* asked for a feature, *where* it was discussed, and *what* code blocks it.
+3. **Generative Matrix UI (OpenUI):** Taking inspiration from `v0.dev` and W&B OpenUI, Phantom's Next.js Canvas natively renders and compiles interactive React/Tailwind components directly from the Swarm's generated artifacts.
+4. **WisprFlow Voice Brain-Dumps:** Translate your raw, unstructured spoken thoughts accurately into Phantom's Omnibar, letting the Swarm organize the chaos into structured Jira Epics and architectural PRDs.
+5. **OpenClaws (OS Gateway & Edge Nodes):** Phantom breaks out of the Browser sandbox via a distributed WebSocket Gateway. By booting a local `@phantom-pm/os-agent` Edge Node, you grant Phantom physical control over your Mac/PC to automatically capture screenshots, move the mouse, and type terminal commands using Anthropic's `computer_20241022` tools.
+6. **Nightly Build Swarm:** Record a brain dump at 5 PM. By 9 AM, the autonomous Phantom routines have parallelized your thoughts to write a systemic PRD, mock the UI, and generate assigned Jira tickets.
+
+## 📦 Packages (The Great Pruning)
+
+Phantom's monorepo is ruthlessly pruned. There is no bloat. Only signal.
+
+| Package | Description |
+|---------|-------------|
+| `@phantom-pm/core` | The beating heart. The AI Manager, Rowboat Graph Context Engine, OpenClaws Gateway, and Swarm Orchestrator. |
+| `@phantom-pm/app` | The "Matrix/Codex" UI. A radical, terminal-inspired Next.js command center embedding Sandpack for live generative code. |
+| `@phantom-pm/os-agent` | The physical Hands. A local Edge Node connecting Phantom back to your physical desktop OS. |
+| `@phantom-pm/mcp-server` | The protocol interface allowing Claude, Cursor, and other tools to tap directly into Phantom's product brain natively. |
+| `@phantom-pm/cli` | The terminal interface for headless operation. |
+
+## ⚡ Getting Started
+
+The fastest way to install Phantom OS is via our one-line installer:
 
 ```bash
-# Run instantly with npx (Recommended)
-npx @phantom-pm/cli --tag next
+curl -sSL https://raw.githubusercontent.com/sir-ad/Phantom/master/install.sh | bash
+```
 
-# Or install globally
+Alternatively, you can install via NPM:
+
+```bash
 npm install -g @phantom-pm/cli
 ```
 
+### From Source
 ```bash
-# Quick start
-phantom                            # Interactive PM chat
-phantom config setup               # Connect your LLM
-phantom prd "Dark Mode for iOS"    # Generate a PRD
-phantom swarm "Mobile app or PWA?" # 7 agents debate it
+# Clone the intellect
+git clone https://github.com/sir-ad/Phantom.git
+cd Phantom
+
+# Install dependencies
+npm install
+
+# Boot the Core Brain (Next.js Dashboard + OS Gateway)
+npm run dev
+
+# (Optional) Boot the physical OS Edge Node in a new terminal
+npx @phantom-pm/os-agent
 ```
 
----
+## 🧠 Core Philosophy
 
-## 🦅 Features
+1. **No Blank Canvases:** Product Managers shouldn't start from scratch. Phantom reads the world state and proposes the optimal next move.
+2. **Deterministic Output:** AI output must be structurally reliable for enterprise consumption.
+3. **Open Ecosystem:** If a tool has an MCP, Phantom can use it. If an OS has a mouse, Phantom can control it.
+4. **Minimalist Exuberance:** Beneath a data-dense, radically simple UI lies an architecture of immense power and scalability.
 
-### 🔮 Phantom Oracle (Chrome Extension)
+## 🤝 Contributing
 
-A "New Tab" experience that connects your web research to your product strategy.
-
--   **Description**: Transforms your new tab into a focus dashboard that analyzes your active LLM chats and surfaces relevant philosophical calibration.
--   **Key Benefit**: Keeps you aligned with your core product vision while you research.
--   **[Read Full Documentation](https://sir-ad.github.io/Phantom/docs/features/oracle)**
-
-#### Installation
-
-1.  **Build**: `cd packages/chrome-extension && npm run build`
-2.  **Load**: Open `chrome://extensions/` -> Enable **Developer Mode** -> Click **Load Unpacked**.
-3.  **Select**: Choose the `packages/chrome-extension/dist` folder.
-
-### 🧠 Deep Task Analysis (Level 4 Intelligence)
-
-Recursive task decomposition inspired by high-performance engineering teams.
-
--   **Command**: `phantom task analyze "Build a SaaS"`
--   **How it Works**: breaks goal into subtasks -> assigns complexity scores (1-10) -> recursively breaks down high-complexity nodes -> assigns specialized agents (`Coder`, `Architect`, `Researcher`) to each leaf node.
--   **[Read Full Documentation](https://sir-ad.github.io/Phantom/docs/features/analyze)**
+We welcome contributions from builders who share the vision of an AI-native product workflow. Please read our `PHANTOM_RULES.md` before submitting a PR to align with the core architectural mandates.
 
 ---
-
-## 📦 Module System
-
-Every module is an installable PM superpower. Install with `phantom install <name>`.
-
-### Core PM Modules
-
-| Module | What it does | Quote |
-|--------|-------------|-------|
-| `prd-forge` | Generate full PRDs from natural language | _"I know PRDs."_ |
-| `story-writer` | Auto-generate user stories + acceptance criteria | _"I know user stories."_ |
-| `sprint-planner` | AI sprint planning with velocity tracking | _"I know velocity."_ |
-| `swarm` | 7-agent consensus analysis on any question | _"We know everything."_ |
-| `competitive` | Competitor monitoring + market positioning | _"I know your enemies."_ |
-| `analytics-lens` | Connect analytics → surface actionable insights | _"I know the numbers."_ |
-| `oracle` | Monte Carlo sims, prediction, risk analysis | _"I know the future."_ |
-
-### Consulting Superpowers _(McKinsey / BCG grade)_
-
-| Module | Framework | What it does |
-|--------|-----------|-------------|
-| 🏛️ `mece-lens` | **MECE Analysis** | Validates feature sets are mutually exclusive |
-| 🌳 `issue-tree` | **Hypothesis-Driven PS** | Decomposes problems into testable hypothesis trees |
-| 📊 `bcg-matrix` | **BCG Growth-Share** | Classifies features as Stars / Cash Cows / Question Marks / Dogs |
-| 📑 `deck-forge` | **Pyramid Principle** | Generates presentation outlines (Situation→Complication→Resolution) |
-| 📋 `exec-brief` | **Executive One-Pager** | Creates C-suite ready briefs from PRDs and analysis |
-
----
-
-## 🔌 MCP Integration
-
-Phantom runs as an MCP server — plug it into any AI IDE with a single config.
-
-### Quick Setup
-
-**Cursor / Windsurf / VS Code / Claude Code:**
-
-```bash
-npx -y @phantom-pm/cli mcp serve
-```
-
-See [**Full MCP Documentation**](https://sir-ad.github.io/Phantom/docs/mcp) for detailed configuration files.
-
----
-
-## 🏗️ Architecture
-
-```
-phantom/
-├── packages/
-│   ├── cli/            # Command-line interface + REPL
-│   ├── core/           # Context engine, AI manager, module system
-│   ├── mcp-server/     # Model Context Protocol server
-│   ├── chrome-extension/ # Phantom Oracle (New Tab experience)
-│   ├── modules/        # 23 built-in PM modules
-│   └── integrations/   # IDE auto-detection + registration
-├── docs-site/          # Zola documentation site
-└── scripts/            # Build, release, install scripts
-```
-
----
-
-## 📜 License
-
-[MIT](./LICENSE) — Adarsh Agrahari, 2026.
 
 <div align="center">
-
-```
- "The Matrix has you... but Phantom has your product strategy."
-```
-
-**[⬆ Back to top](#)**
-
+  <em>There is no spoon. There is only context.</em>
 </div>

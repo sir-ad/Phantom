@@ -82,7 +82,7 @@ export class AgentSwarm {
             'engine=ai.manager',
             'engine=parallel.agents',
             'engine=context.rag',
-            'model=gpt-4-turbo-preview',
+            'model=o3-mini',
         ];
 
         return {

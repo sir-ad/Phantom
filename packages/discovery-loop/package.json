@@ -1,0 +1,34 @@
+{
+  "name": "@phantom-pm/discovery-loop",
+  "version": "2.0.0-alpha.2",
+  "description": "Discovery Loop module for Phantom - Synthesize insights and prioritize opportunities",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "test": "tsx test/index.test.ts",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@phantom-pm/core": "2.0.0-alpha.2",
+    "@phantom-pm/interview-analyzer": "2.0.0-alpha.2",
+    "@phantom-pm/feedback-hub": "2.0.0-alpha.2",
+    "@phantom-pm/usage-intelligence": "2.0.0-alpha.2",
+    "better-sqlite3": "^11.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0",
+    "@types/better-sqlite3": "^7.6.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

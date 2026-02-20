@@ -45,10 +45,25 @@ export interface RuntimeUXAudit {
   analyses: RuntimeScreenAnalysis[];
 }
 
+export interface RuntimeStep {
+  name: string;
+  status: 'PASS' | 'WARN' | 'FAIL';
+  score: number;
+  message: string;
+  recommendation?: string;
+}
+
+export interface RuntimePersona {
+  name: string;
+  trait: string;
+  steps: RuntimeStep[];
+}
+
 export interface RuntimeSimulationResult {
   scenario: string;
   seed: number;
   assumptions: string[];
+  personas: RuntimePersona[];
   metrics: {
     baseline: number;
     projected: number;
@@ -444,21 +459,21 @@ export function getRuntimeHealth(cwd: string): RuntimeHealth {
     },
     fallbackModel: cfg.fallbackModel
       ? {
-          provider: cfg.fallbackModel.provider,
-          model: cfg.fallbackModel.model,
-          status: cfg.fallbackModel.status === 'connected' ? 'connected' : 'disconnected',
-          latency: getDeterministicModelLatency(`${cfg.fallbackModel.provider}:${cfg.fallbackModel.model}`),
-          cost: cfg.fallbackModel.provider === 'ollama' ? '$0.00 (local)' : 'variable',
-          tokensToday: contextDocs * 3,
-          apiKeyPreview: cfg.fallbackModel.apiKey ? `${cfg.fallbackModel.apiKey.slice(0, 6)}...****` : 'not-set',
-        }
+        provider: cfg.fallbackModel.provider,
+        model: cfg.fallbackModel.model,
+        status: cfg.fallbackModel.status === 'connected' ? 'connected' : 'disconnected',
+        latency: getDeterministicModelLatency(`${cfg.fallbackModel.provider}:${cfg.fallbackModel.model}`),
+        cost: cfg.fallbackModel.provider === 'ollama' ? '$0.00 (local)' : 'variable',
+        tokensToday: contextDocs * 3,
+        apiKeyPreview: cfg.fallbackModel.apiKey ? `${cfg.fallbackModel.apiKey.slice(0, 6)}...****` : 'not-set',
+      }
       : undefined,
     visionModel: cfg.visionModel
       ? {
-          provider: cfg.visionModel.provider,
-          model: cfg.visionModel.model,
-          status: cfg.visionModel.status === 'connected' ? 'connected' : 'disconnected',
-        }
+        provider: cfg.visionModel.provider,
+        model: cfg.visionModel.model,
+        status: cfg.visionModel.status === 'connected' ? 'connected' : 'disconnected',
+      }
       : undefined,
     integrations: mappedIntegrations,
     security: {
@@ -482,7 +497,10 @@ function createDeterministicRng(seed: number): () => number {
   };
 }
 
-export function runDeterministicSimulation(scenario: string): RuntimeSimulationResult {
+export function runDeterministicSimulation(
+  scenario: string,
+  options: { personas?: number; depth?: 'shallow' | 'medium' | 'deep' } = {},
+): RuntimeSimulationResult {
   const seed = hashInt(`simulation:${scenario}`);
   const rnd = createDeterministicRng(seed);
 
@@ -492,6 +510,65 @@ export function runDeterministicSimulation(scenario: string): RuntimeSimulationR
   const deltaAbsolute = baseline - projected;
   const deltaPercent = baseline === 0 ? 0 : (deltaAbsolute / baseline) * 100;
 
+  // Persona Data Generation
+  const personaCount = options.personas ?? 3;
+  const personaNames = ['Maya', 'Jordan', 'Alex', 'Taylor', 'Casey', 'Sasha', 'Riley'];
+  const personaTraits = ['Gen Z Student', 'Busy Professional', 'Early Adopter', 'Risk Averse', 'Privacy Conscious'];
+
+  const stepTemplates = [
+    'App Download',
+    'Initial Signup',
+    'Security Setup',
+    'Feature Onboarding',
+    'Bank Linkage',
+    'KYC Verification',
+    'First Product Engagement',
+    'Notification Optics',
+    'Subscription Check',
+  ];
+
+  const personas: RuntimePersona[] = [];
+  for (let i = 0; i < personaCount; i++) {
+    const pIdx = (seed + i) % personaNames.length;
+    const tIdx = (seed + i * 2) % personaTraits.length;
+
+    const steps: RuntimeStep[] = [];
+    const stepCount = options.depth === 'shallow' ? 3 : options.depth === 'medium' ? 5 : 7;
+
+    for (let j = 0; j < stepCount; j++) {
+      const sIdx = (seed + i + j) % stepTemplates.length;
+      const roll = rnd();
+
+      let status: 'PASS' | 'WARN' | 'FAIL' = 'PASS';
+      let message = 'Smooth interaction.';
+      let rec: string | undefined;
+
+      if (roll < 0.15) {
+        status = 'FAIL';
+        message = 'Significant friction; user dropped off.';
+        rec = 'Simplify this step or allow deferral to later.';
+      } else if (roll < 0.4) {
+        status = 'WARN';
+        message = 'Minor confusion detected.';
+        rec = 'Add help tooltips or explanatory copy.';
+      }
+
+      steps.push({
+        name: stepTemplates[sIdx],
+        status,
+        score: Math.round(60 + rnd() * 40),
+        message,
+        recommendation: rec,
+      });
+    }
+
+    personas.push({
+      name: personaNames[pIdx],
+      trait: personaTraits[tIdx],
+      steps,
+    });
+  }
+
   return {
     scenario,
     seed,
@@ -500,6 +577,7 @@ export function runDeterministicSimulation(scenario: string): RuntimeSimulationR
       'Assumes no major pricing or traffic-mix shift during simulation window.',
       'Assumes rollout uses existing release and monitoring process.',
     ],
+    personas,
     metrics: {
       baseline: Number(baseline.toFixed(2)),
       projected: Number(projected.toFixed(2)),
@@ -613,8 +691,8 @@ export function generateRealDocumentation(cwd: string, outDir?: string): string[
   const products = getRealProducts(cwd);
   const generatedAt = new Date(
     1_700_000_000_000 +
-      (hashInt(`${cfg.activeProject || 'none'}|${contextStats.totalFiles}|${contextStats.healthScore}`) %
-        31_536_000_000)
+    (hashInt(`${cfg.activeProject || 'none'}|${contextStats.totalFiles}|${contextStats.healthScore}`) %
+      31_536_000_000)
   ).toISOString();
 
   const root = outDir ? resolve(outDir) : join(cwd, '.phantom', 'output', 'docs');

@@ -69,3 +69,13 @@ docs-dist/
 *.vsix
 
 .npmrc
+
+# Internal agent instructions
+UNIVERSAL_SYSTEM_INSTRUCTIONS.md
+
+# Temporary clones and build artifacts
+tmp-clones/
+*.zip
+scripts/mass-model-upgrade.mjs
+scripts/test-memory.ts
+scripts/fix-versions.js

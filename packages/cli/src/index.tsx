@@ -894,20 +894,47 @@ program
   .command('simulate <scenario>')
   .description('Run deterministic simulation for a product scenario')
   .option('--json', 'Output as JSON')
-  .action((scenario: string, options: { json?: boolean }) => {
-    const result = runDeterministicSimulation(scenario);
+  .option('--personas <n>', 'Number of personas to simulate', '3')
+  .option('--depth <level>', 'Simulation depth (shallow, medium, deep)', 'medium')
+  .action((scenario: string, options: { json?: boolean; personas: string; depth: 'shallow' | 'medium' | 'deep' }) => {
+    const result = runDeterministicSimulation(scenario, {
+      personas: Number.parseInt(options.personas, 10),
+      depth: options.depth,
+    });
+
     if (options.json) {
       printJson(result);
       return;
     }
+
     console.log('');
-    console.log(theme.title('  DETERMINISTIC SIMULATION'));
-    console.log(`  ${theme.secondary('Scenario:')} ${result.scenario}`);
-    console.log(`  ${theme.secondary('Seed:')} ${result.seed}`);
-    console.log(`  ${theme.secondary('Baseline:')} ${result.metrics.baseline}`);
-    console.log(`  ${theme.secondary('Projected:')} ${result.metrics.projected}`);
-    console.log(`  ${theme.secondary('Delta (%):')} ${result.metrics.deltaPercent}`);
-    console.log(`  ${theme.secondary('Confidence:')} ${result.metrics.confidence}%`);
+    console.log(theme.title('  === PRODUCT SIMULATION ==='));
+    console.log(`  ${theme.secondary('Scenario:')} "${scenario}"`);
+    console.log('');
+
+    for (const persona of result.personas) {
+      console.log(`  ${theme.accent(`─── PERSONA: ${persona.name} (${persona.trait}) ───`)}`);
+      console.log('');
+
+      for (let i = 0; i < persona.steps.length; i++) {
+        const step = persona.steps[i];
+        const icon = step.status === 'PASS' ? theme.check : step.status === 'WARN' ? theme.warning_icon : theme.error('✗');
+        const color = step.status === 'PASS' ? theme.success : step.status === 'WARN' ? theme.warning : theme.error;
+
+        console.log(`  Step ${i + 1}: ${step.name}`);
+        console.log(`    ${icon} ${color(`${step.status}: ${step.score}% — ${step.message}`)}`);
+        if (step.recommendation) {
+          console.log(`    ${theme.dim('💡 Recommendation:')} ${theme.secondary(step.recommendation)}`);
+        }
+        console.log('');
+      }
+    }
+
+    console.log(`  ${theme.accent('─── SUMMARY ───')}`);
+    console.log(`  ${theme.secondary('Overall Funnel Completion:')} ${result.metrics.deltaPercent.toFixed(1)}%`);
+    console.log(`  ${theme.secondary('Baseline Metrics:')} ${result.metrics.baseline}`);
+    console.log(`  ${theme.secondary('Confidence Score:')} ${result.metrics.confidence}%`);
+    console.log(`  ${theme.secondary('Deterministic Seed:')} ${result.seed}`);
     console.log('');
   });
 
@@ -2709,7 +2736,7 @@ program
     console.log(`  ${theme.success('ollama')}            llama3.1:8b, llama3.1:70b, codellama:7b, mistral:7b`);
     console.log(`  ${theme.success('openai')}            gpt-4o, gpt-4o-mini, o3-mini`);
     console.log(`  ${theme.success('anthropic')}         claude-sonnet-4, claude-3.5-haiku, claude-3-opus`);
-    console.log(`  ${theme.success('gemini')}            gemini-2.0-flash, gemini-2.5-pro, gemini-1.5-pro`);
+    console.log(`  ${theme.success('gemini')}            gemini-3.1-pro, gemini-3.1-pro, gemini-3.1-pro`);
     console.log('');
     console.log(theme.dim('  Usage: phantom chat --model <name>'));
     console.log(theme.dim('  Config: phantom config setup'));

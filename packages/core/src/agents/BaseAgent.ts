@@ -3,6 +3,7 @@ import { AGENT_DESCRIPTIONS, type AgentType } from '../constants.js';
 import { getAIManager, type AIMessage } from '../ai/manager.js';
 import { getContextEngine } from '../context.js';
 import { doctorIntegrations } from '../integrations.js';
+import { SkillRegistry } from '../skills/registry.js';
 
 export type AgentStatus =
     | 'idle'
@@ -266,61 +267,121 @@ export class BaseAgent {
         this.status = 'analyzing';
         this.currentTask = question;
         this.startTime = Date.now();
+        const MAX_TURNS = 5;
+        let turnCount = 0;
 
         try {
             const ai = getAIManager();
-            const systemPrompt = getSystemPrompt(this.type, snapshot);
+            const registry = SkillRegistry.getInstance();
+            const tools = registry.getAllTools();
+
+            // 1. Construct Tool Definitions for Prompt
+            const toolDesc = tools.map(t =>
+                `- ${t.name}: ${t.description} (Args: ${JSON.stringify(t.parameters)})`
+            ).join('\n');
+
+            const toolPrompt = tools.length > 0 ? `
+## Available Tools
+You can use tools to gather information before giving your final verdict.
+To use a tool, responding ONLY with a JSON object:
+{ "tool": "tool_name", "args": { ... } }
+
+Available Tools:
+${toolDesc}
+` : '';
+
+            let systemPrompt = getSystemPrompt(this.type, snapshot);
+            systemPrompt += toolPrompt;
+
             const relevantContext = await extractRelevantContext(question);
 
-            const messages: AIMessage[] = [
+            let messages: AIMessage[] = [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: `Question: ${question}\n\nRelevant Context:\n${relevantContext}\n\nPlease provide your analysis with:\n1. Verdict: yes/no/maybe/needs-data\n2. Confidence: 0-100\n3. Reasoning: Your detailed analysis\n\nYour response should start with "Verdict:" followed by your verdict, then "Confidence:" followed by a number, then your reasoning.` },
             ];
 
-            const request = {
-                model: ai.getDefaultProvider()?.getDefaultModel() || 'gpt-4-turbo-preview', // Use provider's default
-                messages,
-                temperature: 0.3,
-                maxTokens: 1000,
-            };
+            // ReAct Loop
+            while (turnCount < MAX_TURNS) {
+                turnCount++;
 
-            const response = await ai.complete(request);
-            const { verdict, confidence, reasoning } = parseAIResponse(response.content);
+                const request = {
+                    model: ai.getDefaultProvider()?.getDefaultModel() || 'o3-mini',
+                    messages,
+                    temperature: 0.3,
+                    maxTokens: 1000,
+                };
 
-            const evidence = [
-                `context.files=${snapshot.contextFiles}`,
-                `context.health=${snapshot.contextHealth}`,
-                `integrations=${snapshot.connectedIntegrations}/${snapshot.totalIntegrations}`,
-                `ai.model=${response.model}`,
-                `ai.latency=${response.latency}ms`,
-            ];
+                const response = await ai.complete(request);
+                const content = response.content.trim();
 
-            const details = [
-                this.getDescription(),
-                `AI Model: ${response.model}`,
-                `Confidence Score: ${confidence}/100`,
-                reasoning || 'No detailed reasoning provided.',
-            ];
+                // Check for Tool Call (JSON)
+                if (content.startsWith('{') && content.endsWith('}')) {
+                    try {
+                        const call = JSON.parse(content);
+                        if (call.tool && call.args) {
+                            const tool = tools.find(t => t.name === call.tool);
+                            if (tool) {
+                                // Execute Tool
+                                messages.push({ role: 'assistant', content });
 
-            const result: AgentResult = {
-                agent: this.type,
-                verdict,
-                confidence,
-                summary: `${this.type} ${verdict === 'yes' ? 'supports' : verdict === 'no' ? 'opposes' : 'has reservations about'} proceeding with implementation.`,
-                details,
-                evidence,
-                duration: Date.now() - this.startTime,
-                cost: ai.getMetrics().find(m => m.provider === 'openai')?.totalCost || 0,
-            };
+                                try {
+                                    const result = await tool.handler(call.args);
+                                    messages.push({ role: 'user', content: `Tool Output (${call.tool}): ${JSON.stringify(result)}` });
+                                    continue; // Loop again with tool output
+                                } catch (toolErr: any) {
+                                    messages.push({ role: 'user', content: `Tool Error (${call.tool}): ${toolErr.message}` });
+                                    continue;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Not JSON, or failed parse - treat as final response
+                    }
+                }
 
-            this.status = 'complete';
-            this.currentTask = undefined;
-            return result;
+                // If not a tool call, parse as final verdict
+                const { verdict, confidence, reasoning } = parseAIResponse(content);
+
+                // ... (Rest of result construction)
+                const evidence = [
+                    `context.files=${snapshot.contextFiles}`,
+                    `context.health=${snapshot.contextHealth}`,
+                    `integrations=${snapshot.connectedIntegrations}/${snapshot.totalIntegrations}`,
+                    `ai.model=${response.model}`,
+                    `ai.latency=${response.latency}ms`,
+                    `tool_turns=${turnCount}`,
+                ];
+
+                const details = [
+                    this.getDescription(),
+                    `AI Model: ${response.model}`,
+                    `Confidence Score: ${confidence}/100`,
+                    reasoning || 'No detailed reasoning provided.',
+                ];
+
+                const result: AgentResult = {
+                    agent: this.type,
+                    verdict,
+                    confidence,
+                    summary: `${this.type} ${verdict === 'yes' ? 'supports' : verdict === 'no' ? 'opposes' : 'has reservations about'} proceeding with implementation.`,
+                    details,
+                    evidence,
+                    duration: Date.now() - this.startTime,
+                    cost: ai.getMetrics().find(m => m.provider === 'openai')?.totalCost || 0,
+                };
+
+                this.status = 'complete';
+                this.currentTask = undefined;
+                return result;
+            }
+
+            // Fallback if max turns reached
+            throw new Error("Max turns reached without verdict");
 
         } catch (error) {
+            // ... (Error handling)
             this.status = 'error';
             this.currentTask = undefined;
-
             return {
                 agent: this.type,
                 verdict: 'maybe',

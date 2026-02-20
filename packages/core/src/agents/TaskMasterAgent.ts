@@ -48,7 +48,7 @@ export class TaskMasterAgent extends BaseAgent {
     `;
 
         const request = {
-            model: ai.getDefaultProvider()?.getDefaultModel() || 'gpt-4-turbo-preview',
+            model: ai.getDefaultProvider()?.getDefaultModel() || 'o3-mini',
             messages: [{ role: 'user' as const, content: prompt }],
             temperature: 0.2,
             maxTokens: 2000,

@@ -4,12 +4,20 @@ export interface AIMessage {
   content: string;
 }
 
+export interface AITool {
+  name: string;
+  description: string;
+  input_schema: any;
+  type?: 'computer_20241022' | 'bash_20241022' | 'text_editor_20241022';
+}
+
 export interface AIRequest {
   model: string;
   messages: AIMessage[];
   temperature?: number;
   maxTokens?: number;
   stream?: boolean;
+  tools?: AITool[];
 }
 
 export interface AIResponse {

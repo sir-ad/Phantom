@@ -267,7 +267,7 @@ Provide a comprehensive design analysis.`;
 
     try {
       const response = await ai.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },

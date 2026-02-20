@@ -1,0 +1,31 @@
+{
+  "name": "@phantom-pm/interview-analyzer",
+  "version": "2.0.0-alpha.2",
+  "description": "Interview Analyzer module for Phantom - Extracts insights from customer interviews",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "test": "node --test dist/**/*.test.js",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@phantom-pm/core": "2.0.0-alpha.2",
+    "better-sqlite3": "^11.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0",
+    "@types/better-sqlite3": "^7.6.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

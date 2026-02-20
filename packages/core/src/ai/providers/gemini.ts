@@ -17,7 +17,7 @@ export class GeminiProvider extends BaseAIProvider {
             name: 'gemini',
             apiKey: config.apiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '',
             baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-            defaultModel: config.defaultModel || 'gemini-2.0-flash',
+            defaultModel: config.defaultModel || 'gemini-3.1-pro',
             timeout: config.timeout || 60000,
         });
 
@@ -26,8 +26,8 @@ export class GeminiProvider extends BaseAIProvider {
     }
 
     private initializeModels() {
-        this.models.set('gemini-2.0-flash', {
-            name: 'gemini-2.0-flash',
+        this.models.set('gemini-3.1-pro', {
+            name: 'gemini-3.1-pro',
             maxTokens: 8192,
             contextWindow: 1048576,
             supportsVision: true,
@@ -35,8 +35,8 @@ export class GeminiProvider extends BaseAIProvider {
             costPerOutputToken: 0.0000003,
         });
 
-        this.models.set('gemini-2.5-pro', {
-            name: 'gemini-2.5-pro',
+        this.models.set('gemini-3.1-pro', {
+            name: 'gemini-3.1-pro',
             maxTokens: 65536,
             contextWindow: 1048576,
             supportsVision: true,
@@ -44,8 +44,8 @@ export class GeminiProvider extends BaseAIProvider {
             costPerOutputToken: 0.000005,
         });
 
-        this.models.set('gemini-1.5-pro', {
-            name: 'gemini-1.5-pro',
+        this.models.set('gemini-3.1-pro', {
+            name: 'gemini-3.1-pro',
             maxTokens: 8192,
             contextWindow: 2097152,
             supportsVision: true,

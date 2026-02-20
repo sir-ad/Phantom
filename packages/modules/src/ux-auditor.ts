@@ -179,7 +179,7 @@ Focus areas: ${input.focusAreas?.join(', ') || 'all'}`,
 
     try {
       const response = await ai.complete({
-        model: imageData ? 'gpt-4-vision-preview' : 'gpt-4-turbo-preview',
+        model: imageData ? 'gpt-4.5-preview' : 'o3-mini',
         messages,
         temperature: 0.2,
         maxTokens: 3000,

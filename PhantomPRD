@@ -1,0 +1,1789 @@
+# PHANTOM: Agent-Optimized Product Requirements Document
+## Building "Cursor for Product Managers" - Complete System Specification
+
+**Target Agent:** AntiGravity (Gemini 3 Pro)  
+**Document Type:** Execution Specification (Not Timeline-Based)  
+**Purpose:** Transform PHANTOM into YC's vision of automated product discovery  
+**Repository:** github.com/sir-ad/Phantom
+
+---
+
+## PART 1: MARKET INTELLIGENCE
+
+### Competition Analysis
+
+**Current PM Tool Landscape:**
+
+| Tool | Strength | Critical Weakness | Price | Market Gap |
+|------|----------|-------------------|-------|------------|
+| **Productboard** | Roadmapping, prioritization | No native analytics, manual processes, $20-200/user/mo | $20+/user/mo | Can't automate "what to build next" |
+| **Aha!** | Strategy, OKRs, roadmaps | Complex pricing, feature bloat, steep learning curve | $59-149/user/mo (split products) | Disconnected modules |
+| **UserVoice** | Feedback collection | Limited analytics, no automated insights, outdated UI | $699-1,349/mo | Manual synthesis |
+| **Pendo** | Analytics + feedback | Expensive, analytics-focused not PM-focused | $583+/mo | No decision automation |
+| **BuildBetter.ai** | AI feedback analysis | Closed-source, expensive, no CLI/agent integration | Enterprise only | Not developer-friendly |
+| **Canny** | Simple feedback | Basic features, no AI, no analytics | $79+/mo | Too simple |
+
+**Key Pain Points (From User Reviews):**
+1. **Manual Synthesis:** "Takes 5+ hours to analyze 50 customer interviews"
+2. **Tool Sprawl:** "We use 8 different tools - Jira, Productboard, Dovetail, Analytics, Slack..."
+3. **Slow Decisions:** "By the time we synthesize feedback, the moment is gone"
+4. **No Automation:** "Still copy-pasting feedback into spreadsheets"
+5. **Expensive:** "$1,200/mo for 5 PMs is unsustainable"
+6. **No AI Integration:** "Our devs use Cursor, but PM tools don't connect"
+
+### YC's Vision (From Request)
+
+**What They Want:**
+```
+"Cursor for Product Management" = AI-native system where:
+
+INPUT:
+- Customer interviews (audio/text)
+- Product usage data (analytics)
+- Feedback (Slack, tickets, surveys)
+
+PROCESS:
+- Automated analysis
+- Pattern detection
+- Opportunity scoring
+
+OUTPUT:
+- "Here's what to build next"
+- Explanation with customer evidence
+- UI/data model/workflow changes proposed
+- Tasks broken down for AI agents (Cursor, Claude Code)
+
+GOAL: Change how we define "what to build" as agents take over implementation
+```
+
+### Market Opportunity
+
+**TAM:** $5.2B product management software market (2024)  
+**SAM:** $1.8B AI-powered PM tools (emerging)  
+**SOM:** $180M (open-source, developer-friendly)
+
+**Competitive Advantage:**
+1. **Open-source** (vs all competitors = closed)
+2. **CLI + UI** (vs GUI-only)
+3. **Model-agnostic** (vs locked to OpenAI/Anthropic)
+4. **Agent-first** (vs human-first)
+5. **$0** (vs $700-1,400/mo)
+
+---
+
+## PART 2: CURRENT STATE ANALYSIS (PHANTOM)
+
+### What Exists Today
+
+**Architecture:**
+```
+phantom/
+├── packages/
+│   ├── cli/            ✅ Working (20+ commands)
+│   ├── core/           ✅ Working (AI, context, config)
+│   ├── mcp-server/     ✅ Working (MCP integration)
+│   ├── modules/        ⚠️  Partial (7/23 working)
+│   │   ├── prd-forge/      ✅ Complete
+│   │   ├── story-writer/   ❌ Stubbed
+│   │   ├── sprint-planner/ ❌ Stubbed
+│   │   ├── swarm/          ✅ Complete
+│   │   ├── competitive/    ❌ Stubbed
+│   │   ├── analytics-lens/ ❌ Stubbed
+│   │   ├── oracle/         ❌ Stubbed
+│   │   └── ... (16 more stubbed)
+│   └── chrome-extension/ ⚠️  Basic (Phantom Oracle)
+└── docs-site/          ✅ Working (Zola)
+```
+
+**Strengths:**
+- Solid foundation (CLI, AI providers, MCP)
+- Swarm already works (7 agents)
+- Good module system architecture
+- TypeScript + Jest + Modern stack
+
+**Critical Gaps (For YC Vision):**
+1. **❌ No customer interview analysis**
+2. **❌ No usage data ingestion**
+3. **❌ No feedback aggregation** (Slack, Intercom, tickets)
+4. **❌ No automated "what to build next"**
+5. **❌ No continuous discovery loop**
+6. **❌ No web UI** (CLI only)
+7. **❌ No agent-optimized output format**
+8. **❌ Modules incomplete** (16/23 stubbed)
+
+### Code Quality Assessment
+
+**Needs Improvement:**
+- Module completion (only 7/23 done)
+- Test coverage (estimated 60%, need 80%+)
+- Error handling (some modules lack proper try/catch)
+- Documentation (many modules undocumented)
+- Performance (context engine could be faster)
+
+---
+
+## PART 3: PRODUCT VISION
+
+### What We're Building
+
+**PHANTOM = Cursor for Product Managers**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      PHANTOM OS                                  │
+│  "The invisible force behind every great product"               │
+└─────────────────────────────────────────────────────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+   [CLI Mode]          [Web UI]          [Agent Mode]
+   Developers          Product PMs       AI Agents
+   Terminal use        Browser use       MCP integration
+                            │
+        ┌───────────────────┴───────────────────┐
+        │                                       │
+   [Intelligence Core]                   [Action Layer]
+   - Interview analysis                 - PRD generation
+   - Usage intelligence                 - Story creation
+   - Feedback synthesis                 - Task breakdown
+   - Discovery automation               - Agent communication
+   - Opportunity scoring
+```
+
+### Core Capabilities (Target State)
+
+**1. Customer Intelligence**
+- Upload interview transcripts → Extract pain points, desires, jobs-to-be-done
+- Connect analytics (Mixpanel, Amplitude, GA4) → Usage patterns, drop-offs
+- Aggregate feedback (Slack, Intercom, Zendesk) → Themes, sentiment
+- Synthesize across all sources → Unified customer truth
+
+**2. Automated Discovery**
+- Weekly/daily discovery loops (background processing)
+- "What to build next" recommendations with evidence
+- Opportunity scoring (impact × feasibility × confidence)
+- Proactive suggestions ("Your users are churning at X step")
+
+**3. Agent Communication**
+- Output optimized for AI agents (Cursor, Claude Code, AntiGravity)
+- Structured JSON + natural language
+- Task breakdown for implementation
+- Acceptance criteria in executable format
+
+**4. Dual Interface**
+- CLI for developers (existing)
+- Web UI for PMs (new - like Codex/ChatGPT)
+- Local-first (runs on localhost)
+- Same functionality, different UX
+
+---
+
+## PART 4: TECHNICAL ARCHITECTURE
+
+### System Design
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                         Frontend Layer                          │
+├────────────────────────────────────────────────────────────────┤
+│  Web UI (React + Next.js)     │     CLI (existing)             │
+│  localhost:3000               │     phantom <command>          │
+└───────────────┬───────────────┴────────────────┬───────────────┘
+                │                                │
+        ┌───────▼────────────────────────────────▼───────┐
+        │          API Server (Express + tRPC)           │
+        │          localhost:3001                        │
+        └────────────────────┬───────────────────────────┘
+                             │
+        ┌────────────────────▼───────────────────────────┐
+        │          PHANTOM Core Engine                   │
+        │  ┌─────────────────────────────────────────┐  │
+        │  │  Intelligence Modules (New)             │  │
+        │  │  - Interview Analyzer                   │  │
+        │  │  - Feedback Hub                         │  │
+        │  │  - Usage Intelligence                   │  │
+        │  │  - Discovery Loop                       │  │
+        │  │  - Agent Communicator                   │  │
+        │  └─────────────────────────────────────────┘  │
+        │  ┌─────────────────────────────────────────┐  │
+        │  │  Existing Modules                       │  │
+        │  │  - PRD Forge, Swarm, etc.              │  │
+        │  └─────────────────────────────────────────┘  │
+        │  ┌─────────────────────────────────────────┐  │
+        │  │  Core Services                          │  │
+        │  │  - AI Manager (multi-model)            │  │
+        │  │  - Context Engine                       │  │
+        │  │  - Module Loader                        │  │
+        │  │  - Config Manager                       │  │
+        │  └─────────────────────────────────────────┘  │
+        └────────────────────┬───────────────────────────┘
+                             │
+        ┌────────────────────▼───────────────────────────┐
+        │          Data Layer                            │
+        │  - SQLite (local-first)                       │
+        │  - Vector DB (embeddings)                     │
+        │  - File storage (transcripts, analytics)     │
+        └────────────────────────────────────────────────┘
+```
+
+### Technology Stack
+
+**Frontend (New Web UI):**
+```typescript
+- Framework: Next.js 14 (App Router)
+- UI Library: React 18
+- Styling: Tailwind CSS
+- Components: shadcn/ui
+- State: Zustand
+- Forms: React Hook Form
+- API: tRPC
+- Charts: Recharts
+- Monaco Editor: For PRD/code editing
+```
+
+**Backend (Enhanced):**
+```typescript
+- Runtime: Node.js 18+
+- API: Express + tRPC
+- Database: SQLite (better-sqlite3)
+- Vector DB: ChromaDB (local)
+- Queue: BullMQ (for background jobs)
+- WebSockets: Socket.io (real-time updates)
+```
+
+**AI Integration (Enhanced):**
+```typescript
+- Providers: OpenAI, Anthropic, Google (Gemini), Ollama
+- Orchestration: LangChain (for complex workflows)
+- Embeddings: OpenAI ada-002 or local (all-MiniLM)
+- Vector Search: Cosine similarity
+```
+
+---
+
+## PART 5: BUILD MODULES (For Agent Execution)
+
+### Module 1: Interview Analyzer
+
+**Location:** `packages/modules/interview-analyzer/`
+
+**Purpose:** Transform interview transcripts → structured insights
+
+**Input:**
+```typescript
+interface InterviewInput {
+  transcript: string;        // Text or audio→text
+  metadata: {
+    interviewee: string;
+    date: string;
+    product_area?: string;
+  };
+}
+```
+
+**Process:**
+```typescript
+1. Parse transcript (identify speaker turns)
+2. Extract entities (problems, desires, quotes)
+3. Classify by framework:
+   - Pain points (current frustrations)
+   - Gains (desired outcomes)
+   - Jobs-to-be-Done (what they're hiring product for)
+4. Sentiment scoring (-1 to +1)
+5. Theme clustering (MECE)
+6. Quote extraction (evidence)
+```
+
+**Output:**
+```typescript
+interface InterviewInsights {
+  id: string;
+  summary: string;
+  pain_points: Array<{
+    description: string;
+    severity: 1-10;
+    frequency: number;      // Mentions across interviews
+    quotes: string[];
+  }>;
+  jobs_to_be_done: Array<{
+    job: string;
+    importance: 1-10;
+    satisfaction: 1-10;     // Current solution
+    opportunity_score: number; // importance × (1 - satisfaction)
+  }>;
+  themes: Array<{
+    name: string;
+    mentions: number;
+    related_pain_points: string[];
+  }>;
+  quotes: Array<{
+    text: string;
+    context: string;
+    category: string;
+  }>;
+}
+```
+
+**CLI Integration:**
+```bash
+phantom interview analyze transcript.txt
+phantom interview analyze audio.mp3 --transcribe
+phantom interview bulk-analyze ./interviews/
+```
+
+**Implementation Steps:**
+```typescript
+1. Create module structure (src/, types.ts, index.ts, analyzer.test.ts)
+2. Implement transcript parsing
+3. Add AI integration for extraction
+4. Implement JTBD framework
+5. Add theme clustering (k-means or hierarchical)
+6. Implement storage (SQLite table: interviews)
+7. Add CLI commands
+8. Write tests (80%+ coverage)
+9. Add documentation
+```
+
+**Reference Implementation:**
+Look at `packages/modules/prd-forge/` for patterns:
+- AI integration
+- File handling
+- Output generation
+- CLI command structure
+
+**Acceptance Criteria:**
+```
+✓ Can parse text transcripts
+✓ Can transcribe audio (using Whisper API)
+✓ Extracts pain points with severity scores
+✓ Generates JTBD analysis
+✓ Clusters themes automatically
+✓ Stores results in database
+✓ CLI commands work
+✓ Tests pass (80%+ coverage)
+✓ Handles errors gracefully
+```
+
+---
+
+### Module 2: Feedback Hub
+
+**Location:** `packages/modules/feedback-hub/`
+
+**Purpose:** Aggregate feedback from multiple sources → unified themes
+
+**Input Sources:**
+```typescript
+interface FeedbackSource {
+  type: 'slack' | 'intercom' | 'zendesk' | 'linear' | 'github' | 'email';
+  config: {
+    api_key?: string;
+    webhook_url?: string;
+    channel_id?: string;
+  };
+}
+```
+
+**Process:**
+```typescript
+1. Poll sources (daily/hourly)
+2. Normalize formats → unified schema
+3. Deduplication (same feedback, different sources)
+4. Sentiment analysis (positive/negative/neutral)
+5. Feature request extraction
+6. Pain point identification
+7. Theme clustering
+8. Frequency scoring
+```
+
+**Output:**
+```typescript
+interface FeedbackTheme {
+  id: string;
+  name: string;
+  description: string;
+  sentiment: number;        // -1 to +1
+  frequency: number;        // Total mentions
+  sources: Array<{
+    source: string;
+    count: number;
+  }>;
+  trend: 'increasing' | 'stable' | 'decreasing';
+  top_requests: Array<{
+    request: string;
+    votes: number;
+    mrr_impact: number;     // From CRM data if available
+  }>;
+  sample_feedback: string[];
+}
+```
+
+**Integration Patterns:**
+```typescript
+// Slack
+- Listen to specific channels
+- Parse messages for feedback indicators
+- Extract @mentions, reactions, threads
+
+// Intercom
+- Poll conversations API
+- Filter by tags (feature-request, bug, feedback)
+- Extract customer properties (plan, MRR)
+
+// Zendesk
+- Poll tickets API
+- Filter by custom fields
+- Categorize by priority
+
+// GitHub Issues
+- Poll issues with label "feedback"
+- Extract feature requests
+- Track +1 reactions
+```
+
+**CLI Integration:**
+```bash
+phantom feedback connect slack --channel product-feedback
+phantom feedback connect intercom --api-key xxx
+phantom feedback sync                    # Manual sync
+phantom feedback themes                  # Show current themes
+phantom feedback analyze "authentication" # Filter analysis
+```
+
+**Background Processing:**
+```typescript
+// Use BullMQ for scheduled jobs
+Queue: 'feedback-sync'
+Schedule: Every 6 hours
+Jobs:
+1. Poll all sources
+2. Process new feedback
+3. Update themes
+4. Detect trends
+5. Send notifications (if major changes)
+```
+
+**Acceptance Criteria:**
+```
+✓ Integrates with Slack (read channels)
+✓ Integrates with Intercom (conversations)
+✓ Integrates with Zendesk (tickets)
+✓ Integrates with GitHub (issues)
+✓ Normalizes formats correctly
+✓ Deduplicates feedback
+✓ Clusters themes (MECE)
+✓ Tracks trends over time
+✓ CLI commands work
+✓ Background jobs work
+✓ Tests pass (80%+ coverage)
+```
+
+---
+
+### Module 3: Usage Intelligence
+
+**Location:** `packages/modules/usage-intelligence/`
+
+**Purpose:** Connect analytics → recommendations
+
+**Supported Platforms:**
+```typescript
+interface AnalyticsPlatform {
+  type: 'mixpanel' | 'amplitude' | 'posthog' | 'ga4' | 'segment';
+  credentials: {
+    api_key: string;
+    api_secret?: string;
+    project_id: string;
+  };
+}
+```
+
+**Analysis Capabilities:**
+```typescript
+1. Funnel Analysis
+   - Identify drop-off points
+   - Calculate conversion rates
+   - Suggest improvements
+
+2. Feature Adoption
+   - Track usage of features
+   - Identify underused features
+   - Suggest deprecation or promotion
+
+3. Cohort Analysis
+   - Segment users by behavior
+   - Identify power users vs churning users
+   - Understand retention patterns
+
+4. Behavioral Patterns
+   - Common user journeys
+   - Friction points
+   - Success paths
+
+5. Churn Prediction
+   - Identify at-risk users
+   - Understand churn reasons
+   - Suggest retention features
+```
+
+**Output:**
+```typescript
+interface UsageInsight {
+  id: string;
+  type: 'funnel' | 'adoption' | 'churn' | 'behavior';
+  title: string;
+  description: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  impact_score: number;     // 0-100
+  data: {
+    metric: string;
+    current_value: number;
+    benchmark_value?: number;
+    change: number;         // % change
+  };
+  recommendations: Array<{
+    action: string;
+    expected_impact: string;
+    effort: 'low' | 'medium' | 'high';
+  }>;
+  visualization: {
+    type: 'chart' | 'funnel' | 'cohort';
+    data: any;
+  };
+}
+```
+
+**CLI Integration:**
+```bash
+phantom analytics connect mixpanel --api-key xxx
+phantom analytics funnel "signup → activation"
+phantom analytics adoption --feature "dark-mode"
+phantom analytics insights                    # All insights
+phantom analytics trends --last-30-days
+```
+
+**Acceptance Criteria:**
+```
+✓ Connects to Mixpanel API
+✓ Connects to Amplitude API
+✓ Connects to PostHog API
+✓ Analyzes funnels correctly
+✓ Tracks feature adoption
+✓ Generates recommendations
+✓ Visualizes data (terminal charts)
+✓ CLI commands work
+✓ Tests pass (80%+ coverage)
+```
+
+---
+
+### Module 4: Discovery Loop
+
+**Location:** `packages/modules/discovery-loop/`
+
+**Purpose:** Automated "what to build next" engine
+
+**Process:**
+```typescript
+1. Data Collection (Weekly/Daily)
+   - Fetch latest interviews (Interview Analyzer)
+   - Get feedback themes (Feedback Hub)
+   - Pull usage insights (Usage Intelligence)
+
+2. Cross-Source Synthesis
+   - Find overlaps (problem mentioned in interviews + feedback + low usage)
+   - Calculate confidence scores
+   - Validate with multiple sources
+
+3. Opportunity Scoring
+   Formula: (Impact × Feasibility × Confidence) / 100
+   
+   Impact = (
+     customer_pain_severity * 0.4 +
+     frequency_of_mentions * 0.3 +
+     mrr_at_risk * 0.3
+   )
+   
+   Feasibility = (
+     technical_complexity_score * 0.5 +
+     existing_infrastructure * 0.3 +
+     team_capacity * 0.2
+   )
+   
+   Confidence = (
+     number_of_sources * 0.5 +
+     data_quality * 0.3 +
+     recency * 0.2
+   )
+
+4. Feature Hypothesis Generation
+   - Use AI to generate feature ideas
+   - Map to user pain points
+   - Suggest UI changes, data model changes
+   - Provide customer evidence
+
+5. Prioritization
+   - RICE framework
+   - ICE framework
+   - Custom scoring
+
+6. Output Generation
+   - "What to build next" report
+   - Recommendations with evidence
+   - Task breakdown for agents
+```
+
+**Output:**
+```typescript
+interface DiscoveryReport {
+  generated_at: string;
+  time_period: string;
+  executive_summary: string;
+  
+  opportunities: Array<{
+    id: string;
+    title: string;
+    description: string;
+    
+    opportunity_score: number;  // 0-100
+    impact: number;
+    feasibility: number;
+    confidence: number;
+    
+    customer_evidence: Array<{
+      source: 'interview' | 'feedback' | 'analytics';
+      summary: string;
+      quotes?: string[];
+      data_points?: any;
+    }>;
+    
+    proposed_solution: {
+      feature_description: string;
+      ui_changes: string[];
+      data_model_changes: string[];
+      workflow_changes: string[];
+    };
+    
+    expected_outcomes: {
+      metrics: Array<{
+        metric: string;
+        current: number;
+        target: number;
+        confidence: string;
+      }>;
+    };
+    
+    tasks_for_agents: Array<{
+      task_type: 'frontend' | 'backend' | 'database' | 'api' | 'testing';
+      description: string;
+      acceptance_criteria: string[];
+      estimated_effort: string;
+    }>;
+  }>;
+  
+  insights: Array<{
+    category: string;
+    finding: string;
+    recommendation: string;
+  }>;
+}
+```
+
+**CLI Integration:**
+```bash
+phantom discover run                    # Run discovery loop
+phantom discover report --last          # Show last report
+phantom discover opportunities          # List opportunities
+phantom discover detail <id>            # Opportunity details
+phantom discover export json/md/html    # Export report
+```
+
+**Background Processing:**
+```typescript
+Queue: 'discovery-loop'
+Schedule: Weekly (configurable)
+Process:
+1. Collect data from all modules
+2. Run synthesis
+3. Generate report
+4. Store results
+5. Notify user (CLI notification, email, Slack)
+```
+
+**Acceptance Criteria:**
+```
+✓ Collects data from all intelligence modules
+✓ Synthesizes across sources
+✓ Scores opportunities correctly
+✓ Generates feature hypotheses
+✓ Provides customer evidence
+✓ Breaks down tasks for agents
+✓ Runs automatically (background)
+✓ CLI commands work
+✓ Export formats work
+✓ Tests pass (80%+ coverage)
+```
+
+---
+
+### Module 5: Agent Communicator
+
+**Location:** `packages/modules/agent-communicator/`
+
+**Purpose:** Translate PM decisions → agent-optimized tasks
+
+**Input:**
+```typescript
+interface ProductDecision {
+  type: 'feature' | 'improvement' | 'fix' | 'experiment';
+  title: string;
+  description: string;
+  prd_url?: string;
+  user_stories?: string[];
+  acceptance_criteria?: string[];
+  design_mocks?: string[];
+}
+```
+
+**Process:**
+```typescript
+1. Decompose Decision
+   - Break into implementable units
+   - Identify dependencies
+   - Classify by domain (frontend, backend, etc.)
+
+2. Generate Agent Tasks
+   - Precise specifications
+   - Executable acceptance criteria
+   - Test requirements
+   - No ambiguity
+
+3. Assign Complexity
+   - Estimate effort (1-10)
+   - Identify risks
+   - Suggest approaches
+
+4. Create Agent Protocol
+   - Structured JSON for MCP
+   - Natural language for context
+   - Code examples where helpful
+```
+
+**Output:**
+```typescript
+interface AgentTaskBundle {
+  feature_id: string;
+  feature_title: string;
+  
+  tasks: Array<{
+    id: string;
+    type: 'frontend' | 'backend' | 'database' | 'api' | 'testing' | 'documentation';
+    title: string;
+    description: string;
+    
+    // For agent execution
+    specification: {
+      what_to_build: string;
+      files_to_create: string[];
+      files_to_modify: string[];
+      dependencies_to_add: string[];
+      
+      implementation_notes: string[];
+      edge_cases: string[];
+      
+      acceptance_criteria: Array<{
+        criterion: string;
+        verification_method: 'automated_test' | 'manual_test' | 'code_review';
+        test_code?: string;
+      }>;
+    };
+    
+    // For planning
+    complexity: number;       // 1-10
+    estimated_hours: number;
+    dependencies: string[];   // Other task IDs
+    
+    // For agents like Cursor/Claude Code
+    cursor_prompt: string;    // Optimized prompt
+    context_files: string[];  // Files to load
+  }>;
+  
+  execution_order: string[];  // Task IDs in dependency order
+  
+  validation_checklist: string[];
+}
+```
+
+**MCP Integration:**
+```typescript
+// Exposed as MCP tool
+Tool: "phantom_get_agent_tasks"
+Description: "Get implementation tasks for a product feature"
+Input: { feature_id: string }
+Output: AgentTaskBundle
+
+// Used by Cursor/Claude Code/AntiGravity
+User: "Build the dark mode feature"
+Agent: Calls phantom_get_agent_tasks("dark-mode-123")
+Agent: Gets structured task breakdown
+Agent: Executes each task in order
+Agent: Verifies acceptance criteria
+```
+
+**CLI Integration:**
+```bash
+phantom agent-tasks generate prd.md
+phantom agent-tasks export feature-123 --format json
+phantom agent-tasks mcp                    # Start MCP server mode
+```
+
+**Acceptance Criteria:**
+```
+✓ Decomposes features correctly
+✓ Generates executable tasks
+✓ Assigns complexity scores
+✓ Creates agent-optimized prompts
+✓ Identifies dependencies
+✓ Works via MCP
+✓ CLI commands work
+✓ Tests pass (80%+ coverage)
+```
+
+---
+
+### Module 6: Web UI (Complete Application)
+
+**Location:** `packages/web-ui/`
+
+**Purpose:** Browser-based interface (localhost)
+
+**Architecture:**
+```
+web-ui/
+├── app/                      # Next.js App Router
+│   ├── layout.tsx           # Root layout
+│   ├── page.tsx             # Homepage/Dashboard
+│   ├── chat/                # Chat interface
+│   │   └── page.tsx
+│   ├── interviews/          # Interview management
+│   │   ├── page.tsx         # List
+│   │   ├── [id]/page.tsx   # Detail
+│   │   └── upload/page.tsx  # Upload
+│   ├── feedback/            # Feedback hub
+│   ├── analytics/           # Usage intelligence
+│   ├── discoveries/         # Discovery reports
+│   ├── modules/             # Module browser
+│   └── settings/            # Configuration
+├── components/
+│   ├── ui/                  # shadcn components
+│   ├── layout/              # Layout components
+│   ├── features/            # Feature components
+│   └── charts/              # Visualization
+├── lib/
+│   ├── api/                 # tRPC client
+│   ├── store/               # Zustand stores
+│   └── utils/               # Helpers
+└── styles/
+    └── globals.css          # Tailwind
+```
+
+**Key Features:**
+
+**1. Chat Interface (Main UX)**
+```tsx
+// Like ChatGPT but for PM
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+  attachments?: File[];
+}
+
+// Examples:
+User: "Analyze the last 10 customer interviews"
+→ PHANTOM analyzes, shows insights
+
+User: "What should we build next?"
+→ PHANTOM runs discovery loop, presents opportunities
+
+User: "Generate PRD for dark mode"
+→ PHANTOM creates PRD, offers download
+```
+
+**2. Dashboard**
+```tsx
+// Overview of intelligence
+- Recent interviews (with insights)
+- Active feedback themes (trending)
+- Usage insights (critical issues)
+- Opportunities (ranked)
+- Discovery reports (latest)
+```
+
+**3. Interview Manager**
+```tsx
+// Upload and manage interviews
+- Drag-and-drop upload
+- Audio transcription progress
+- Analysis results
+- Theme visualization
+- Quote browser
+```
+
+**4. Feedback Dashboard**
+```tsx
+// Aggregated feedback
+- Source breakdown (pie chart)
+- Theme clustering (word cloud)
+- Sentiment timeline
+- Top requests (table)
+- Integration status
+```
+
+**5. Analytics Dashboard**
+```tsx
+// Usage intelligence
+- Funnel visualizations
+- Adoption trends
+- Cohort analysis
+- Churn predictions
+- Recommendations
+```
+
+**6. Discovery Reports**
+```tsx
+// "What to build next"
+- Opportunity list (sorted by score)
+- Detailed opportunity view
+- Evidence browser
+- Task breakdown for agents
+- Export options
+```
+
+**Technical Implementation:**
+
+**API Layer (tRPC):**
+```typescript
+// packages/api-server/src/trpc/routers/
+
+router: {
+  interviews: {
+    upload: mutation,
+    analyze: mutation,
+    list: query,
+    get: query,
+  },
+  feedback: {
+    sync: mutation,
+    themes: query,
+    connect: mutation,
+  },
+  analytics: {
+    funnel: query,
+    insights: query,
+    connect: mutation,
+  },
+  discovery: {
+    run: mutation,
+    latest: query,
+    opportunities: query,
+  },
+  chat: {
+    message: mutation,
+    history: query,
+  },
+}
+```
+
+**Real-time Updates (WebSockets):**
+```typescript
+// For long-running operations
+Events:
+- interview_analysis_progress
+- feedback_sync_progress
+- discovery_loop_progress
+- background_job_complete
+```
+
+**CLI Integration:**
+```bash
+# Start web UI
+phantom ui start                # Starts at localhost:3000
+phantom ui --port 8080         # Custom port
+
+# Background
+API server: localhost:3001
+WebSocket: localhost:3001/ws
+```
+
+**Acceptance Criteria:**
+```
+✓ Next.js app builds successfully
+✓ All routes work
+✓ Chat interface functional
+✓ File uploads work (drag-and-drop)
+✓ Real-time updates work (WebSockets)
+✓ Charts render correctly
+✓ Responsive design (mobile-friendly)
+✓ Dark mode support
+✓ Authentication (optional, for multi-user)
+✓ Export functionality works
+✓ Tests pass (80%+ coverage)
+```
+
+---
+
+## PART 6: IMPLEMENTATION GUIDE (For AntiGravity)
+
+### Development Workflow
+
+**Phase 1: Intelligence Modules (Priority)**
+```
+Order:
+1. Interview Analyzer (foundation)
+2. Feedback Hub (aggregation)
+3. Usage Intelligence (data)
+4. Discovery Loop (synthesis)
+5. Agent Communicator (output)
+
+Approach:
+- Start with Interview Analyzer (most critical)
+- Follow existing patterns from prd-forge
+- Build incrementally (one feature at a time)
+- Test after each feature
+- Commit when working
+```
+
+**Phase 2: API Server**
+```
+Setup:
+1. Create packages/api-server/
+2. Setup Express + tRPC
+3. Create routers for each module
+4. Add WebSocket support
+5. Add authentication (optional)
+6. Test all endpoints
+
+Technology:
+- Express.js
+- tRPC for type-safe API
+- Socket.io for WebSockets
+- JWT for auth (optional)
+```
+
+**Phase 3: Web UI**
+```
+Setup:
+1. Create packages/web-ui/
+2. Setup Next.js 14
+3. Install shadcn/ui components
+4. Implement chat interface (start here)
+5. Build dashboard
+6. Add module-specific pages
+7. Test all features
+
+Technology:
+- Next.js 14 (App Router)
+- React 18
+- Tailwind CSS
+- shadcn/ui
+- tRPC client
+- Zustand (state)
+```
+
+**Phase 4: Integration & Polish**
+```
+Tasks:
+1. Connect CLI ↔ API server
+2. Test MCP integration
+3. Add background jobs (BullMQ)
+4. Performance optimization
+5. Documentation
+6. Demo video
+```
+
+### Code Patterns to Follow
+
+**1. Module Structure**
+```typescript
+// Every module follows this
+packages/modules/module-name/
+├── src/
+│   ├── index.ts          // Public exports
+│   ├── analyzer.ts       // Core logic
+│   ├── types.ts          // TypeScript types
+│   ├── storage.ts        // Database operations
+│   ├── analyzer.test.ts  // Tests
+│   └── cli.ts            // CLI commands
+├── package.json
+└── README.md
+```
+
+**2. AI Integration Pattern**
+```typescript
+// Standard way to call AI
+import { AIManager } from '@phantom/core/ai';
+
+const ai = AIManager.getInstance();
+const response = await ai.complete(prompt, {
+  temperature: 0.7,
+  maxTokens: 2000,
+  model: 'preferred-model',
+});
+
+// Parse response
+const result = parseAIResponse(response);
+```
+
+**3. CLI Command Pattern**
+```typescript
+// Standard CLI command
+import { Command } from 'commander';
+
+export function registerCommand(program: Command): void {
+  program
+    .command('module-action')
+    .description('Description of action')
+    .argument('<input>', 'Input description')
+    .option('-o, --output <file>', 'Output file')
+    .action(async (input: string, options) => {
+      try {
+        console.log(chalk.green('🎭 PHANTOM Module'));
+        
+        // Implementation
+        const result = await performAction(input, options);
+        
+        console.log(chalk.green('✓ Complete!'));
+        
+        if (options.output) {
+          await saveToFile(result, options.output);
+        }
+      } catch (error) {
+        console.error(chalk.red(`✗ Error: ${error.message}`));
+        process.exit(1);
+      }
+    });
+}
+```
+
+**4. Error Handling Pattern**
+```typescript
+// Always use try/catch
+export async function moduleFunction(input: string): Promise<Result> {
+  try {
+    // Validate input
+    if (!input) {
+      throw new Error('Input is required');
+    }
+    
+    // Process
+    const result = await processInput(input);
+    
+    // Validate output
+    if (!isValidResult(result)) {
+      throw new Error('Invalid result generated');
+    }
+    
+    return result;
+  } catch (error) {
+    throw new Error(`Module function failed: ${error.message}`);
+  }
+}
+```
+
+**5. Test Pattern**
+```typescript
+// Standard test structure
+import { analyzeInterview } from './analyzer';
+
+describe('Interview Analyzer', () => {
+  beforeEach(() => {
+    // Setup
+  });
+  
+  afterEach(() => {
+    // Cleanup
+  });
+  
+  describe('analyzeInterview', () => {
+    it('should extract pain points from transcript', async () => {
+      const transcript = 'Sample transcript...';
+      const result = await analyzeInterview(transcript);
+      
+      expect(result.pain_points).toBeDefined();
+      expect(result.pain_points.length).toBeGreaterThan(0);
+    });
+    
+    it('should handle empty transcript', async () => {
+      await expect(analyzeInterview('')).rejects.toThrow('Transcript is required');
+    });
+    
+    it('should calculate opportunity scores correctly', async () => {
+      const transcript = 'Sample with high-severity pain...';
+      const result = await analyzeInterview(transcript);
+      
+      expect(result.pain_points[0].severity).toBeGreaterThanOrEqual(1);
+      expect(result.pain_points[0].severity).toBeLessThanOrEqual(10);
+    });
+  });
+});
+```
+
+### Quality Gates
+
+**Before Committing:**
+```bash
+npm run build           # Must succeed
+npm test               # Must pass
+npm run lint           # Must be clean
+npm run type-check     # TypeScript must pass
+```
+
+**Code Coverage:**
+- Minimum: 80%
+- Target: 90%
+- Run: `npm test -- --coverage`
+
+**Performance:**
+- API responses < 200ms (non-AI)
+- AI operations < 10s
+- File operations < 1s
+- Database queries < 100ms
+
+---
+
+## PART 7: VERIFICATION & ACCEPTANCE
+
+### Module-Level Acceptance
+
+**Each module must:**
+```
+✓ Build successfully (npm run build)
+✓ Pass all tests (npm test)
+✓ Pass linting (npm run lint)
+✓ Pass type checking (tsc --noEmit)
+✓ Have 80%+ test coverage
+✓ Have comprehensive README
+✓ Have working CLI commands
+✓ Handle errors gracefully
+✓ Follow existing patterns
+✓ Be documented with examples
+```
+
+### System-Level Acceptance
+
+**Integration tests must pass:**
+```
+✓ CLI → API server communication works
+✓ API server → modules communication works
+✓ Web UI → API server communication works
+✓ MCP server → modules communication works
+✓ Background jobs run correctly
+✓ WebSockets deliver real-time updates
+✓ File uploads work (various formats)
+✓ Database operations work correctly
+✓ AI integrations work (all providers)
+```
+
+### User Acceptance Criteria
+
+**YC Vision Achieved:**
+```
+✓ Upload interview transcript → Get insights in < 1 min
+✓ Ask "what should we build next?" → Get answer with evidence
+✓ Run discovery loop → Receive opportunities ranked by score
+✓ Generate PRD → Get agent-optimized task breakdown
+✓ Use via CLI OR web UI (user choice)
+✓ Works with Cursor/Claude Code via MCP
+✓ 100% local (no cloud required)
+✓ Open-source (can fork and modify)
+```
+
+**Success Metrics:**
+```
+Interview Analysis Time: < 60 seconds
+Feedback Synthesis: < 5 minutes
+Discovery Loop: < 10 minutes (full run)
+Agent Task Generation: < 30 seconds
+
+Accuracy (measured by user feedback):
+Pain point extraction: > 85%
+Theme clustering: > 80%
+Opportunity scoring: > 75%
+```
+
+---
+
+## PART 8: AGENT EXECUTION INSTRUCTIONS
+
+### For AntiGravity (You)
+
+**Your Role:**
+You are the full-stack developer. I (Claude/the PM) have specified what to build. You execute.
+
+**Your Approach:**
+
+**Step 1: Understand Current State**
+```bash
+# First, analyze the existing codebase
+cat packages/modules/prd-forge/src/generator.ts   # Learn patterns
+cat packages/core/src/ai/manager.ts               # Learn AI integration
+cat packages/cli/src/commands/prd.ts              # Learn CLI patterns
+cat packages/modules/swarm/src/orchestrator.ts    # Learn agent patterns
+
+# Understand architecture
+ls -la packages/
+cat package.json
+cat tsconfig.json
+```
+
+**Step 2: Build Incrementally**
+```
+Start with Module 1 (Interview Analyzer)
+→ Create structure
+→ Implement one feature at a time
+→ Test after each feature
+→ When complete, move to Module 2
+```
+
+**Step 3: Follow Patterns**
+```
+- Copy structure from prd-forge
+- Use same AI integration approach
+- Follow same error handling
+- Use same test patterns
+- Follow same CLI command patterns
+```
+
+**Step 4: Verify Constantly**
+```
+After every change:
+npm run build && npm test && npm run lint
+```
+
+**Step 5: Commit When Working**
+```
+git add <files>
+git commit -m "feat: implement interview analyzer core logic"
+```
+
+**Priority Order:**
+```
+1. Interview Analyzer (most critical)
+2. Feedback Hub (data aggregation)
+3. Discovery Loop (automation)
+4. Usage Intelligence (insights)
+5. Agent Communicator (output)
+6. API Server (backend)
+7. Web UI (frontend)
+```
+
+**Time Estimates (For Your Planning):**
+```
+Interview Analyzer:      8-12 hours
+Feedback Hub:            10-15 hours
+Usage Intelligence:      8-12 hours
+Discovery Loop:          12-18 hours
+Agent Communicator:      6-10 hours
+API Server:              8-12 hours
+Web UI (basic):          20-30 hours
+Web UI (polish):         10-15 hours
+Testing & Integration:   10-15 hours
+---
+Total:                   92-149 hours
+```
+
+**Working in Sessions:**
+```
+Session 1 (4h): Interview Analyzer (structure + parsing)
+Session 2 (4h): Interview Analyzer (AI + extraction)
+Session 3 (4h): Interview Analyzer (storage + CLI + tests)
+Session 4 (4h): Feedback Hub (structure + integrations)
+... continue until complete
+```
+
+---
+
+## PART 9: REFERENCE IMPLEMENTATIONS
+
+### Interview Analyzer - Pseudo Code
+
+```typescript
+// packages/modules/interview-analyzer/src/analyzer.ts
+
+import { AIManager } from '@phantom/core/ai';
+import { storage } from './storage';
+
+export async function analyzeInterview(
+  transcript: string,
+  metadata?: InterviewMetadata
+): Promise<InterviewInsights> {
+  
+  // Validate
+  if (!transcript || transcript.trim().length === 0) {
+    throw new Error('Transcript is required');
+  }
+  
+  // Get AI instance
+  const ai = AIManager.getInstance();
+  
+  // Build extraction prompt
+  const prompt = buildExtractionPrompt(transcript);
+  
+  // Call AI
+  const response = await ai.complete(prompt, {
+    temperature: 0.7,
+    maxTokens: 3000,
+  });
+  
+  // Parse response
+  const extracted = parseAIResponse(response);
+  
+  // Calculate scores
+  const painPoints = extracted.pain_points.map(pp => ({
+    ...pp,
+    severity: calculateSeverity(pp),
+    frequency: 1, // Will be updated when multiple interviews
+  }));
+  
+  // Cluster themes
+  const themes = clusterThemes(extracted.mentions);
+  
+  // Calculate JTBD opportunity scores
+  const jobs = extracted.jobs.map(j => ({
+    ...j,
+    opportunity_score: j.importance * (10 - j.satisfaction) / 10,
+  }));
+  
+  // Build result
+  const insights: InterviewInsights = {
+    id: generateId(),
+    summary: extracted.summary,
+    pain_points: painPoints,
+    jobs_to_be_done: jobs,
+    themes: themes,
+    quotes: extracted.quotes,
+    metadata: metadata || {},
+    analyzed_at: new Date().toISOString(),
+  };
+  
+  // Store
+  await storage.saveInterview(insights);
+  
+  return insights;
+}
+
+function buildExtractionPrompt(transcript: string): string {
+  return `
+Analyze this customer interview transcript and extract:
+
+1. Pain Points (current frustrations)
+2. Desired Gains (what they want to achieve)
+3. Jobs-to-be-Done (what they're trying to accomplish)
+4. Key Quotes (evidence)
+
+Transcript:
+${transcript}
+
+Respond in JSON format:
+{
+  "summary": "Brief summary of interview",
+  "pain_points": [
+    {
+      "description": "Clear description of pain",
+      "severity": 1-10,
+      "category": "usability|performance|feature-gap|other"
+    }
+  ],
+  "jobs": [
+    {
+      "job": "Job description",
+      "importance": 1-10,
+      "satisfaction": 1-10
+    }
+  ],
+  "quotes": [
+    {
+      "text": "Exact quote",
+      "context": "What it relates to",
+      "category": "pain|gain|job"
+    }
+  ]
+}
+`;
+}
+
+function calculateSeverity(painPoint: any): number {
+  // Logic to calculate severity based on language intensity
+  const intensityWords = ['critical', 'impossible', 'broken', 'unusable'];
+  const description = painPoint.description.toLowerCase();
+  
+  let score = painPoint.severity || 5;
+  
+  for (const word of intensityWords) {
+    if (description.includes(word)) {
+      score = Math.min(10, score + 2);
+    }
+  }
+  
+  return score;
+}
+
+function clusterThemes(mentions: string[]): Theme[] {
+  // Simple clustering by keyword similarity
+  // In production, use more sophisticated NLP
+  
+  const themes = new Map<string, number>();
+  
+  for (const mention of mentions) {
+    const normalized = mention.toLowerCase().trim();
+    const existing = themes.get(normalized) || 0;
+    themes.set(normalized, existing + 1);
+  }
+  
+  return Array.from(themes.entries())
+    .map(([name, count]) => ({ name, mentions: count }))
+    .sort((a, b) => b.mentions - a.mentions);
+}
+```
+
+### Discovery Loop - Pseudo Code
+
+```typescript
+// packages/modules/discovery-loop/src/discoverer.ts
+
+import { InterviewAnalyzer } from '@phantom/interview-analyzer';
+import { FeedbackHub } from '@phantom/feedback-hub';
+import { UsageIntelligence } from '@phantom/usage-intelligence';
+import { AIManager } from '@phantom/core/ai';
+
+export async function runDiscoveryLoop(): Promise<DiscoveryReport> {
+  
+  console.log('Running discovery loop...');
+  
+  // 1. Collect data from all sources
+  const interviews = await InterviewAnalyzer.getRecent(30); // Last 30 days
+  const feedback = await FeedbackHub.getThemes();
+  const usage = await UsageIntelligence.getInsights();
+  
+  // 2. Cross-source synthesis
+  const opportunities = await synthesizeOpportunities(
+    interviews,
+    feedback,
+    usage
+  );
+  
+  // 3. Score opportunities
+  const scored = opportunities.map(opp => ({
+    ...opp,
+    opportunity_score: calculateOpportunityScore(opp),
+  }));
+  
+  // 4. Sort by score
+  const ranked = scored.sort((a, b) => b.opportunity_score - a.opportunity_score);
+  
+  // 5. Generate report
+  const report: DiscoveryReport = {
+    generated_at: new Date().toISOString(),
+    time_period: 'last_30_days',
+    executive_summary: await generateExecutiveSummary(ranked),
+    opportunities: ranked.slice(0, 10), // Top 10
+    insights: extractKeyInsights(interviews, feedback, usage),
+  };
+  
+  // 6. Store
+  await storage.saveDiscoveryReport(report);
+  
+  return report;
+}
+
+async function synthesizeOpportunities(
+  interviews: Interview[],
+  feedback: FeedbackTheme[],
+  usage: UsageInsight[]
+): Promise<Opportunity[]> {
+  
+  const ai = AIManager.getInstance();
+  
+  // Build synthesis prompt
+  const prompt = `
+Given these data sources, identify product opportunities:
+
+INTERVIEWS (Pain Points):
+${JSON.stringify(interviews.flatMap(i => i.pain_points), null, 2)}
+
+FEEDBACK (Themes):
+${JSON.stringify(feedback, null, 2)}
+
+USAGE DATA (Insights):
+${JSON.stringify(usage, null, 2)}
+
+Find overlaps where:
+- Same problem appears in multiple sources
+- High severity pain + high frequency mention
+- Usage data confirms the issue
+
+For each opportunity, provide:
+1. Title
+2. Description
+3. Customer evidence (from sources above)
+4. Proposed solution
+5. Expected impact
+
+Respond in JSON array format.
+`;
+  
+  const response = await ai.complete(prompt, {
+    temperature: 0.8,
+    maxTokens: 4000,
+  });
+  
+  return parseOpportunities(response);
+}
+
+function calculateOpportunityScore(opp: Opportunity): number {
+  // Impact scoring
+  const impact = (
+    opp.customer_evidence.length * 10 +  // More evidence = higher impact
+    opp.severity * 5 +
+    opp.frequency * 3
+  ) / 3;
+  
+  // Feasibility scoring (estimated)
+  const feasibility = 10 - opp.estimated_complexity;
+  
+  // Confidence scoring
+  const confidence = (
+    (opp.customer_evidence.length / 5) * 10 +  // More sources = higher confidence
+    (opp.data_quality_score || 5) * 2
+  ) / 2;
+  
+  // Weighted average
+  return (impact * 0.4 + feasibility * 0.3 + confidence * 0.3);
+}
+```
+
+---
+
+## PART 10: MARKETING & POSITIONING
+
+### Messaging
+
+**Tagline:**
+"Cursor for Product Managers - Automated product discovery powered by AI"
+
+**Elevator Pitch:**
+"PHANTOM analyzes customer interviews, usage data, and feedback to automatically tell you what to build next - with customer evidence and tasks broken down for AI agents like Cursor. It's like having a PM team working 24/7."
+
+**Key Messages:**
+1. **Automated Discovery:** "Stop spending 10 hours synthesizing interviews. PHANTOM does it in 60 seconds."
+2. **AI-First:** "Built for the age of AI agents. Works with Cursor, Claude Code, and any coding tool."
+3. **Evidence-Based:** "Every recommendation backed by customer quotes and data."
+4. **Local & Free:** "Open-source, runs on your machine, zero cloud costs."
+5. **Developer-Friendly:** "CLI first, web UI optional. Fits your workflow."
+
+### Launch Strategy
+
+**Phase 1: Soft Launch (Week 1-2)**
+- Post on GitHub
+- Share on Twitter/X
+- Post in indie hacker communities
+- Reach out to YC directly
+
+**Phase 2: Product Hunt (Week 3)**
+- Full PH launch with demo video
+- Target: #1 Product of the Day
+- Engage all day in comments
+
+**Phase 3: Growth (Month 2+)**
+- Blog posts on dev.to, hashnode
+- Demo videos on YouTube
+- Guest posts on PM blogs
+- Conference talks (submit to Product-Led Summit, etc.)
+
+### Demo Script
+
+```
+1. Install: npm install -g @phantom-pm/cli
+2. Setup: phantom config setup
+3. Upload interview: phantom interview analyze interview.txt
+4. Show insights: [beautiful CLI output with pain points]
+5. Ask question: phantom swarm "Should we add dark mode?"
+6. Show agent decision: [7 agents analyze, consensus reached]
+7. Run discovery: phantom discover run
+8. Show opportunities: [ranked list with evidence]
+9. Generate tasks: phantom agent-tasks generate opportunity-123
+10. Show in Cursor: [Cursor uses PHANTOM via MCP, implements feature]
+```
+
+---
+
+## SUMMARY: What AntiGravity Builds
+
+### Core Deliverables
+
+**6 New Intelligence Modules:**
+1. Interview Analyzer - Customer interview → insights
+2. Feedback Hub - Multi-source feedback → themes
+3. Usage Intelligence - Analytics → recommendations
+4. Discovery Loop - Automated "what to build next"
+5. Agent Communicator - PM decisions → agent tasks
+
+**1 API Server:**
+- Express + tRPC
+- WebSocket support
+- Background job processing
+- MCP server mode
+
+**1 Web UI:**
+- Next.js 14
+- Chat interface (primary UX)
+- Dashboard + module pages
+- Real-time updates
+- File uploads
+
+**Total:** 8 major components
+
+### Success = YC Vision Achieved
+
+```
+✓ Upload interviews → Insights
+✓ Ask "what to build next" → Answer with evidence
+✓ Automatic discovery loop
+✓ Agent-optimized output
+✓ CLI + Web UI
+✓ MCP integration
+✓ Open-source
+✓ Local-first
+```
+
+### Differentiation
+
+**vs Competition:**
+- Productboard: PHANTOM is free, open-source, CLI-first, agent-integrated
+- Aha!: PHANTOM is simpler, unified, automated, not enterprise-only
+- BuildBetter: PHANTOM is open-source, local-first, developer-friendly
+- All: PHANTOM has agent communication layer (unique)
+
+### Revenue Model (Optional)
+
+**Open Core:**
+- Core: Free, open-source (MIT)
+- Cloud: Paid hosting ($29-99/mo) - for teams who don't want to self-host
+- Enterprise: Custom integrations, support ($999+/mo)
+
+---
+
+## EXECUTION BEGINS
+
+AntiGravity, you have:
+1. ✅ Complete market intelligence
+2. ✅ Technical architecture
+3. ✅ Detailed specifications
+4. ✅ Implementation patterns
+5. ✅ Acceptance criteria
+6. ✅ Reference code
+
+**Start with Interview Analyzer. Build incrementally. Verify constantly. Ship fast.**
+
+The world needs Cursor for Product Managers. You're building it. 🚀

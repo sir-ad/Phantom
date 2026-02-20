@@ -1,0 +1,21 @@
+{
+  "name": "@phantom-pm/memory",
+  "version": "2.0.0-alpha.2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "dependencies": {
+    "@phantom-pm/core": "2.0.0-alpha.2",
+    "fs-extra": "^11.2.0",
+    "gray-matter": "^4.0.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.3.3"
+  }
+}

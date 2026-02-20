@@ -17,32 +17,32 @@ export class AnthropicProvider extends BaseAIProvider {
     super({
       name: 'anthropic',
       apiKey: config.apiKey,
-      defaultModel: config.defaultModel || 'claude-3-5-sonnet-20241022',
+      defaultModel: config.defaultModel || 'claude-3-7-sonnet-20250219',
       timeout: config.timeout,
     });
-    
+
     this.initializeModels();
   }
 
   private initializeModels() {
-    this.models.set('claude-3-5-sonnet-20241022', {
-      name: 'claude-3-5-sonnet-20241022',
+    this.models.set('claude-3-7-sonnet-20250219', {
+      name: 'claude-3-7-sonnet-20250219',
       maxTokens: 4096,
       contextWindow: 200000,
       supportsVision: true,
       costPerInputToken: 0.000003,
       costPerOutputToken: 0.000015,
     });
-    
-    this.models.set('claude-3-opus-20240229', {
-      name: 'claude-3-opus-20240229',
+
+    this.models.set('claude-4.6-opus', {
+      name: 'claude-4.6-opus',
       maxTokens: 4096,
       contextWindow: 200000,
       supportsVision: true,
       costPerInputToken: 0.000015,
       costPerOutputToken: 0.000075,
     });
-    
+
     this.models.set('claude-3-haiku-20240307', {
       name: 'claude-3-haiku-20240307',
       maxTokens: 4096,
@@ -51,7 +51,7 @@ export class AnthropicProvider extends BaseAIProvider {
       costPerInputToken: 0.00000025,
       costPerOutputToken: 0.00000125,
     });
-    
+
     this.models.set('claude-2.1', {
       name: 'claude-2.1',
       maxTokens: 4096,
@@ -73,7 +73,7 @@ export class AnthropicProvider extends BaseAIProvider {
 
   async isAvailable(): Promise<boolean> {
     if (!this.config.apiKey) return false;
-    
+
     try {
       const client = this.getClient();
       await client.messages.create({
@@ -89,10 +89,10 @@ export class AnthropicProvider extends BaseAIProvider {
 
   async complete(request: AIRequest): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     return this.rateLimit(async () => {
       const client = this.getClient();
-      
+
       const response = await this.timeoutPromise(
         client.messages.create({
           model: request.model,
@@ -100,13 +100,14 @@ export class AnthropicProvider extends BaseAIProvider {
           temperature: request.temperature ?? 0.7,
           max_tokens: request.maxTokens || 2048,
           system: this.extractSystemPrompt(request.messages),
+          tools: request.tools as any,
         }),
         this.config.timeout || 30000
       );
 
       const latency = Date.now() - startTime;
       const content = (response.content[0] as any)?.text || '';
-      
+
       return {
         content,
         usage: {
@@ -123,10 +124,10 @@ export class AnthropicProvider extends BaseAIProvider {
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
     const startTime = Date.now();
     const chunks: string[] = [];
-    
+
     return this.rateLimit(async () => {
       const client = this.getClient();
-      
+
       const stream = await this.timeoutPromise(
         client.messages.create({
           model: request.model,
@@ -135,6 +136,7 @@ export class AnthropicProvider extends BaseAIProvider {
           max_tokens: request.maxTokens || 2048,
           system: this.extractSystemPrompt(request.messages),
           stream: true,
+          tools: request.tools as any,
         }),
         this.config.timeout || 30000
       );
@@ -156,7 +158,7 @@ export class AnthropicProvider extends BaseAIProvider {
         for await (const chunk of asyncIterator) {
           fullContent += chunk;
         }
-        
+
         const latency = Date.now() - startTime;
         return {
           content: fullContent,
@@ -171,7 +173,7 @@ export class AnthropicProvider extends BaseAIProvider {
   }
 
   estimateCost(request: AIRequest, response: AIResponse): number {
-    const modelInfo = this.models.get(request.model) || this.models.get('claude-3-5-sonnet-20241022')!;
+    const modelInfo = this.models.get(request.model) || this.models.get('claude-3-7-sonnet-20250219')!;
     const inputCost = (response.usage?.promptTokens || 0) * (modelInfo.costPerInputToken || 0);
     const outputCost = (response.usage?.completionTokens || 0) * (modelInfo.costPerOutputToken || 0);
     return inputCost + outputCost;

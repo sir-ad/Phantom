@@ -32,7 +32,7 @@ Return the result in JSON format:
     async calibrate(context: string): Promise<OracleCalibration> {
         const ai = getAIManager();
         const response = await ai.complete({
-            model: ai.getDefaultProvider()?.getDefaultModel() || 'gpt-4-turbo-preview',
+            model: ai.getDefaultProvider()?.getDefaultModel() || 'o3-mini',
             messages: [
                 { role: 'system', content: this.systemPrompt },
                 { role: 'user', content: `Analyze this chat context and calibrate: \n\n${context}` }

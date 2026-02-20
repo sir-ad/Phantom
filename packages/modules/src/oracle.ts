@@ -142,7 +142,7 @@ Provide a detailed prediction with probability and factors.`;
 
     try {
       const response = await ai.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -292,7 +292,7 @@ Provide a comprehensive risk assessment.`;
 
     try {
       const response = await ai.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },

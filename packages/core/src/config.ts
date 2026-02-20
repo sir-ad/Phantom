@@ -33,6 +33,16 @@ export interface SecurityConfig {
   audit_log_path: string;
 }
 
+export interface MemoryConfig {
+  enabled: boolean;
+}
+
+
+export interface MemoryConfig {
+  enabled: boolean;
+}
+
+
 export interface ProjectConfig {
   name: string;
   path: string;
@@ -72,7 +82,9 @@ export interface PhantomConfig {
   theme: 'matrix' | 'cyberpunk' | 'minimal';
   installation: InstallationConfig;
   mcp: MCPConfig;
+  memory?: MemoryConfig;
   security: SecurityConfig;
+
   apiKeys: APIKeyConfig;
 }
 

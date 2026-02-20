@@ -151,7 +151,7 @@ export class SprintPlannerModule {
 
     try {
       const response = await this.aiManager.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },

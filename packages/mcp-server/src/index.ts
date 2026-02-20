@@ -14,7 +14,18 @@ import {
   registerWithAllDetected,
   registerWithSpecificAgent,
   listRegistrationTargets,
+  getAIManager,
 } from '@phantom-pm/core';
+import { BrowserAgent } from '@phantom-pm/browser-agent';
+
+let globalBrowserAgent: BrowserAgent | null = null;
+async function getBrowserAgent(): Promise<BrowserAgent> {
+  if (!globalBrowserAgent) {
+    globalBrowserAgent = new BrowserAgent(getAIManager(), { headless: true });
+    await globalBrowserAgent.init();
+  }
+  return globalBrowserAgent;
+}
 
 export type PhantomToolName =
   | 'context.add'
@@ -29,7 +40,11 @@ export type PhantomToolName =
   | 'phantom_analyze_product'
   | 'phantom_discover_agents'
   | 'phantom_register_self'
-  | 'phantom_simulate';
+  | 'phantom_simulate'
+  | 'phantom_browser_goto'
+  | 'phantom_browser_screenshot'
+  | 'phantom_browser_dom'
+  | 'phantom_browser_inject_css';
 
 type PhantomErrorCode =
   | 'INVALID_REQUEST'
@@ -226,6 +241,48 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
       },
     },
   },
+  {
+    name: 'phantom_browser_goto',
+    description: 'Navigate the Phantom BrowserAgent (OpenClaws) to a URL for visual UI inspection and generative modification.',
+    input_schema: {
+      type: 'object',
+      required: ['url'],
+      properties: {
+        url: { type: 'string', description: 'URL to navigate to (e.g., http://localhost:3000)' },
+      },
+    },
+  },
+  {
+    name: 'phantom_browser_screenshot',
+    description: 'Take a screenshot of the active BrowserAgent session. Base64 encoded output.',
+    input_schema: {
+      type: 'object',
+      required: [],
+      properties: {
+        full_page: { type: 'boolean', description: 'Capture full scrollable page' },
+      },
+    },
+  },
+  {
+    name: 'phantom_browser_dom',
+    description: 'Export a cleaned text version of the DOM from the BrowserAgent for AI traversal.',
+    input_schema: {
+      type: 'object',
+      required: [],
+      properties: {},
+    },
+  },
+  {
+    name: 'phantom_browser_inject_css',
+    description: 'Inject raw CSS into the active BrowserAgent session for Generative UI previews.',
+    input_schema: {
+      type: 'object',
+      required: ['css'],
+      properties: {
+        css: { type: 'string', description: 'Raw CSS to inject' },
+      },
+    },
+  },
 ];
 
 const RESOURCES: ResourceDefinition[] = [
@@ -275,6 +332,10 @@ const ALL_TOOLS: PhantomToolName[] = [
   'swarm.analyze',
   'phantom_swarm_analyze',
   'bridge.translate_pm_to_dev',
+  'phantom_browser_goto',
+  'phantom_browser_screenshot',
+  'phantom_browser_dom',
+  'phantom_browser_inject_css',
 ];
 
 function getToolsForMode(mode: MCPMode): ToolDefinition[] {
@@ -667,6 +728,32 @@ export class PhantomMCPServer {
           const scenario = parseStringArg(request.arguments, 'scenario');
           const result = runDeterministicSimulation(scenario);
           return ok(request.request_id, result);
+        }
+        case 'phantom_browser_goto': {
+          const url = parseStringArg(request.arguments, 'url');
+          const agent = await getBrowserAgent();
+          await agent.goto(url);
+          return ok(request.request_id, { status: 'Navigated successfully', url });
+        }
+        case 'phantom_browser_screenshot': {
+          const agent = await getBrowserAgent();
+          const isFullPage = !!request.arguments.full_page;
+          const screenshot = await agent.getScreenshot(isFullPage);
+          return ok(request.request_id, {
+            image: screenshot.toString('base64'),
+            type: 'image/png'
+          });
+        }
+        case 'phantom_browser_dom': {
+          const agent = await getBrowserAgent();
+          const dom = await agent.getDOMTree();
+          return ok(request.request_id, { dom });
+        }
+        case 'phantom_browser_inject_css': {
+          const css = parseStringArg(request.arguments, 'css');
+          const agent = await getBrowserAgent();
+          await agent.injectCSS(css);
+          return ok(request.request_id, { status: 'CSS Inject success' });
         }
         default:
           return err(request.request_id, [{ code: 'INVALID_TOOL', message: `Unknown tool: ${request.tool}` }]);

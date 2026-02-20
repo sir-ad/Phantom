@@ -14,9 +14,15 @@ import { extname, join, relative, resolve } from 'path';
 import { getConfig } from './config.js';
 import { EmbeddingEngine, type Embedding } from './ai/embeddings.js';
 
+export interface ContextLink {
+  targetId: string;
+  relation: 'mentions' | 'blocks' | 'implements' | 'resolves' | 'related' | 'author';
+  weight: number;
+}
+
 export interface ContextEntry {
   id: string;
-  type: 'code' | 'document' | 'image' | 'design' | 'data';
+  type: 'code' | 'document' | 'image' | 'design' | 'data' | 'ticket' | 'message' | 'person';
   path: string;
   relativePath: string;
   content?: string;
@@ -26,9 +32,12 @@ export interface ContextEntry {
     lastModified: string;
     language?: string;
     lines?: number;
+    title?: string;
+    author?: string;
   };
   indexed: boolean;
   indexedAt?: string;
+  links?: ContextLink[]; // Knowledge Graph edges
 }
 
 export interface ContextStats {
@@ -112,7 +121,7 @@ export class ContextEngine {
     mkdirSync(contextDir, { recursive: true });
     this.storePath = join(contextDir, 'index.json');
     this.load();
-    
+
     // Initialize embedding engine if we have AI capabilities
     this.initializeEmbeddings(contextDir);
   }
@@ -314,23 +323,50 @@ export class ContextEngine {
     return this.textSearch(normalized);
   }
 
+  public addLink(sourcePathOrId: string, targetPathOrId: string, relation: ContextLink['relation'], weight: number = 1.0): void {
+    let source = this.entries.get(resolve(sourcePathOrId)) || Array.from(this.entries.values()).find(e => e.id === sourcePathOrId);
+    let target = this.entries.get(resolve(targetPathOrId)) || Array.from(this.entries.values()).find(e => e.id === targetPathOrId);
+
+    if (source && target) {
+      if (!source.links) source.links = [];
+      if (!source.links.find(l => l.targetId === target!.id && l.relation === relation)) {
+        source.links.push({ targetId: target.id, relation, weight });
+        this.persist();
+      }
+    }
+  }
+
   private async semanticSearch(query: string): Promise<ContextEntry[]> {
     if (!this.embeddingEngine) return [];
 
     const results = await this.embeddingEngine.search(query, 20);
-    
+
     // Convert embedding results to context entries
     const entries: ContextEntry[] = [];
+    const entryIds = new Set<string>();
+
     for (const result of results) {
       if (result.score > 0.3) { // Minimum similarity threshold
         const entry = this.getEntry(result.entry.path);
-        if (entry) {
+        if (entry && !entryIds.has(entry.id)) {
           entries.push(entry);
+          entryIds.add(entry.id);
+
+          // Knowledge Graph Traversal: Pull in 1st-degree connected nodes
+          if (entry.links) {
+            for (const link of entry.links) {
+              const connectedNode = Array.from(this.entries.values()).find(e => e.id === link.targetId);
+              if (connectedNode && !entryIds.has(connectedNode.id)) {
+                entries.push(connectedNode);
+                entryIds.add(connectedNode.id);
+              }
+            }
+          }
         }
       }
     }
 
-    return entries.slice(0, 10); // Return top 10
+    return entries.slice(0, 15); // Return top 15 (including graph edges)
   }
 
   private textSearch(normalized: string): ContextEntry[] {

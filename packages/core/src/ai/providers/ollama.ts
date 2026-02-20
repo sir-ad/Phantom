@@ -19,56 +19,34 @@ export class OllamaProvider extends BaseAIProvider {
       defaultModel: config.defaultModel || 'llama3.1:70b',
       timeout: config.timeout || 120000, // Longer timeout for local models
     });
-    
+
     this.baseUrl = config.baseUrl || 'http://localhost:11434';
     this.initializeModels();
   }
 
   private initializeModels() {
-    this.models.set('llama3.1:70b', {
-      name: 'llama3.1:70b',
-      maxTokens: 4096,
-      contextWindow: 8192,
-      supportsVision: false,
-      costPerInputToken: 0,
-      costPerOutputToken: 0,
-    });
-    
-    this.models.set('llama3.1:8b', {
-      name: 'llama3.1:8b',
-      maxTokens: 4096,
-      contextWindow: 8192,
-      supportsVision: false,
-      costPerInputToken: 0,
-      costPerOutputToken: 0,
-    });
-    
-    this.models.set('codellama:7b', {
-      name: 'codellama:7b',
-      maxTokens: 4096,
-      contextWindow: 16384,
-      supportsVision: false,
-      costPerInputToken: 0,
-      costPerOutputToken: 0,
-    });
-    
-    this.models.set('mistral:7b', {
-      name: 'mistral:7b',
-      maxTokens: 4096,
-      contextWindow: 32768,
-      supportsVision: false,
-      costPerInputToken: 0,
-      costPerOutputToken: 0,
-    });
-    
-    this.models.set('nomic-embed-text', {
-      name: 'nomic-embed-text',
-      maxTokens: 0,
-      contextWindow: 8192,
-      supportsVision: false,
-      costPerInputToken: 0,
-      costPerOutputToken: 0,
-    });
+    // LLAMA 3.1
+    this.models.set('llama3.1:70b', { name: 'llama3.1:70b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('llama3.1:8b', { name: 'llama3.1:8b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+
+    // QWEN 2.5
+    this.models.set('qwen2.5:72b', { name: 'qwen2.5:72b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('qwen2.5:32b', { name: 'qwen2.5:32b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('qwen2.5:14b', { name: 'qwen2.5:14b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+
+    // DEEPSEEK
+    this.models.set('deepseek-r1:70b', { name: 'deepseek-r1:70b', maxTokens: 8192, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('deepseek-coder-v2', { name: 'deepseek-coder-v2', maxTokens: 8192, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+
+    // GEMMA 2 & PHI 3 & MISTRAL
+    this.models.set('gemma2:27b', { name: 'gemma2:27b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('gemma2:9b', { name: 'gemma2:9b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('phi3:14b', { name: 'phi3:14b', maxTokens: 4096, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('phi3:mini', { name: 'phi3:mini', maxTokens: 4096, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    this.models.set('mistral-nemo', { name: 'mistral-nemo', maxTokens: 4096, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+
+    // EMBEDDINGS
+    this.models.set('nomic-embed-text', { name: 'nomic-embed-text', maxTokens: 0, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
   }
 
   async isAvailable(): Promise<boolean> {
@@ -84,7 +62,7 @@ export class OllamaProvider extends BaseAIProvider {
 
   async complete(request: AIRequest): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     return this.rateLimit(async () => {
       const response = await this.timeoutPromise(
         this.makeRequest(request),
@@ -92,14 +70,14 @@ export class OllamaProvider extends BaseAIProvider {
       );
 
       const latency = Date.now() - startTime;
-      
+
       if (!response.ok) {
         throw new Error(`Ollama request failed: ${response.status} ${await response.text()}`);
       }
 
       const data = await response.json() as any;
       const content = data.response || '';
-      
+
       return {
         content,
         usage: {
@@ -116,25 +94,25 @@ export class OllamaProvider extends BaseAIProvider {
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
     const startTime = Date.now();
     const chunks: string[] = [];
-    
+
     return this.rateLimit(async () => {
       const streamResponse = await this.makeRequest(request, true);
-      
+
       if (!streamResponse.ok || !streamResponse.body) {
         throw new Error(`Ollama stream failed: ${streamResponse.status}`);
       }
 
       const reader = streamResponse.body.getReader();
       const decoder = new TextDecoder();
-      
+
       const asyncIterator = (async function* () {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          
+
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n').filter(line => line.trim());
-          
+
           for (const line of lines) {
             try {
               const data = JSON.parse(line);
@@ -154,7 +132,7 @@ export class OllamaProvider extends BaseAIProvider {
         for await (const chunk of asyncIterator) {
           fullContent += chunk;
         }
-        
+
         const latency = Date.now() - startTime;
         return {
           content: fullContent,
@@ -197,7 +175,7 @@ export class OllamaProvider extends BaseAIProvider {
 
   private async makeRequest(request: AIRequest, stream: boolean = false): Promise<Response> {
     const url = `${this.baseUrl}/api/generate`;
-    
+
     const body = {
       model: request.model,
       prompt: this.convertMessagesToPrompt(request.messages),
@@ -257,7 +235,7 @@ export class OllamaProvider extends BaseAIProvider {
           prompt: text,
         }),
       });
-      
+
       const data = await response.json() as any;
       return data.embedding || [];
     } catch (error) {

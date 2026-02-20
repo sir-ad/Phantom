@@ -1,62 +1,62 @@
 {
-    "name": "phantom-vscode",
-    "displayName": "Phantom PM",
-    "description": "The AI-native PM Operating System for VS Code",
-    "version": "2.0.0",
-    "publisher": "phantom-pm",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/sir-ad/Phantom.git"
-    },
-    "engines": {
-        "vscode": "^1.80.0"
-    },
-    "categories": [
-        "Productivity",
-        "Other"
+  "name": "phantom-vscode",
+  "displayName": "Phantom PM",
+  "description": "The AI-native PM Operating System for VS Code",
+  "version": "2.0.0-alpha.2",
+  "publisher": "phantom-pm",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sir-ad/Phantom.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Productivity",
+    "Other"
+  ],
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "phantom.dashboard.open",
+        "title": "Phantom: Open Dashboard"
+      },
+      {
+        "command": "phantom.prd.generate",
+        "title": "Phantom: Generate PRD"
+      }
     ],
-    "activationEvents": [],
-    "contributes": {
-        "commands": [
-            {
-                "command": "phantom.dashboard.open",
-                "title": "Phantom: Open Dashboard"
-            },
-            {
-                "command": "phantom.prd.generate",
-                "title": "Phantom: Generate PRD"
-            }
-        ],
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "phantom-app",
-                    "title": "Phantom",
-                    "icon": "resources/phantom-icon.svg"
-                }
-            ]
-        },
-        "views": {
-            "phantom-app": [
-                {
-                    "id": "phantom.dashboard",
-                    "name": "Dashboard"
-                }
-            ]
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "phantom-app",
+          "title": "Phantom",
+          "icon": "resources/phantom-icon.svg"
         }
+      ]
     },
-    "main": "./dist/extension.js",
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -b",
-        "watch": "tsc -b -w",
-        "package": "vsce package",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "devDependencies": {
-        "@types/node": "^18.0.0",
-        "@types/vscode": "^1.80.0",
-        "typescript": "^5.0.0",
-        "vsce": "^2.15.0"
+    "views": {
+      "phantom-app": [
+        {
+          "id": "phantom.dashboard",
+          "name": "Dashboard"
+        }
+      ]
     }
+  },
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "package": "vsce package",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0",
+    "vsce": "^2.15.0"
+  }
 }

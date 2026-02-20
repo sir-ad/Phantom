@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PHANTOM | PM Operating System for the Terminal Age</title>
-  <meta name="description" content="The invisible force behind every great product. Open source PM operating system that gives AI agents PM superpowers." />
+  <meta name="description"
+    content="The invisible force behind every great product. Open source PM operating system that gives AI agents PM superpowers." />
   <meta property="og:title" content="PHANTOM — PM Operating System" />
   <meta property="og:description" content="16 AI agents detected. One command to rule them all." />
   <meta property="og:type" content="website" />
@@ -12,9 +14,12 @@
   <meta name="theme-color" content="#00FF41" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
+
 <body>
   <canvas id="matrix-rain" aria-hidden="true"></canvas>
 
@@ -31,32 +36,34 @@
   <main>
     <!-- HERO -->
     <section class="hero">
-      <p class="eyebrow">PM Operating System</p>
+      <p class="eyebrow">The Super Intellect OS</p>
       <pre class="ascii" aria-hidden="true">░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█
 ░█▀▀░█▀█░█▀█░█░█░░█░░█░█░█░█
 ░▀░░░▀░▀░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀</pre>
-      <h1>The invisible force behind every great product.</h1>
+      <h1>There is no spoon. There is only context.</h1>
       <p class="sub">
-        Open source PM operating system for the terminal age.
-        Detects <strong id="agent-count">16</strong> AI agents. Connects to your tools. Turns requests into PM-grade execution.
+        The open-source Product Management Operating System.
+        Phantom connects a <strong id="agent-count">Swarm</strong> of AI agents to an interactive Semantic Graph,
+        turning chaotic raw thoughts into executing teams.
       </p>
 
       <div class="install-block">
-        <code id="install-cmd">curl -fsSL https://raw.githubusercontent.com/sir-ad/Phantom/main/scripts/install.sh | sh</code>
+        <code id="install-cmd">git clone https://github.com/sir-ad/Phantom.git && npm run dev</code>
         <button id="copy-btn" type="button">Copy</button>
       </div>
       <p id="copy-state" class="copy-state" aria-live="polite"></p>
 
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="./install.html">Install Now →</a>
-        <a class="btn btn-secondary" href="https://github.com/sir-ad/phantom" target="_blank" rel="noreferrer">★ Star on GitHub</a>
+        <a class="btn btn-primary" href="https://github.com/sir-ad/Phantom">Enter the Matrix →</a>
+        <a class="btn btn-secondary" href="https://github.com/sir-ad/phantom" target="_blank" rel="noreferrer">★ Star on
+          GitHub</a>
       </div>
 
       <ul class="stats">
-        <li><strong data-counter="16">0</strong> AI Agents Supported</li>
-        <li><strong data-counter="13">0</strong> MCP Tools</li>
-        <li><strong>100%</strong> Local-first</li>
-        <li><strong data-counter="11">0</strong> Integrations</li>
+        <li><strong data-counter="7">0</strong> SOTA AI Models</li>
+        <li><strong data-counter="4">0</strong> OpenClaw Edge Nodes</li>
+        <li><strong>100%</strong> Local-First (Ollama)</li>
+        <li><strong data-counter="13">0</strong> MCP Integrations</li>
       </ul>
     </section>
 
@@ -66,7 +73,7 @@
         <span class="dot red"></span>
         <span class="dot yellow"></span>
         <span class="dot green"></span>
-        <span class="terminal-title">phantom — AI Agent Orchestration</span>
+        <span class="terminal-title">phantom — Swarm Orchestration</span>
       </div>
       <div id="terminal-output" class="terminal-body">
         <div class="prompt">$ <span class="typed-text" id="typed-cmd"></span><span class="cursor">▊</span></div>
@@ -75,25 +82,26 @@
 
     <!-- AGENT DISCOVERY -->
     <section class="agent-grid">
-      <h2>Universal Agent Discovery</h2>
-      <p class="section-sub">Phantom detects every AI agent, IDE, and LLM on your system — automatically.</p>
+      <h2>Native API Connections</h2>
+      <p class="section-sub">Phantom links natively across local machines, voice inputs, and the absolute frontier LLMs.
+      </p>
       <div class="agents">
-        <div class="agent-card"><span class="agent-icon">🤖</span><strong>Claude Code</strong><span class="badge full">Full</span></div>
-        <div class="agent-card"><span class="agent-icon">🖥️</span><strong>Claude Desktop</strong><span class="badge full">Full</span></div>
-        <div class="agent-card"><span class="agent-icon">⚡</span><strong>Cursor</strong><span class="badge full">Full</span></div>
-        <div class="agent-card"><span class="agent-icon">🌊</span><strong>Windsurf</strong><span class="badge full">Full</span></div>
-        <div class="agent-card"><span class="agent-icon">💻</span><strong>VS Code</strong><span class="badge full">Full</span></div>
-        <div class="agent-card"><span class="agent-icon">⚡</span><strong>Zed</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">🚀</span><strong>Antigravity</strong><span class="badge full">Full</span></div>
-        <div class="agent-card"><span class="agent-icon">🔗</span><strong>Cline</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">➡️</span><strong>Continue</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">🤝</span><strong>Copilot</strong><span class="badge basic">Basic</span></div>
-        <div class="agent-card"><span class="agent-icon">🦙</span><strong>Ollama</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">🧠</span><strong>LM Studio</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">🖋️</span><strong>Aider</strong><span class="badge basic">Basic</span></div>
-        <div class="agent-card"><span class="agent-icon">🔓</span><strong>OpenCode</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">📟</span><strong>Codex CLI</strong><span class="badge enhanced">Enhanced</span></div>
-        <div class="agent-card"><span class="agent-icon">✨</span><strong>Gemini CLI</strong><span class="badge basic">Basic</span></div>
+        <div class="agent-card"><span class="agent-icon">🧠</span><strong>Claude 3.7</strong><span
+            class="badge full">SOTA</span></div>
+        <div class="agent-card"><span class="agent-icon">🧠</span><strong>DeepSeek R1</strong><span
+            class="badge full">SOTA</span></div>
+        <div class="agent-card"><span class="agent-icon">🧠</span><strong>OpenAI o3-mini</strong><span
+            class="badge full">SOTA</span></div>
+        <div class="agent-card"><span class="agent-icon">🦙</span><strong>Ollama Local</strong><span
+            class="badge enhanced">Private</span></div>
+        <div class="agent-card"><span class="agent-icon">🎙️</span><strong>WisprFlow</strong><span
+            class="badge enhanced">Voice</span></div>
+        <div class="agent-card"><span class="agent-icon">☁️</span><strong>Notion MCP</strong><span
+            class="badge full">Context</span></div>
+        <div class="agent-card"><span class="agent-icon">☁️</span><strong>Jira MCP</strong><span
+            class="badge full">Context</span></div>
+        <div class="agent-card"><span class="agent-icon">💻</span><strong>OS Gateway</strong><span
+            class="badge enhanced">Edge</span></div>
       </div>
     </section>
 
@@ -102,50 +110,41 @@
       <h2>Superpowers</h2>
       <div class="feature-grid">
         <article class="panel feature-card">
-          <h3>🔍 Agent Discovery</h3>
-          <p>Auto-detect 16 AI agents, IDEs, and LLMs. One scan covers your entire system.</p>
+          <h3>🕸️ Rowboat Semantic Graph</h3>
+          <p>Phantom doesn't just read embeddings. It indexes Jira, Slack, and PRDs into a 1st-degree connected
+            Knowledge Graph to deeply understand product history.</p>
         </article>
         <article class="panel feature-card">
-          <h3>🔌 MCP Auto-Register</h3>
-          <p>One command injects Phantom into every agent's config. <code>phantom register --all</code></p>
+          <h3>🦾 OpenClaws Gateway</h3>
+          <p>Escape the browser. Phantom can boot local Edge Nodes on your desktop to utilize Anthropic's Computer Use,
+            giving the AI physical hands.</p>
         </article>
         <article class="panel feature-card">
-          <h3>🐝 Swarm Analysis</h3>
-          <p>7 AI agents analyze your product decisions in parallel with consensus scoring.</p>
+          <h3>🐝 Nightly Build Swarms</h3>
+          <p>Voice dump your thoughts at 5 PM using WisprFlow. Phantom's parallel Swarms will write the PRD, mock the
+            UI, and generate Jira tickets by 9 AM.</p>
         </article>
         <article class="panel feature-card">
-          <h3>📋 PRD Generation</h3>
-          <p>Generate production-grade PRDs from a single title, powered by your local context.</p>
-        </article>
-        <article class="panel feature-card">
-          <h3>🔧 13 MCP Tools</h3>
-          <p>Context engine, PRD generation, swarm analysis, sprint planning, agent discovery, and more.</p>
-        </article>
-        <article class="panel feature-card">
-          <h3>🔒 100% Local-First</h3>
-          <p>All data stays on your machine. No cloud required. Full encryption support.</p>
+          <h3>🖼️ Generative Matrix UI</h3>
+          <p>Why write tickets when you can see the app? Phantom embeds a live React/Tailwind Sandpack directly inside
+            its Canvas, mimicking v0.dev offline.</p>
         </article>
       </div>
     </section>
 
     <!-- MCP TOOLS -->
     <section class="tools-section">
-      <h2>MCP Tool Arsenal</h2>
-      <p class="section-sub">Every tool available to any MCP-compatible agent.</p>
+      <h2>Phantom Core API</h2>
+      <p class="section-sub">Every tool exposed to the swarm via the internal MCP aggregator.</p>
       <div class="tools-grid">
-        <div class="tool"><code>context.add</code> — Index files into local context</div>
-        <div class="tool"><code>context.search</code> — Search indexed context</div>
-        <div class="tool"><code>prd.generate</code> — Generate PRD documents</div>
-        <div class="tool"><code>swarm.analyze</code> — Multi-agent consensus</div>
-        <div class="tool"><code>bridge.translate_pm_to_dev</code> — PM to dev tasks</div>
-        <div class="tool"><code>phantom_discover_agents</code> — Find all AI agents</div>
-        <div class="tool"><code>phantom_register_self</code> — Auto-register MCP</div>
-        <div class="tool"><code>phantom_simulate</code> — Product simulation</div>
-        <div class="tool"><code>phantom_create_stories</code> — User stories</div>
-        <div class="tool"><code>phantom_plan_sprint</code> — Sprint planning</div>
-        <div class="tool"><code>phantom_analyze_product</code> — Product analysis</div>
-        <div class="tool"><code>phantom_generate_prd</code> — PRD (agent alias)</div>
-        <div class="tool"><code>phantom_swarm_analyze</code> — Swarm (agent alias)</div>
+        <div class="tool"><code>graph.add_link</code> — Map semantic edges</div>
+        <div class="tool"><code>graph.semantic_search</code> — Deep traversal</div>
+        <div class="tool"><code>os.execute_bash</code> — Run native nodes</div>
+        <div class="tool"><code>os.screenshot</code> — Desktop visual context</div>
+        <div class="tool"><code>os.click</code> — Remote robotic interaction</div>
+        <div class="tool"><code>swarm.nightly_build</code> — Parallel tasking</div>
+        <div class="tool"><code>ui.generate_component</code> — OpenUI React block</div>
+        <div class="tool"><code>jira.create_epic</code> — Automatic ticket assignment</div>
       </div>
     </section>
 
@@ -184,4 +183,5 @@
 
   <script src="./site.js" defer></script>
 </body>
+
 </html>

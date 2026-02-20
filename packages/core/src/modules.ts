@@ -115,6 +115,12 @@ interface ModulesPackageAPI {
   runFigmaBridge(args: Record<string, unknown>): Promise<ModuleResult>;
   runBridge(args: Record<string, unknown>): Promise<ModuleResult>;
   runSwarm(args: Record<string, unknown>): Promise<ModuleResult>;
+  runSwarm(args: Record<string, unknown>): Promise<ModuleResult>;
+  runInterviewAnalyzer(args: Record<string, unknown>): Promise<ModuleResult>;
+  runFeedbackHub(args: Record<string, unknown>): Promise<ModuleResult>;
+  runUsageIntelligence(args: Record<string, unknown>): Promise<ModuleResult>;
+  runDiscoveryLoop(args: Record<string, unknown>): Promise<ModuleResult>;
+  runAgentCommunicator(args: Record<string, unknown>, modulesPkg: any): Promise<ModuleResult>;
   [key: string]: unknown;
 }
 
@@ -155,6 +161,102 @@ export const BUILTIN_MODULES: ModuleManifest[] = [
     ],
     dependencies: [],
     size: '2.4 MB',
+  },
+  {
+    name: 'interview-analyzer',
+    version: '1.0.0',
+    description: 'Transform interview transcripts into structured insights with pain points and JTBD analysis',
+    quote: 'I know what they feel.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'interview analyze',
+        description: 'Analyze interview transcript',
+        usage: 'phantom interview analyze <file>',
+        args: [{ name: 'file', description: 'Transcript file path', required: true, type: 'string' }],
+      },
+    ],
+    dependencies: [],
+    size: '1.5 MB',
+  },
+  {
+    name: 'feedback-hub',
+    version: '1.0.0',
+    description: 'Centralized feedback aggregation from Slack, Intercom, and more with theme analysis',
+    quote: 'I know what they want.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'feedback sync',
+        description: 'Sync feedback from connected sources',
+        usage: 'phantom feedback sync',
+      },
+      {
+        name: 'feedback themes',
+        description: 'Identify common themes in feedback',
+        usage: 'phantom feedback themes',
+      },
+    ],
+    dependencies: [],
+    size: '1.8 MB',
+  },
+  {
+    name: 'usage-intelligence',
+    version: '1.0.0',
+    description: 'Track adoption, analyze user behavior, and surface usage metrics',
+    quote: 'I know what they do.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'usage track',
+        description: 'Track a usage event manually',
+        usage: 'phantom usage track <event>',
+      },
+      {
+        name: 'usage report',
+        description: 'Generate a usage report',
+        usage: 'phantom usage report',
+      },
+    ],
+    dependencies: [],
+    size: '1.6 MB',
+  },
+  {
+    name: 'discovery-loop',
+    version: '1.0.0',
+    description: 'Synthesize insights from all modules to identify high-potential opportunities',
+    quote: 'I know what to build.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'discovery run',
+        description: 'Run synthesis loop to find opportunities',
+        usage: 'phantom discovery run',
+      },
+      {
+        name: 'discovery list',
+        description: 'List identified opportunities',
+        usage: 'phantom discovery list',
+      },
+    ],
+    dependencies: [],
+    size: '2.0 MB',
+  },
+  {
+    name: 'agent-communicator',
+    version: '1.0.0',
+    description: 'Natural language interface for Phantom',
+    quote: 'I speak your language.',
+    author: 'PhantomPM',
+    commands: [
+      {
+        name: 'agent chat',
+        description: 'Chat with Phantom agent',
+        usage: 'phantom agent chat <query>',
+      },
+    ],
+    dependencies: [],
+    size: '1.8 MB',
   },
   {
     name: 'story-writer',
@@ -747,6 +849,11 @@ function normalizeModuleName(name: string): string {
     ux: 'ux-auditor',
     figma: 'figma-bridge',
     experiment: 'experiment-lab',
+    interview: 'interview-analyzer',
+    feedback: 'feedback-hub',
+    usage: 'usage-intelligence',
+    discovery: 'discovery-loop',
+    agent: 'agent-communicator',
   };
 
   return aliases[withoutScope] || withoutScope;
@@ -800,6 +907,60 @@ const MODULE_RUNTIME_DEFINITIONS: Record<ModuleName, RuntimeDefinition> = {
       }
       const output = argString(args, 'output') || `${MODULE_OUTPUT_ROOT}/prds`;
       return modulesPkg.runPRDForge({ ...args, output }) as Promise<ModuleResult>;
+    },
+  },
+  'interview-analyzer': {
+    name: 'interview-analyzer',
+    version: '1.0.0',
+    handler: async ({ modulesPkg, command, args }) => {
+      if (command === 'interview analyze') {
+        return modulesPkg.runInterviewAnalyzer(args);
+      }
+      unsupportedCommand('interview-analyzer', command, ['interview analyze']);
+    },
+  },
+  'feedback-hub': {
+    name: 'feedback-hub',
+    version: '1.0.0',
+    handler: async ({ modulesPkg, command, args }) => {
+      if (command.startsWith('feedback ')) {
+        const subCommand = command.replace(/^feedback\s+/, '');
+        return modulesPkg.runFeedbackHub({ ...args, _: [subCommand] });
+      }
+      unsupportedCommand('feedback-hub', command, ['feedback sync', 'feedback themes']);
+    },
+  },
+  'usage-intelligence': {
+    name: 'usage-intelligence',
+    version: '1.0.0',
+    handler: async ({ modulesPkg, command, args }) => {
+      if (command.startsWith('usage ')) {
+        const subCommand = command.replace(/^usage\s+/, '');
+        return modulesPkg.runUsageIntelligence({ ...args, _: [subCommand] });
+      }
+      unsupportedCommand('usage-intelligence', command, ['usage track', 'usage report']);
+    },
+  },
+  'discovery-loop': {
+    name: 'discovery-loop',
+    version: '1.0.0',
+    handler: async ({ modulesPkg, command, args }) => {
+      if (command.startsWith('discovery ')) {
+        const subCommand = command.replace(/^discovery\s+/, '');
+        return modulesPkg.runDiscoveryLoop({ ...args, _: [subCommand] });
+      }
+      unsupportedCommand('discovery-loop', command, ['discovery run', 'discovery list']);
+    },
+  },
+  'agent-communicator': {
+    name: 'agent-communicator',
+    version: '1.0.0',
+    handler: async ({ modulesPkg, command, args }) => {
+      if (command.startsWith('agent ')) {
+        const subCommand = command.replace(/^agent\s+/, '');
+        return modulesPkg.runAgentCommunicator({ ...args, _: [subCommand] }, modulesPkg);
+      }
+      unsupportedCommand('agent-communicator', command, ['agent chat']);
     },
   },
   'story-writer': {

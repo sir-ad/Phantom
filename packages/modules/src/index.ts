@@ -28,6 +28,11 @@ export { ExperimentLabModule, runExperimentLab, type ExperimentDesign, type Expe
 export { UXAuditorModule, runUXAuditor, type UXAuditResult, type UXScoreBreakdown, type WCAGCompliance } from './ux-auditor.js';
 export { TimeMachineModule, runTimeMachine, type ProductSnapshot, type SnapshotComparison, type WhatIfScenario } from './time-machine.js';
 export { FigmaBridgeModule, runFigmaBridge, type DesignAnalysis, type SyncResult, type FigmaFile } from './figma-bridge.js';
+export { runInterviewAnalyzer, type InterviewInput, type InterviewInsights } from '@phantom-pm/interview-analyzer';
+export { runFeedbackHub, type FeedbackTheme, type FeedbackItem } from '@phantom-pm/feedback-hub';
+export { runUsageIntelligence, type UsageEvent, type DailyMetric } from '@phantom-pm/usage-intelligence';
+export { runDiscoveryLoop, type Opportunity } from '@phantom-pm/discovery-loop';
+export { runAgentCommunicator, type AgentMessage, type Intent } from '@phantom-pm/agent-communicator';
 
 // Additional type exports
 export { VariantDataPoint, type VariantResult } from './experiment-lab.js';

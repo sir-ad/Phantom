@@ -1,0 +1,24 @@
+{
+    "name": "phantom-website",
+    "type": "module",
+    "version": "2.0.0",
+    "scripts": {
+        "dev": "astro dev",
+        "start": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "astro": "astro"
+    },
+    "dependencies": {
+        "astro": "^4.15.0",
+        "@astrojs/react": "^3.6.2",
+        "@astrojs/tailwind": "^5.1.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "tailwindcss": "^3.4.4",
+        "lucide-react": "^0.475.0",
+        "framer-motion": "^11.5.0",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^2.5.2"
+    }
+}

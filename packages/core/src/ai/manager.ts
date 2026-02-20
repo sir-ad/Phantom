@@ -3,10 +3,11 @@ import { OpenAIProvider, type OpenAIProviderConfig } from './providers/openai.js
 import { AnthropicProvider, type AnthropicProviderConfig } from './providers/anthropic.js';
 import { OllamaProvider, type OllamaProviderConfig } from './providers/ollama.js';
 import { GeminiProvider, type GeminiProviderConfig } from './providers/gemini.js';
+import { UniversalProvider, type UniversalProviderConfig } from './providers/universal.js';
 import { BaseAIProvider, type AIRequest, type AIResponse, type StreamingAIResponse, type AIProviderConfig, type ProviderHealth } from './providers/base.js';
 import { getConfig } from '../config.js';
 
-export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'gemini';
+export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'gemini' | 'groq' | 'opencode' | 'openrouter' | 'deepseek';
 
 // Re-export AIMessage from base
 export type { AIMessage } from './providers/base.js';
@@ -18,6 +19,10 @@ export interface AIManagerConfig {
     anthropic?: AnthropicProviderConfig;
     ollama?: OllamaProviderConfig;
     gemini?: GeminiProviderConfig;
+    groq?: UniversalProviderConfig;
+    opencode?: UniversalProviderConfig;
+    openrouter?: UniversalProviderConfig;
+    deepseek?: UniversalProviderConfig;
   };
   fallbackProviders?: ProviderType[];
   enableCaching?: boolean;
@@ -82,6 +87,30 @@ export class AIManager {
       if (!this.defaultProvider) {
         this.defaultProvider = provider;
       }
+    }
+
+    if (this.config.providers.groq?.apiKey) {
+      const provider = new UniversalProvider(this.config.providers.groq as UniversalProviderConfig);
+      this.providers.set('groq', provider);
+      if (!this.defaultProvider) this.defaultProvider = provider;
+    }
+
+    if (this.config.providers.opencode?.apiKey) {
+      const provider = new UniversalProvider(this.config.providers.opencode as UniversalProviderConfig);
+      this.providers.set('opencode', provider);
+      if (!this.defaultProvider) this.defaultProvider = provider;
+    }
+
+    if (this.config.providers.openrouter?.apiKey) {
+      const provider = new UniversalProvider(this.config.providers.openrouter as UniversalProviderConfig);
+      this.providers.set('openrouter', provider);
+      if (!this.defaultProvider) this.defaultProvider = provider;
+    }
+
+    if (this.config.providers.deepseek?.apiKey) {
+      const provider = new UniversalProvider(this.config.providers.deepseek as UniversalProviderConfig);
+      this.providers.set('deepseek', provider);
+      if (!this.defaultProvider) this.defaultProvider = provider;
     }
   }
 
@@ -346,11 +375,11 @@ export function getAIManager(): AIManager {
         providers: {
           openai: {
             apiKey: phantomConfig.apiKeys.openai || process.env.OPENAI_API_KEY || '',
-            defaultModel: phantomConfig.primaryModel.provider === 'openai' ? phantomConfig.primaryModel.model : 'gpt-4-turbo-preview'
+            defaultModel: phantomConfig.primaryModel.provider === 'openai' ? phantomConfig.primaryModel.model : 'o3-mini'
           },
           anthropic: {
             apiKey: phantomConfig.apiKeys.anthropic || process.env.ANTHROPIC_API_KEY || '',
-            defaultModel: phantomConfig.primaryModel.provider === 'anthropic' ? phantomConfig.primaryModel.model : 'claude-3-5-sonnet-20241022'
+            defaultModel: phantomConfig.primaryModel.provider === 'anthropic' ? phantomConfig.primaryModel.model : 'claude-3-7-sonnet-20250219'
           },
           ollama: {
             baseUrl: phantomConfig.primaryModel.baseUrl || 'http://localhost:11434',
@@ -358,10 +387,38 @@ export function getAIManager(): AIManager {
           },
           gemini: {
             apiKey: phantomConfig.apiKeys.gemini || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '',
-            defaultModel: phantomConfig.primaryModel.provider === 'gemini' ? phantomConfig.primaryModel.model : 'gemini-2.0-flash'
+            defaultModel: phantomConfig.primaryModel.provider === 'gemini' ? phantomConfig.primaryModel.model : 'gemini-3.1-pro'
+          },
+          groq: {
+            name: 'groq',
+            apiKey: process.env.GROQ_API_KEY || '',
+            baseUrl: 'https://api.groq.com/openai/v1',
+            providerName: 'groq',
+            defaultModel: (phantomConfig.primaryModel.provider as string) === 'groq' ? phantomConfig.primaryModel.model : 'mixtral-8x7b-32768'
+          },
+          opencode: {
+            name: 'opencode',
+            apiKey: process.env.OPENCODE_API_KEY || '',
+            baseUrl: 'https://api.opencode.com/v1',
+            providerName: 'opencode',
+            defaultModel: (phantomConfig.primaryModel.provider as string) === 'opencode' ? phantomConfig.primaryModel.model : 'opencode-default'
+          },
+          openrouter: {
+            name: 'openrouter',
+            apiKey: process.env.OPENROUTER_API_KEY || '',
+            baseUrl: 'https://openrouter.ai/api/v1',
+            providerName: 'openrouter',
+            defaultModel: (phantomConfig.primaryModel.provider as string) === 'openrouter' ? phantomConfig.primaryModel.model : 'meta-llama/llama-3-8b-instruct'
+          },
+          deepseek: {
+            name: 'deepseek',
+            apiKey: process.env.DEEPSEEK_API_KEY || '',
+            baseUrl: 'https://api.deepseek.com/v1',
+            providerName: 'deepseek',
+            defaultModel: (phantomConfig.primaryModel.provider as string) === 'deepseek' ? phantomConfig.primaryModel.model : 'deepseek-reasoner'
           }
         },
-        fallbackProviders: ['anthropic', 'ollama', 'gemini'],
+        fallbackProviders: ['deepseek', 'anthropic', 'ollama', 'gemini', 'groq'],
         enableCaching: true,
         maxRetries: 3,
       };
@@ -391,9 +448,10 @@ export function createAIManagerFromConfig(overrides?: Partial<AIManagerConfig>):
       anthropic: { apiKey: process.env.ANTHROPIC_API_KEY || '' },
       ollama: { baseUrl: 'http://localhost:11434' },
       gemini: { apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' },
+      deepseek: { name: 'deepseek', providerName: 'deepseek', baseUrl: 'https://api.deepseek.com/v1', apiKey: process.env.DEEPSEEK_API_KEY || '', defaultModel: 'deepseek-reasoner' },
       ...overrides?.providers,
     },
-    fallbackProviders: overrides?.fallbackProviders || ['anthropic', 'ollama', 'gemini'],
+    fallbackProviders: overrides?.fallbackProviders || ['deepseek', 'anthropic', 'ollama', 'gemini'],
     enableCaching: overrides?.enableCaching ?? true,
     maxRetries: overrides?.maxRetries ?? 3,
   };

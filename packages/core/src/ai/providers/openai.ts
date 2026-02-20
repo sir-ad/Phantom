@@ -20,7 +20,7 @@ export class OpenAIProvider extends BaseAIProvider {
       name: 'openai',
       apiKey: config.apiKey,
       baseUrl: config.baseURL,
-      defaultModel: config.defaultModel || 'gpt-4-turbo-preview',
+      defaultModel: config.defaultModel || 'o3-mini',
       timeout: config.timeout,
     });
     
@@ -28,8 +28,8 @@ export class OpenAIProvider extends BaseAIProvider {
   }
 
   private initializeModels() {
-    this.models.set('gpt-4-turbo-preview', {
-      name: 'gpt-4-turbo-preview',
+    this.models.set('o3-mini', {
+      name: 'o3-mini',
       maxTokens: 4096,
       contextWindow: 128000,
       supportsVision: false,
@@ -170,7 +170,7 @@ export class OpenAIProvider extends BaseAIProvider {
   }
 
   estimateCost(request: AIRequest, response: AIResponse): number {
-    const modelInfo = this.models.get(request.model) || this.models.get('gpt-4-turbo-preview')!;
+    const modelInfo = this.models.get(request.model) || this.models.get('o3-mini')!;
     const inputCost = (response.usage?.promptTokens || 0) * (modelInfo.costPerInputToken || 0);
     const outputCost = (response.usage?.completionTokens || 0) * (modelInfo.costPerOutputToken || 0);
     return inputCost + outputCost;

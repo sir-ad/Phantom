@@ -128,7 +128,7 @@ Please generate at least 8-12 user stories covering all major features. Include 
 
     try {
       const response = await this.aiManager.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -245,7 +245,7 @@ Please generate diverse stories covering different aspects:
 
     try {
       const response = await this.aiManager.complete({
-        model: 'gpt-4-turbo-preview',
+        model: 'o3-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
