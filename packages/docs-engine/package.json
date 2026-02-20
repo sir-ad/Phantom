@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/docs-engine",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Document generation engine for Phantom — PPTX slides, Excel workbooks, PDF reports, and HTML dashboards",
   "type": "module",
   "main": "dist/index.js",
@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@phantom-pm/core": "3.0.0",
+    "@phantom-pm/core": "3.0.1",
     "@types/highlight.js": "^9.12.4",
     "@types/marked": "^5.0.2",
     "exceljs": "^4.4.0",

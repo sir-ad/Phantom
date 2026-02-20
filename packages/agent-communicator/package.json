@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/agent-communicator",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Natural language interface for Phantom - chatting with your product data",
   "type": "module",
   "main": "dist/index.js",
@@ -15,11 +15,11 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@phantom-pm/core": "3.0.0",
-    "@phantom-pm/interview-analyzer": "3.0.0",
-    "@phantom-pm/feedback-hub": "3.0.0",
-    "@phantom-pm/usage-intelligence": "3.0.0",
-    "@phantom-pm/discovery-loop": "3.0.0",
+    "@phantom-pm/core": "3.0.1",
+    "@phantom-pm/interview-analyzer": "3.0.1",
+    "@phantom-pm/feedback-hub": "3.0.1",
+    "@phantom-pm/usage-intelligence": "3.0.1",
+    "@phantom-pm/discovery-loop": "3.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

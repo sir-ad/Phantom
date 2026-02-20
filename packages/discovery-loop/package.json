@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/discovery-loop",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Discovery Loop module for Phantom - Synthesize insights and prioritize opportunities",
   "type": "module",
   "main": "dist/index.js",
@@ -15,10 +15,10 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@phantom-pm/core": "3.0.0",
-    "@phantom-pm/interview-analyzer": "3.0.0",
-    "@phantom-pm/feedback-hub": "3.0.0",
-    "@phantom-pm/usage-intelligence": "3.0.0",
+    "@phantom-pm/core": "3.0.1",
+    "@phantom-pm/interview-analyzer": "3.0.1",
+    "@phantom-pm/feedback-hub": "3.0.1",
+    "@phantom-pm/usage-intelligence": "3.0.1",
     "better-sqlite3": "^11.1.0",
     "zod": "^3.23.8"
   },
