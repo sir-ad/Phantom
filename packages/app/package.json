@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "2.0.0-alpha.2",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
-    "@phantom-pm/core": "2.0.0-alpha.2",
-    "@phantom-pm/memory": "2.0.0-alpha.2",
-    "@phantom-pm/modules": "2.0.0-alpha.2",
+    "@phantom-pm/core": "3.0.0",
+    "@phantom-pm/memory": "3.0.0",
+    "@phantom-pm/modules": "3.0.0",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.4",

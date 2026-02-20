@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/tui",
-  "version": "2.0.0-alpha.2",
+  "version": "3.0.0",
   "description": "PHANTOM Terminal UI - Matrix-themed React TUI components",
   "type": "module",
   "main": "dist/index.js",
@@ -17,7 +17,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@phantom-pm/core": "2.0.0-alpha.2",
+    "@phantom-pm/core": "3.0.0",
     "ink": "^5.0.1",
     "ink-text-input": "^6.0.0",
     "ink-spinner": "^5.0.0",

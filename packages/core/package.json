@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/core",
-  "version": "2.0.0-alpha.2",
+  "version": "3.0.0",
   "description": "PHANTOM Core Engine - Context, swarm, discovery, runtime engines",
   "type": "module",
   "main": "dist/index.js",
@@ -24,7 +24,7 @@
     "crypto-js": "^4.2.0",
     "glob": "^11.0.0",
     "ws": "^8.19.0",
-    "@phantom-pm/memory": "2.0.0-alpha.2"
+    "@phantom-pm/memory": "3.0.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",

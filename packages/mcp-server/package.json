@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/mcp-server",
-  "version": "2.0.0-alpha.2",
+  "version": "3.0.0",
   "description": "PHANTOM MCP Server - Model Connection Protocol implementation",
   "type": "module",
   "main": "dist/index.js",
@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "@phantom-pm/core": "2.0.0-alpha.2",
-    "@phantom-pm/browser-agent": "2.0.0-alpha.2"
+    "@phantom-pm/core": "3.0.0",
+    "@phantom-pm/browser-agent": "3.0.0"
   },
   "devDependencies": {
     "typescript": "^5.5.0",
