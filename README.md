@@ -1,5 +1,15 @@
 <div align="center">
-  <img src="packages/app/public/phantom-logo.png" alt="Phantom Logo" width="120" />
+
+```text
+      :::::::::  :::    :::     :::     ::::    ::: ::::::::::: ::::::::  ::::    ::: 
+     :+:    :+: :+:    :+:   :+: :+:   :+:+:   :+:     :+:    :+:    :+: :+:+:   :+:  
+    +:+    +:+ +:+    +:+  +:+   +:+  :+:+:+  +:+     +:+    +:+    +:+ :+:+:+  +:+   
+   +#++:++#+  +#++:++#++ +#++:++#++: +#++ +#++#+     +#+    +#+    +:+ +#+ +#++#+    
+  +#+        +#+    +#+ +#+     +#+ +#+  +#+#+#     +#+    +#+    +#+ +#+  +#+#+#     
+ #+#        #+#    #+# #+#     #+# #+#   #+#+#     #+#    #+#    #+# #+#   #+#+#      
+###        ###    ### ###     ### ###    ####     ###     ########  ###    ####       
+```
+
   <h1>Phantom OS</h1>
   <p><em>The Super Intellect Operating System for Product Managers.</em></p>
   <p>
@@ -13,9 +23,7 @@
 
 ## 👁️ The Vision: Cursor for PMs
 
-Phantom is an open-source, AI-native operating system designed to automate and elevate the entire product discovery and execution loop. It is not just a web application; it is an intelligent **Product Management Swarm**.
-
-Built with the extreme engineering simplicity championed by **Kailash Nadh** (Zerodha) and the deep, philosophical AI-first design of **Paras Chopra**, Phantom acts as a "Super Intellect". It absorbs enterprise context, translates spoken brainstorming into deterministic product specifications, visualizes code natively via Generative Sandboxes, and can physically pilot your desktop OS.
+Phantom is an open-source, AI-native operating system designed to automate and elevate the entire product discovery and execution loop. It is an intelligent **Product Management Swarm** that absorbs enterprise context, translates raw brainstorming into deterministic product specifications, and visualizes code natively via Generative Sandboxes.
 
 **We believe the future of software creation is context.** If developers have Cursor, Product Managers have Phantom.
 
@@ -23,23 +31,23 @@ Built with the extreme engineering simplicity championed by **Kailash Nadh** (Ze
 
 Phantom is designed as a central **Brain** that drives various **Hands** (Agents). 
 
-1. **Universal SOTA Models:** Natively routes reasoning tasks to the absolute frontier of open-source and proprietary models: `deepseek-r1`, `o3-mini`, `claude-3.7-sonnet`, `gemini-2.5-pro`, and exhaustive local Ollama support (`llama3.1`, `qwen2.5`, `phi3`).
-2. **Rowboat Semantic Knowledge Graph:** Instead of simple vector search, Phantom ingests your Jira backlog, Slack histories, and Notion PRDs into a 1st-degree connected **Semantic Knowledge Graph**. It knows *who* asked for a feature, *where* it was discussed, and *what* code blocks it.
-3. **Generative Matrix UI (OpenUI):** Taking inspiration from `v0.dev` and W&B OpenUI, Phantom's Next.js Canvas natively renders and compiles interactive React/Tailwind components directly from the Swarm's generated artifacts.
-4. **WisprFlow Voice Brain-Dumps:** Translate your raw, unstructured spoken thoughts accurately into Phantom's Omnibar, letting the Swarm organize the chaos into structured Jira Epics and architectural PRDs.
-5. **OpenClaws (OS Gateway & Edge Nodes):** Phantom breaks out of the Browser sandbox via a distributed WebSocket Gateway. By booting a local `@phantom-pm/os-agent` Edge Node, you grant Phantom physical control over your Mac/PC to automatically capture screenshots, move the mouse, and type terminal commands using Anthropic's `computer_20241022` tools.
-6. **Nightly Build Swarm:** Record a brain dump at 5 PM. By 9 AM, the autonomous Phantom routines have parallelized your thoughts to write a systemic PRD, mock the UI, and generate assigned Jira tickets.
+1. **Universal SOTA Models:** Natively routes reasoning tasks to the absolute frontier of open-source and proprietary models: `deepseek-r1`, `o3-mini`, `claude-3.7-sonnet`, `gemini-2.5-pro`, and exhaustive local Ollama support.
+2. **Semantic Knowledge Graph:** Instead of simple vector search, Phantom ingests your Jira backlog, Slack histories, and Notion PRDs into a connected **Product Knowledge Graph**. It knows the relationship between user feedback, technical constraints, and product roadmap.
+3. **Generative UI (OpenUI):** Phantom's Next.js Canvas natively renders and compiles interactive React/Tailwind components directly from the Swarm's generated artifacts.
+4. **Voice Intelligence:** Translate your raw, unstructured spoken thoughts accurately into Phantom's Omnibar, letting the Swarm organize the chaos into structured Jira Epics and architectural PRDs.
+5. **OS Edge Nodes:** Phantom breaks out of the Browser sandbox via a distributed WebSocket Gateway. By booting a local Edge Node, you grant Phantom the ability to capture screenshots and interact with your local environment for deep technical analysis.
+6. **Autonomous Workflows:** Phantom routines parallelize tasks to write systemic PRDs, mock the UI, and generate detailed technical specifications autonomously.
 
-## 📦 Packages (The Great Pruning)
+## 📦 Packages
 
-Phantom's monorepo is ruthlessly pruned. There is no bloat. Only signal.
+Phantom's monorepo is ruthlessly optimized for performance and reliability.
 
 | Package | Description |
 |---------|-------------|
-| `@phantom-pm/core` | The beating heart. The AI Manager, Rowboat Graph Context Engine, OpenClaws Gateway, and Swarm Orchestrator. |
-| `@phantom-pm/app` | The "Matrix/Codex" UI. A radical, terminal-inspired Next.js command center embedding Sandpack for live generative code. |
-| `@phantom-pm/os-agent` | The physical Hands. A local Edge Node connecting Phantom back to your physical desktop OS. |
-| `@phantom-pm/mcp-server` | The protocol interface allowing Claude, Cursor, and other tools to tap directly into Phantom's product brain natively. |
+| `@phantom-pm/core` | The engine for AI Management, Knowledge Graph extraction, and Swarm Orchestration. |
+| `@phantom-pm/app` | The "Matrix/Codex" UI. A radical, terminal-inspired Next.js command center. |
+| `@phantom-pm/os-agent` | Local Edge Node connecting Phantom back to your physical desktop for deep context ingestion. |
+| `@phantom-pm/mcp-server` | The protocol interface allowing Claude, Cursor, and other tools to tap into Phantom's product brain. |
 | `@phantom-pm/cli` | The terminal interface for headless operation. |
 
 ## ⚡ Getting Started
@@ -65,26 +73,23 @@ cd Phantom
 # Install dependencies
 npm install
 
-# Boot the Core Brain (Next.js Dashboard + OS Gateway)
+# Boot the Core Brain
 npm run dev
-
-# (Optional) Boot the physical OS Edge Node in a new terminal
-npx @phantom-pm/os-agent
 ```
 
 ## 🧠 Core Philosophy
 
 1. **No Blank Canvases:** Product Managers shouldn't start from scratch. Phantom reads the world state and proposes the optimal next move.
 2. **Deterministic Output:** AI output must be structurally reliable for enterprise consumption.
-3. **Open Ecosystem:** If a tool has an MCP, Phantom can use it. If an OS has a mouse, Phantom can control it.
-4. **Minimalist Exuberance:** Beneath a data-dense, radically simple UI lies an architecture of immense power and scalability.
+3. **Open Ecosystem:** If a tool has an MCP, Phantom can use it.
+4. **Minimalist Power:** Beneath a radically simple UI lies an architecture of intense power and scalability.
 
 ## 🤝 Contributing
 
-We welcome contributions from builders who share the vision of an AI-native product workflow. Please read our `PHANTOM_RULES.md` before submitting a PR to align with the core architectural mandates.
+We welcome contributions from builders who share the vision of an AI-native product workflow.
 
 ---
 
 <div align="center">
-  <em>There is no spoon. There is only context.</em>
+  <em>There is only context.</em>
 </div>

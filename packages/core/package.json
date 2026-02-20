@@ -23,7 +23,8 @@
     "conf": "^13.0.1",
     "crypto-js": "^4.2.0",
     "glob": "^11.0.0",
-    "ws": "^8.19.0"
+    "ws": "^8.19.0",
+    "@phantom-pm/memory": "2.0.0-alpha.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
