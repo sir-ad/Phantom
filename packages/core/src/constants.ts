@@ -17,7 +17,7 @@ export const COLORS = {
   dimmed: '#484F58',       // Dimmed text
 } as const;
 
-export const PHANTOM_VERSION = '1.0.0';
+export const PHANTOM_VERSION = '3.1.0';
 
 export const PHANTOM_ASCII = `
   ░█▀█░█░█░█▀█░█▀█░▀█▀░█▀█░█▄█

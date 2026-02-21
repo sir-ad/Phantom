@@ -7,6 +7,7 @@ import { CanvasPanel } from "@/components/canvas/CanvasPanel";
 import { Omnibar } from "@/components/ui/Omnibar";
 import { SettingsOverlay } from "@/components/layout/SettingsOverlay";
 import { NavPanel } from "@/components/layout/NavPanel";
+import { ContextPanel } from "@/components/context/ContextPanel";
 
 const AppShell = dynamicImport(() => import("@/components/layout/AppShell").then(mod => mod.AppShell), {
     ssr: false,
@@ -22,7 +23,12 @@ export default function ChatPage() {
         <main className="h-screen w-full overflow-hidden bg-background relative">
             <Omnibar />
             <AppShell
-                nav={<NavPanel onOpenSettings={() => setIsSettingsOpen(true)} />}
+                nav={
+                    <div className="flex h-full divide-x divide-zinc-900">
+                        <NavPanel onOpenSettings={() => setIsSettingsOpen(true)} />
+                        <ContextPanel />
+                    </div>
+                }
                 chat={<ChatPanel />}
                 canvas={<CanvasPanel />}
             />

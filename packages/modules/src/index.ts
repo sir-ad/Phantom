@@ -37,3 +37,5 @@ export { runAgentCommunicator, type AgentMessage, type Intent } from '@phantom-p
 // Additional type exports
 export { VariantDataPoint, type VariantResult } from './experiment-lab.js';
 export { UXIssue, type UXRecommendation } from './ux-auditor.js';
+// Adapters
+export { registerAllAdapters } from './adapters/index.js';

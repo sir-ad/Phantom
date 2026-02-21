@@ -181,32 +181,56 @@ export class AIManager {
     this.metrics.set(key, current);
   }
 
-  private appendRulesToRequest(request: AIRequest): AIRequest {
+  private async appendContextToRequest(request: AIRequest): Promise<AIRequest> {
     try {
-      const rules = getContextEngine().getCustomRules();
-      if (!rules) return request;
+      const engine = getContextEngine();
+      const rules = engine.getCustomRules();
+
+      // Get the last user message for semantic search
+      const userMessage = [...request.messages].reverse().find(m => m.role === 'user')?.content || '';
+
+      const activeContext = await engine.getActiveContext();
+      let semanticContext: string | null = null;
+
+      // If context is large, perform semantic search
+      if (activeContext && activeContext.length > 8000) {
+        semanticContext = await engine.searchActive(userMessage);
+      }
+
+      if (!rules && !activeContext) return request;
 
       const messages = [...request.messages];
-      const systemInstruction = `You must strictly adhere to the following project rules:\n\n${rules}`;
+      let systemInstruction = '';
+
+      if (rules) {
+        systemInstruction += `\n\nYou must strictly adhere to the following project rules:\n\n${rules}`;
+      }
+
+      // Use semantic context if available (large files), otherwise full context
+      const contextToInject = semanticContext || activeContext;
+      if (contextToInject) {
+        systemInstruction += `\n\n${contextToInject}`;
+      }
 
       const existingSystemIndex = messages.findIndex(m => m.role === 'system');
       if (existingSystemIndex >= 0) {
         messages[existingSystemIndex] = {
           ...messages[existingSystemIndex],
-          content: `${systemInstruction}\n\n${messages[existingSystemIndex].content}`
+          content: `${messages[existingSystemIndex].content}${systemInstruction}`
         };
       } else {
-        messages.unshift({ role: 'system', content: systemInstruction });
+        messages.unshift({ role: 'system', content: `Base Instruction: You are Phantom, an expert PM AI assistant.${systemInstruction}` });
       }
 
       return { ...request, messages };
-    } catch {
+    } catch (error) {
+      console.error('Failed to append context to request:', error);
       return request; // fail safe
     }
   }
 
   async complete(request: AIRequest): Promise<AIResponse> {
-    const req = this.appendRulesToRequest(request);
+    const req = await this.appendContextToRequest(request);
 
     // Check cache
     if (this.config.enableCaching) {
@@ -277,7 +301,7 @@ export class AIManager {
   }
 
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
-    const req = this.appendRulesToRequest(request);
+    const req = await this.appendContextToRequest(request);
     // No caching for streaming
 
     // Try providers in fallback chain

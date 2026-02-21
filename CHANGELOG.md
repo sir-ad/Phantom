@@ -8,6 +8,7 @@ All notable changes to the Phantom OS project will be documented in this file.
 - **AI Routing Engine:** Completely overhauled routing logic with provider fallback chains.
 - **Settings UI:** Improved settings management with real-time validation.
 - **Chrome Extension:** Restored source, bumped to v3.1.0, and bundled as release artifact.
+- **Connected Context (Phase 3):** Integrated Figma and External Link tracking for real-time design and web context grounding.
 - **Stability:** Final stable v3.1.0 release.
 
 ### 🛠️ fixed

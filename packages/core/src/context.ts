@@ -13,6 +13,8 @@ import { createHash } from 'crypto';
 import { extname, join, relative, resolve } from 'path';
 import { getConfig } from './config.js';
 import { EmbeddingEngine, type Embedding } from './ai/embeddings.js';
+import { getMemoryManager } from './agents/tools/memory.js';
+import { TextChunker } from './ai/chunker.js';
 
 export interface ContextLink {
   targetId: string;
@@ -418,6 +420,89 @@ export class ContextEngine {
     }
 
     return rules.trim() || null;
+  }
+
+  async indexContextItem(id: string, name: string, type: string, content: string): Promise<void> {
+    if (!this.embeddingEngine) return;
+
+    const chunker = new TextChunker({ chunkSize: 4000, chunkOverlap: 400 });
+    const chunks = chunker.chunk(content);
+
+    for (const chunk of chunks) {
+      const chunkId = `${id}_${chunk.index}`;
+      await this.embeddingEngine.indexEntry(
+        chunkId,
+        `context/${id}.txt`,
+        `context/${name}`,
+        'document',
+        chunk.content,
+        {
+          size: chunk.content.length,
+          lastModified: new Date().toISOString(),
+          language: 'Context',
+        }
+      );
+    }
+  }
+
+  async searchActive(query: string): Promise<string | null> {
+    if (!this.embeddingEngine) return null;
+
+    try {
+      const manager = await getMemoryManager();
+      const indexStr = await manager.readEntry('context_index.json');
+      if (!indexStr) return null;
+
+      const index = JSON.parse(indexStr.content);
+      const activeItemIds = new Set(index.filter((item: any) => item.active).map((item: any) => item.id));
+
+      if (activeItemIds.size === 0) return null;
+
+      const results = await this.embeddingEngine.search(query, 10);
+      const filteredResults = results.filter(r => {
+        const idParts = r.entry.id.split('_');
+        return activeItemIds.has(idParts[0]);
+      });
+
+      if (filteredResults.length === 0) return null;
+
+      let combinedContext = '\n\n--- RELEVANT CONTEXT CHUNKS ---\n';
+      for (const result of filteredResults) {
+        combinedContext += `\n[Relevance: ${Math.round(result.score * 100)}%]\n${result.entry.content}\n`;
+      }
+
+      return combinedContext;
+    } catch (error) {
+      console.error('Semantic search of active context failed:', error);
+      return null;
+    }
+  }
+
+  async getActiveContext(): Promise<string | null> {
+    try {
+      const manager = await getMemoryManager();
+      const indexStr = await manager.readEntry('context_index.json');
+      if (!indexStr) return null;
+
+      const index = JSON.parse(indexStr.content);
+      const activeItems = index.filter((item: any) => item.active);
+
+      if (activeItems.length === 0) return null;
+
+      let combinedContext = '\n\n--- ACTIVE WORKING CONTEXT ---\n';
+
+      for (const item of activeItems) {
+        const content = await manager.readEntry(`context/${item.id}.txt`);
+        if (content) {
+          combinedContext += `\n[Source: ${item.name} (${item.type})]\n${content.content}\n`;
+        }
+      }
+
+      return combinedContext;
+    } catch (error) {
+      console.error('Failed to retrieve active context:', error);
+      return null;
+    }
   }
 }
 

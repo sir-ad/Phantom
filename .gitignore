@@ -86,3 +86,32 @@ scripts/fix-versions.js
 *.tgz
 *.vsix
 !phantom-oracle-v3.1.0.zip
+
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+# Dependency directories
+# Environment variables
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+.DS_Store
+
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Internal/Agent specifics
+.mcp.json
+.clinerules/
+.taskmaster/
+CLAUDE.md
