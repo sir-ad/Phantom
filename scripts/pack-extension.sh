@@ -11,24 +11,19 @@ fi
 
 cd packages/chrome-extension
 
-echo "  ↳ Installing dependencies..."
-npm install --silent
-
-echo "  ↳ Building..."
-npm run build
+# Simple extension, no build step needed
+# If you add complex build steps later, add them here
 
 cd ../..
 
-echo "  ↳ Zipping artifact..."
-RELEASE_ZIP="phantom-oracle-v2.0.0.zip"
+# Zipping the source directory directly
+RELEASE_ZIP="phantom-oracle-v3.1.0.zip"
 rm -f "$RELEASE_ZIP"
 
-# Check if zip command exists
 if command -v zip >/dev/null 2>&1; then
-  # Zip just the dist folder content so unzipping gives the files ready to load
-  cd packages/chrome-extension/dist
-  zip -r "../../../$RELEASE_ZIP" .
-  cd ../../..
+  cd packages/chrome-extension
+  zip -r "../../$RELEASE_ZIP" . -x "*.DS_Store*" "package.json" "README.md"
+  cd ../..
   echo "✅ Created $RELEASE_ZIP"
   echo "   (Contains build artifacts ready for 'Load Unpacked')"
 else

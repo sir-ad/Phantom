@@ -69,6 +69,26 @@ The server automatically exposes the Matrix UI locally. Open the provided `local
 
 ---
 
+## 🔌 MCP Server Integration
+
+Phantom exposes a standard **Model Context Protocol (MCP)** server, enabling external AI IDEs (Cursor, Windsurf, Claude Desktop) to leverage Phantom's intelligence.
+
+1. Add Phantom to your `claude_desktop_config.json` or IDE MCP settings:
+```json
+{
+  "mcpServers": {
+    "phantom": {
+      "command": "npx",
+      "args": ["-y", "@phantom-pm/mcp-server@latest"]
+    }
+  }
+}
+```
+2. Phantom's `OpenCode` rules will automatically dynamically switch cloud providers, scrape local files, and grant your IDE new capabilities based on `AGENTS.md` parameters.
+
+
+---
+
 ## 📦 Monorepo Architecture
 
 Phantom's monorepo is ruthlessly optimized for performance, reliability, and modularity.

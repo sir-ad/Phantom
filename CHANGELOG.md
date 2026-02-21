@@ -2,6 +2,19 @@
 
 All notable changes to the Phantom OS project will be documented in this file.
 
+## [3.1.0] - 2026-02-21
+
+### 🚀 features
+- **AI Routing Engine:** Completely overhauled routing logic with provider fallback chains.
+- **Settings UI:** Improved settings management with real-time validation.
+- **Chrome Extension:** Restored source, bumped to v3.1.0, and bundled as release artifact.
+- **Stability:** Final stable v3.1.0 release.
+
+### 🛠️ fixed
+- feat(core): fix AI routing + settings UI + provider fallback chain
+- Cleaned up legacy binaries and redundant artifacts from repository root.
+
+
 ## [3.0.0] - 2026-02-20
 
 ### 🚀 major Features
@@ -21,7 +34,6 @@ All notable changes to the Phantom OS project will be documented in this file.
 ### 🔒 Security & Infra
 - **Trusted Publishing:** Migrated to OIDC/Provenace based NPM publishing.
 - **GitHub Pages:** Automated deployment for the Phantom landing page.
-- **Agent Sandbox:** Robust `.antigravityignore` and `.gitignore` to protect internal strategy documents.
 
 ---
 *There is only context.*

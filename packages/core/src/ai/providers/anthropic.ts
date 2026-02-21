@@ -22,6 +22,7 @@ export class AnthropicProvider extends BaseAIProvider {
     });
 
     this.initializeModels();
+    this.syncRemoteModels();
   }
 
   private initializeModels() {
@@ -60,6 +61,31 @@ export class AnthropicProvider extends BaseAIProvider {
       costPerInputToken: 0.000008,
       costPerOutputToken: 0.000024,
     });
+  }
+
+  private async syncRemoteModels() {
+    if (!this.config.apiKey) return;
+    try {
+      const client = this.getClient();
+      // Type casting to any in case the installed SDK version doesn't have client.models
+      const modelsConfig = await (client as any).models?.list?.();
+      if (modelsConfig && modelsConfig.data) {
+        for (const m of modelsConfig.data) {
+          if (!this.models.has(m.id)) {
+            this.models.set(m.id, {
+              name: m.id,
+              maxTokens: 8192,
+              contextWindow: 200000,
+              supportsVision: true,
+              costPerInputToken: 0.000003,
+              costPerOutputToken: 0.000015,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // feature might not be fully supported in SDK
+    }
   }
 
   private getClient(): Anthropic {

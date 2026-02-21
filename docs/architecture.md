@@ -17,11 +17,14 @@ graph TD
     UI --> Core["@phantom-pm/core (The Brain)"]
     
     subgraph "Phantom Core (The Brain)"
-        Core --> AI[AIManager (Models)]
+        Core --> AI[AIManager (Models) + Dynamic Providers Registry]
+        Core --> Rules[OpenCode Rules Engine (AGENTS.md)]
         Core --> Context[Rowboat Context Engine (Graph)]
         Core --> Swarm[Agent Swarm Routines]
+        Core --> Jobs[BullMQ Background Jobs]
         Core --> Gateway[OS Gateway (WebSocket)]
         Context --> SQLite[(SQLite DB)]
+        Jobs --> Redis[(Redis)]
     end
     
     subgraph "Intelligence Extensibility (The Hands)"

@@ -401,6 +401,24 @@ export class ContextEngine {
     this.entries.clear();
     this.persist();
   }
+
+  getCustomRules(): string | null {
+    const cwd = process.cwd();
+    const ruleFiles = ['PHANTOM.md', 'AGENTS.md', '.phantom.rules'];
+    let rules = '';
+
+    for (const file of ruleFiles) {
+      const fullPath = join(cwd, file);
+      if (existsSync(fullPath)) {
+        try {
+          const content = readFileSync(fullPath, 'utf8');
+          rules += `\n\n--- Rules from ${file} ---\n${content}`;
+        } catch (e) { }
+      }
+    }
+
+    return rules.trim() || null;
+  }
 }
 
 let instance: ContextEngine | null = null;

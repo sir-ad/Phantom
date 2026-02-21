@@ -1,4 +1,5 @@
 // PHANTOM AI - Ollama Provider (Local)
+import { execSync } from 'child_process';
 import { BaseAIProvider, ProviderUnavailableError, type AIRequest, type AIResponse, type StreamingAIResponse, type AIMessage, type AIModelInfo, type ProviderHealth } from './base.js';
 
 export interface OllamaProviderConfig {
@@ -25,28 +26,32 @@ export class OllamaProvider extends BaseAIProvider {
   }
 
   private initializeModels() {
-    // LLAMA 3.1
-    this.models.set('llama3.1:70b', { name: 'llama3.1:70b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('llama3.1:8b', { name: 'llama3.1:8b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    try {
+      const output = execSync('ollama list', { encoding: 'utf-8', stdio: 'pipe' });
+      const lines = output.split('\n').filter(l => l.trim() && !l.startsWith('NAME'));
+      for (const line of lines) {
+        const parts = line.split(/\s+/);
+        if (parts.length > 0 && parts[0]) {
+          const name = parts[0];
+          this.models.set(name, {
+            name: name,
+            maxTokens: 8192,
+            contextWindow: 128000,
+            supportsVision: name.includes('llava') || name.includes('vision'),
+            costPerInputToken: 0,
+            costPerOutputToken: 0,
+          });
+        }
+      }
 
-    // QWEN 2.5
-    this.models.set('qwen2.5:72b', { name: 'qwen2.5:72b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('qwen2.5:32b', { name: 'qwen2.5:32b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('qwen2.5:14b', { name: 'qwen2.5:14b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-
-    // DEEPSEEK
-    this.models.set('deepseek-r1:70b', { name: 'deepseek-r1:70b', maxTokens: 8192, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('deepseek-coder-v2', { name: 'deepseek-coder-v2', maxTokens: 8192, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-
-    // GEMMA 2 & PHI 3 & MISTRAL
-    this.models.set('gemma2:27b', { name: 'gemma2:27b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('gemma2:9b', { name: 'gemma2:9b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('phi3:14b', { name: 'phi3:14b', maxTokens: 4096, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('phi3:mini', { name: 'phi3:mini', maxTokens: 4096, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-    this.models.set('mistral-nemo', { name: 'mistral-nemo', maxTokens: 4096, contextWindow: 128000, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
-
-    // EMBEDDINGS
-    this.models.set('nomic-embed-text', { name: 'nomic-embed-text', maxTokens: 0, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+      if (this.models.size === 0) {
+        throw new Error('No models found');
+      }
+    } catch (err) {
+      // Fallbacks
+      this.models.set('llama3.1:8b', { name: 'llama3.1:8b', maxTokens: 4096, contextWindow: 8192, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+      this.models.set('qwen2.5:32b', { name: 'qwen2.5:32b', maxTokens: 8192, contextWindow: 32768, supportsVision: false, costPerInputToken: 0, costPerOutputToken: 0 });
+    }
   }
 
   async isAvailable(): Promise<boolean> {

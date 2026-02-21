@@ -79,6 +79,21 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 
 function ModelsView({ config, saveConfig }: { config: any, saveConfig: (config: any) => void }) {
 
+    const [ollamaModels, setOllamaModels] = useState<string[]>([]);
+    const [ollamaLoading, setOllamaLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/models/ollama')
+            .then(res => res.json())
+            .then(data => {
+                if (data.models && data.models.length > 0) {
+                    setOllamaModels(data.models);
+                }
+            })
+            .catch(() => { })
+            .finally(() => setOllamaLoading(false));
+    }, []);
+
     // Helper to safely update nested apiKeys
     const updateApiKey = (provider: string, value: string) => {
         const newConfig = { ...config };
@@ -93,7 +108,11 @@ function ModelsView({ config, saveConfig }: { config: any, saveConfig: (config: 
                 <h3 className="text-lg font-semibold mb-1">Local & Offline (Ollama)</h3>
                 <p className="text-xs text-muted-foreground mb-4">Run entirely private, uncensored intelligence locally. (http://localhost:11434)</p>
                 <div className="grid grid-cols-2 gap-3">
-                    {['llama3.1:70b', 'qwen2.5:72b', 'deepseek-coder-v2', 'phi3:mini', 'gemma2:27b', 'mistral-nemo'].map(m => (
+                    {ollamaLoading ? (
+                        <div className="px-3 py-2 text-sm text-muted-foreground col-span-2">Detecting local models...</div>
+                    ) : ollamaModels.length === 0 ? (
+                        <div className="px-3 py-2 text-sm text-destructive col-span-2">No local models detected. Is Ollama running?</div>
+                    ) : ollamaModels.map(m => (
                         <div key={m} className="px-3 py-2 border border-border/40 rounded-md bg-muted/30 text-sm font-mono flex items-center justify-between">
                             {m}
                             <span className="w-2 h-2 rounded-full bg-green-500"></span>

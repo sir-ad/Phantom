@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/integrations",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "PHANTOM real integrations - GitHub, Figma, Linear, Slack",
   "type": "module",
   "main": "dist/index.js",
@@ -10,7 +10,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@phantom-pm/core": "3.0.3",
+    "@phantom-pm/core": "3.1.0",
     "open": "^10.1.0"
   },
   "devDependencies": {

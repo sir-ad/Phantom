@@ -58,6 +58,30 @@ import {
   renderHealthDashboard,
   renderNudge,
 } from '@phantom-pm/tui';
+import { HealingAgent } from '@phantom-pm/core/dist/healing/healing-agent.js';
+
+// Setup Global Auto-Healer
+const globalHealer = new HealingAgent();
+
+function setupSelfHealing() {
+  process.on('uncaughtException', async (err) => {
+    console.log(theme.error('\\n[Phantom OS] Uncaught Exception Detected. Invoking Self-Healing protocol...'));
+    const action = await globalHealer.onError(err);
+    if (!action.success) {
+      console.error(theme.error(`[Phantom OS] Self-Healing failed: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+  process.on('unhandledRejection', async (reason: any, promise) => {
+    console.log(theme.error('\\n[Phantom OS] Unhandled Rejection Detected. Invoking Self-Healing protocol...'));
+    const action = await globalHealer.onError(reason instanceof Error ? reason : new Error(String(reason)));
+    if (!action.success) {
+      console.error(theme.error(`[Phantom OS] Self-Healing failed: ${reason}`));
+      process.exit(1);
+    }
+  });
+}
 
 const program = new Command();
 
@@ -117,6 +141,7 @@ program
   .description(TAGLINE)
   .version(PHANTOM_VERSION, '-v, --version')
   .action(async () => {
+    setupSelfHealing();
     const config = getConfig();
     if (config.isFirstRun()) {
       await runBootSequence();
@@ -517,9 +542,39 @@ program
   .command('doctor')
   .description('Run local environment and Phantom health checks')
   .option('--json', 'Output as JSON')
-  .action((options: { json?: boolean }) => {
+  .option('--auto-fix', 'Automatically create missing configs and directories')
+  .action((options: { json?: boolean, 'auto-fix'?: boolean }) => {
     const cfgMgr = getConfig();
     const cfg = cfgMgr.get();
+
+    let autoFixed = false;
+
+    if (options['auto-fix']) {
+      if (!existsSync(cfgMgr.getConfigDir())) {
+        mkdirSync(cfgMgr.getConfigDir(), { recursive: true });
+        autoFixed = true;
+      }
+
+      const configPath = join(cfgMgr.getConfigDir(), 'config.json');
+      if (!existsSync(configPath) || typeof cfg.installation?.channel !== 'string') {
+        // Force defaults
+        const defaultCfg = {
+          brand: "Phantom OS",
+          apiKeys: {},
+          installation: { channel: "stable", version: PHANTOM_VERSION },
+          mcp: { enabled: true, server_mode: "stdio" },
+          integrations: [],
+          security: { audit_log_path: join(cfgMgr.getConfigDir(), 'audit.log') }
+        };
+        writeFileSync(configPath, JSON.stringify(defaultCfg, null, 2));
+        autoFixed = true;
+      }
+
+      // Reload config if fixed
+      if (autoFixed) {
+        // cfgMgr caches, so we might just report for now
+      }
+    }
     const checks = [
       {
         name: 'Config directory',
@@ -575,7 +630,93 @@ program
       console.log(theme.success(`  All checks passed (${passCount}/${checks.length}).`));
     } else {
       console.log(theme.warning(`  Some checks need attention (${passCount}/${checks.length}).`));
+      if (!options['auto-fix']) {
+        console.log(theme.secondary(`  Run ${theme.accent('phantom doctor --auto-fix')} to attempt automatic recovery.`));
+      }
     }
+
+    if (autoFixed) {
+      console.log('');
+      console.log(theme.success(`  🛠️  Auto-fixes were applied. Please run doctor again to verify.`));
+    }
+
+    if (checks[1].ok === false && options['auto-fix']) {
+      console.log(theme.warning(`  ⚠️  Context is still empty. Run ${theme.accent('phantom context add .')} to fix this manually.`));
+    }
+    console.log('');
+  });
+
+program
+  .command('onboard')
+  .description('Interactive setup wizard to configure AI providers and context')
+  .action(async () => {
+    const { select, input } = await import('@inquirer/prompts');
+    const cfgMgr = getConfig();
+    const cfg = cfgMgr.get();
+
+    console.log('');
+    console.log(theme.title('  PHANTOM ONBOARD WIZARD'));
+    console.log('');
+
+    // 1. Choose primary provider
+    const provider = await select({
+      message: 'Which Primary AI Provider would you like to use?',
+      choices: [
+        { name: 'Ollama (Local / Offline)', value: 'ollama' },
+        { name: 'Anthropic (Claude 3.7)', value: 'anthropic' },
+        { name: 'OpenAI (GPT-4o / O3)', value: 'openai' },
+        { name: 'Google (Gemini 2.5)', value: 'gemini' },
+      ],
+    });
+
+    // 2. Setup API Keys if not local
+    if (provider !== 'ollama') {
+      const apiKey = await input({
+        message: `Enter your ${provider} API Key:`,
+        // bypass strict type for password prompt in older inquirer versions:
+        ...({ type: 'password' } as any)
+      });
+
+      if (apiKey.trim()) {
+        if (!cfg.apiKeys) cfg.apiKeys = {};
+        cfg.apiKeys[provider] = apiKey.trim();
+      }
+    } else {
+      console.log(theme.success('  Ollama selected. Ensure Ollama is running at localhost:11434 before starting the server.'));
+    }
+
+    // 3. Set workspace
+    const workspace = await input({
+      message: 'Where is your main product workspace located?',
+      default: process.cwd()
+    });
+
+    // Save Config
+    cfgMgr.save();
+
+    // Run Context Add
+    console.log('');
+    console.log(theme.secondary(`  Indexing workspace at ${workspace}...`));
+    const resolvedPath = resolve(workspace);
+    try {
+      const stats = await getContextEngine().addPath(resolvedPath);
+      cfgMgr.addProject({
+        name: basename(resolvedPath) || 'project',
+        path: resolvedPath,
+        contextPaths: [resolvedPath],
+        createdAt: new Date().toISOString(),
+        lastAccessed: new Date().toISOString(),
+      });
+      console.log(theme.success(`  ✓ Workspace indexed: ${stats.totalFiles} files found.`));
+    } catch (err: any) {
+      console.log(theme.error(`  ✗ Failed to index workspace: ${err.message}`));
+    }
+
+    console.log('');
+    console.log(theme.success('  SETUP COMPLETE.'));
+    console.log(theme.secondary('  Next Steps:'));
+    console.log(`  1. Run ${theme.accent('phantom server')} to launch the UI`);
+    console.log(`  2. Alternatively, run ${theme.accent('phantom mcp serve')} in your AI Editor`);
     console.log('');
   });
 
@@ -2712,6 +2853,36 @@ program
   .option('--provider <provider>', 'Force a specific provider (openai, anthropic, ollama, gemini)')
   .action(async (options: { model?: string; provider?: string }) => {
     await startChat(options);
+  });
+
+program
+  .command('daemon')
+  .description('Start the Phantom Nexus background gateway')
+  .action(async () => {
+    console.log('');
+    console.log(theme.title('  INITIALIZING PHANTOM NEXUS DAEMON'));
+
+    // Dynamically import so we don't slow down the main CLI boot
+    const { getGatewayDaemon, TelegramAdapter, SlackAdapter } = await import('@phantom-pm/core');
+    const daemon = getGatewayDaemon();
+
+    daemon.registerAdapter(new TelegramAdapter());
+    daemon.registerAdapter(new SlackAdapter());
+
+    await daemon.start();
+
+    console.log('');
+    console.log(theme.success('  Nexus Gateway is alive and listening.'));
+    console.log(theme.dim('  Press Ctrl+C to gracefully shutdown.'));
+
+    // Keep the process alive for the daemon to intercept webhooks/sockets
+    process.on('SIGINT', async () => {
+      console.log(theme.warning('\n  Shutting down Phantom Nexus...'));
+      await daemon.stop();
+      process.exit(0);
+    });
+
+    await new Promise(() => { }); // hang forever
   });
 
 // ── Model management ──

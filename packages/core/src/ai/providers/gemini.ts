@@ -17,17 +17,27 @@ export class GeminiProvider extends BaseAIProvider {
             name: 'gemini',
             apiKey: config.apiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '',
             baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-            defaultModel: config.defaultModel || 'gemini-3.1-pro',
+            defaultModel: config.defaultModel || 'gemini-2.5-pro',
             timeout: config.timeout || 60000,
         });
 
         this.apiKey = config.apiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
         this.initializeModels();
+        this.syncRemoteModels();
     }
 
     private initializeModels() {
-        this.models.set('gemini-3.1-pro', {
-            name: 'gemini-3.1-pro',
+        this.models.set('gemini-2.5-pro', {
+            name: 'gemini-2.5-pro',
+            maxTokens: 8192,
+            contextWindow: 1048576,
+            supportsVision: true,
+            costPerInputToken: 0.00000125,
+            costPerOutputToken: 0.000005,
+        });
+
+        this.models.set('gemini-2.0-flash', {
+            name: 'gemini-2.0-flash',
             maxTokens: 8192,
             contextWindow: 1048576,
             supportsVision: true,
@@ -35,17 +45,8 @@ export class GeminiProvider extends BaseAIProvider {
             costPerOutputToken: 0.0000003,
         });
 
-        this.models.set('gemini-3.1-pro', {
-            name: 'gemini-3.1-pro',
-            maxTokens: 65536,
-            contextWindow: 1048576,
-            supportsVision: true,
-            costPerInputToken: 0.00000125,
-            costPerOutputToken: 0.000005,
-        });
-
-        this.models.set('gemini-3.1-pro', {
-            name: 'gemini-3.1-pro',
+        this.models.set('gemini-1.5-pro-latest', {
+            name: 'gemini-1.5-pro-latest',
             maxTokens: 8192,
             contextWindow: 2097152,
             supportsVision: true,
@@ -61,6 +62,35 @@ export class GeminiProvider extends BaseAIProvider {
             costPerInputToken: 0.000000075,
             costPerOutputToken: 0.0000003,
         });
+    }
+
+    private async syncRemoteModels() {
+        if (!this.apiKey) return;
+        try {
+            const url = `${this.config.baseUrl}/models?key=${this.apiKey}`;
+            const response = await fetch(url);
+            if (!response.ok) return;
+            const data = await response.json() as any;
+            if (data && data.models) {
+                for (const m of data.models) {
+                    const name = m.name.replace('models/', '');
+                    if (m.supportedGenerationMethods?.includes('generateContent')) {
+                        if (!this.models.has(name)) {
+                            this.models.set(name, {
+                                name,
+                                maxTokens: m.outputTokenLimit || 8192,
+                                contextWindow: m.inputTokenLimit || 1048576,
+                                supportsVision: true,
+                                costPerInputToken: 0.000001,
+                                costPerOutputToken: 0.000004,
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
     }
 
     async isAvailable(): Promise<boolean> {

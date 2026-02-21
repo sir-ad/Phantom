@@ -70,6 +70,18 @@ export function registerServerCommands(program: Command) {
                 }
             });
 
+            app.get('/api/models/ollama', async (req, res) => {
+                try {
+                    const response = await fetch('http://localhost:11434/api/tags');
+                    if (!response.ok) throw new Error('Ollama not responding');
+                    const data = await response.json() as any;
+                    const models = data.models?.map((m: any) => m.name) || [];
+                    res.json({ models });
+                } catch (error: any) {
+                    res.status(503).json({ error: 'Ollama is not running locally', models: [] });
+                }
+            });
+
             // Memory Endpoint GET
             app.get('/api/memory', async (req, res) => {
                 try {

@@ -51,6 +51,33 @@ export function registerBootCommands(program: Command) {
                 });
 
                 console.log('\n✅ Phantom OS Matrix UI successfully booted to ~/.phantom/web');
+
+                // --- Add global command availability ---
+                const shell = process.env.SHELL || '';
+                let rcFile = '';
+                if (shell.includes('zsh')) {
+                    rcFile = path.join(os.homedir(), '.zshrc');
+                } else if (shell.includes('bash')) {
+                    rcFile = path.join(os.homedir(), '.bashrc');
+                }
+
+                if (rcFile && fs.existsSync(rcFile)) {
+                    const rcContent = fs.readFileSync(rcFile, 'utf8');
+                    const aliasLine = `alias phantom="npx @phantom-pm/cli@latest"`;
+
+                    if (!rcContent.includes(aliasLine)) {
+                        fs.appendFileSync(rcFile, `\n# Added by Phantom Boot\n${aliasLine}\n`);
+                        console.log(`✓ Added global 'phantom' alias to ${path.basename(rcFile)}`);
+                        console.log(`  Run 'source ${rcFile}' or restart your terminal to use it.`);
+                    } else {
+                        console.log(`✓ Global 'phantom' alias already exists in ${path.basename(rcFile)}`);
+                    }
+                } else {
+                    console.log(`\n⚠️  Could not auto-configure global 'phantom' command.`);
+                    console.log(`   Please add this to your shell profile manually:`);
+                    console.log(`   alias phantom="npx @phantom-pm/cli@latest"`);
+                }
+
                 console.log('\n🚀 Next Steps:');
                 console.log('  1. Run "phantom server" to activate the Matrix Interface');
                 console.log('  2. Open the Chrome Extension panel and enable Developer Mode to side-load.');

@@ -1,11 +1,12 @@
 {
   "name": "@phantom-pm/cli",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "PHANTOM - The invisible force behind every great product. Open-source PM operating system for the terminal age.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "phantom": "dist/index.js"
+    "phantom": "dist/index.js",
+    "phantom-supervisor": "dist/supervisor.js"
   },
   "files": [
     "dist/**/*",
@@ -24,10 +25,10 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^8.2.1",
-    "@phantom-pm/core": "3.0.3",
-    "@phantom-pm/mcp-server": "3.0.3",
-    "@phantom-pm/modules": "3.0.3",
-    "@phantom-pm/tui": "3.0.3",
+    "@phantom-pm/core": "3.1.0",
+    "@phantom-pm/mcp-server": "3.1.0",
+    "@phantom-pm/modules": "3.1.0",
+    "@phantom-pm/tui": "3.1.0",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "conf": "^13.0.1",

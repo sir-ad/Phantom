@@ -7,6 +7,7 @@ import { UniversalProvider, type UniversalProviderConfig } from './providers/uni
 import { MockProvider } from './providers/mock.js';
 import { BaseAIProvider, ProviderUnavailableError, type AIRequest, type AIResponse, type StreamingAIResponse, type AIProviderConfig, type ProviderHealth } from './providers/base.js';
 import { getConfig } from '../config.js';
+import { getContextEngine } from '../context.js';
 
 export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'gemini' | 'groq' | 'opencode' | 'openrouter' | 'deepseek' | 'mock';
 
@@ -180,10 +181,36 @@ export class AIManager {
     this.metrics.set(key, current);
   }
 
+  private appendRulesToRequest(request: AIRequest): AIRequest {
+    try {
+      const rules = getContextEngine().getCustomRules();
+      if (!rules) return request;
+
+      const messages = [...request.messages];
+      const systemInstruction = `You must strictly adhere to the following project rules:\n\n${rules}`;
+
+      const existingSystemIndex = messages.findIndex(m => m.role === 'system');
+      if (existingSystemIndex >= 0) {
+        messages[existingSystemIndex] = {
+          ...messages[existingSystemIndex],
+          content: `${systemInstruction}\n\n${messages[existingSystemIndex].content}`
+        };
+      } else {
+        messages.unshift({ role: 'system', content: systemInstruction });
+      }
+
+      return { ...request, messages };
+    } catch {
+      return request; // fail safe
+    }
+  }
+
   async complete(request: AIRequest): Promise<AIResponse> {
+    const req = this.appendRulesToRequest(request);
+
     // Check cache
     if (this.config.enableCaching) {
-      const cacheKey = this.getCacheKey(request);
+      const cacheKey = this.getCacheKey(req);
       const cached = this.cache.get(cacheKey);
 
       if (cached && (Date.now() - cached.timestamp) < 5 * 60 * 1000) { // 5 minute cache
@@ -198,8 +225,8 @@ export class AIManager {
       const provider = this.fallbackChain[i];
 
       // For fallback providers, we should probably prefer their default model
-      const modelToUse = i > 0 ? provider.getDefaultModel() : request.model;
-      const effectiveRequest = { ...request, model: modelToUse };
+      const modelToUse = i > 0 ? provider.getDefaultModel() : req.model;
+      const effectiveRequest = { ...req, model: modelToUse };
 
       try {
         const response = await provider.complete(effectiveRequest);
@@ -207,7 +234,7 @@ export class AIManager {
 
         // Cache the response
         if (this.config.enableCaching) {
-          const cacheKey = this.getCacheKey(request);
+          const cacheKey = this.getCacheKey(req);
           this.cache.set(cacheKey, {
             response,
             timestamp: Date.now(),
@@ -221,8 +248,8 @@ export class AIManager {
         // If the specific model failed on the primary provider, try its default before moving on
         if (i === 0 && (errorMsg.includes('not found') || errorMsg.includes('404'))) {
           try {
-            const fallbackRequest = { ...request, model: provider.getDefaultModel() };
-            if (fallbackRequest.model !== request.model) {
+            const fallbackRequest = { ...req, model: provider.getDefaultModel() };
+            if (fallbackRequest.model !== req.model) {
               const response = await provider.complete(fallbackRequest);
               this.updateMetrics(provider, response, true);
               return response;
@@ -246,10 +273,11 @@ export class AIManager {
 
     // Last resort: keyword-based mock so UI doesn't break
     console.warn(`No real AI providers responded. Falling back to MockProvider.`);
-    return this.mockProvider.complete(request);
+    return this.mockProvider.complete(req);
   }
 
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
+    const req = this.appendRulesToRequest(request);
     // No caching for streaming
 
     // Try providers in fallback chain
@@ -259,7 +287,7 @@ export class AIManager {
       const provider = this.fallbackChain[i];
 
       try {
-        const streamingResponse = await provider.stream(request);
+        const streamingResponse = await provider.stream(req);
 
         // Wrap the stream to track metrics
         const originalStream = streamingResponse.stream;
@@ -273,7 +301,7 @@ export class AIManager {
           this.updateMetrics(provider, response, true);
           return response;
         }).catch(error => {
-          this.updateMetrics(provider, { content: '', latency: 0, model: request.model }, false);
+          this.updateMetrics(provider, { content: '', latency: 0, model: req.model }, false);
           throw error;
         });
 
@@ -283,7 +311,7 @@ export class AIManager {
         };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown provider error');
-        this.updateMetrics(provider, { content: '', latency: 0, model: request.model }, false);
+        this.updateMetrics(provider, { content: '', latency: 0, model: req.model }, false);
 
         if (error instanceof ProviderUnavailableError) {
           console.warn(`Provider ${provider.name} unavailable, trying next...`);
@@ -296,7 +324,7 @@ export class AIManager {
 
     // Last resort: keyword-based mock so UI doesn't break
     console.warn(`No real AI providers responded. Falling back to MockProvider stream.`);
-    return this.mockProvider.stream(request);
+    return this.mockProvider.stream(req);
   }
 
   async completeWithRetry(request: AIRequest, maxRetries?: number): Promise<AIResponse> {

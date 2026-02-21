@@ -42,6 +42,12 @@ export interface MemoryConfig {
   enabled: boolean;
 }
 
+export interface AutonomyConfig {
+  heartbeatEnabled: boolean;
+  heartbeatIntervalMin: number;
+  toolRules: Record<string, 'auto-approve' | 'require-human' | 'blocked'>;
+}
+
 
 export interface ProjectConfig {
   name: string;
@@ -62,6 +68,8 @@ export interface APIKeyConfig {
   linear?: string;
   figma?: string;
   slack?: string;
+  telegram?: string;
+  discord?: string;
 }
 
 export interface PhantomConfig {
@@ -86,6 +94,10 @@ export interface PhantomConfig {
   security: SecurityConfig;
 
   apiKeys: APIKeyConfig;
+  selfHealing: boolean;
+  progressiveDisclosure: boolean;
+  autoDiscovery: boolean;
+  autonomy: AutonomyConfig;
 }
 
 const DEFAULT_CONFIG: PhantomConfig = {
@@ -117,6 +129,17 @@ const DEFAULT_CONFIG: PhantomConfig = {
     audit_log_path: join(homedir(), '.phantom', 'logs', 'audit.log'),
   },
   apiKeys: {},
+  selfHealing: true,
+  progressiveDisclosure: true,
+  autoDiscovery: true,
+  autonomy: {
+    heartbeatEnabled: false,
+    heartbeatIntervalMin: 30,
+    toolRules: {
+      'executeBash': 'require-human',
+      'executePhantomCommand': 'require-human'
+    }
+  }
 };
 
 export class ConfigManager {
@@ -178,6 +201,10 @@ export class ConfigManager {
           installation: { ...DEFAULT_CONFIG.installation, ...parsed.installation },
           mcp: { ...DEFAULT_CONFIG.mcp, ...normalizedMcp },
           security: { ...DEFAULT_CONFIG.security, ...normalizedSecurity },
+          selfHealing: parsed.selfHealing ?? DEFAULT_CONFIG.selfHealing,
+          progressiveDisclosure: parsed.progressiveDisclosure ?? DEFAULT_CONFIG.progressiveDisclosure,
+          autoDiscovery: parsed.autoDiscovery ?? DEFAULT_CONFIG.autoDiscovery,
+          autonomy: { ...DEFAULT_CONFIG.autonomy, ...parsed.autonomy },
         };
       } catch {
         return { ...DEFAULT_CONFIG };

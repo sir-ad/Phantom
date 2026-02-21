@@ -17,6 +17,11 @@ interface PhantomConfig {
     memory: {
         enabled: boolean;
     };
+    autonomy?: {
+        heartbeatEnabled: boolean;
+        heartbeatIntervalMin: number;
+        toolRules: Record<string, 'auto-approve' | 'require-human' | 'blocked'>;
+    };
 }
 
 export default function ConfigPage() {
@@ -70,6 +75,22 @@ export default function ConfigPage() {
         setConfig({
             ...config,
             memory: { ...config.memory, enabled: checked }
+        });
+    };
+
+    const toggleHeartbeat = (checked: boolean) => {
+        if (!config) return;
+        setConfig({
+            ...config,
+            autonomy: { ...(config.autonomy || { heartbeatIntervalMin: 30, toolRules: {} }), heartbeatEnabled: checked }
+        });
+    };
+
+    const updateHeartbeatInterval = (val: string) => {
+        if (!config) return;
+        setConfig({
+            ...config,
+            autonomy: { ...(config.autonomy || { heartbeatEnabled: false, toolRules: {} }), heartbeatIntervalMin: parseInt(val) || 30 }
         });
     };
 
@@ -143,6 +164,39 @@ export default function ConfigPage() {
                                 checked={config?.mcp?.enabled ?? false}
                                 disabled
                                 className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-green-900 opacity-50 cursor-not-allowed"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Autonomy & Security */}
+                <Card className="bg-black border-red-900/40 text-red-500 md:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-red-400"><ShieldCheck className="h-4 w-4" /> Phantom Nexus Autonomy</CardTitle>
+                        <CardDescription className="text-red-800">Control the background Daemon's operating permissions.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center justify-between border-b border-red-900/30 pb-4">
+                            <div className="space-y-0.5">
+                                <Label className="text-red-400">Daemon Heartbeat</Label>
+                                <p className="text-xs text-red-800">Allow Phantom to wake up in the background and perform autonomous discovery.</p>
+                            </div>
+                            <Switch
+                                checked={config?.autonomy?.heartbeatEnabled ?? false}
+                                onCheckedChange={toggleHeartbeat}
+                                className="data-[state=checked]:bg-red-600 data-[state=unchecked]:bg-red-900"
+                            />
+                        </div>
+
+                        <div className="space-y-1">
+                            <Label className="text-xs uppercase text-red-400">Heartbeat Interval (Minutes)</Label>
+                            <Input
+                                type="number"
+                                min="5"
+                                value={config?.autonomy?.heartbeatIntervalMin ?? 30}
+                                onChange={(e) => updateHeartbeatInterval(e.target.value)}
+                                className="bg-red-950/20 border-red-900/50 text-red-400 focus-visible:ring-red-800 max-w-[200px]"
+                                disabled={!(config?.autonomy?.heartbeatEnabled ?? false)}
                             />
                         </div>
                     </CardContent>

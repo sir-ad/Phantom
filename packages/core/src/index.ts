@@ -22,6 +22,7 @@ export * from './discovery/index.js';
 export * from './agent-discovery.js';
 export * from './nudge-engine.js';
 export * from './ai/manager.js';
+export * from './gateway/index.js';
 export * from './auto-register.js';
 export * from './agents/index.js';
 
@@ -36,3 +37,7 @@ export * from './planning/swarm-routines.js';
 export * from './os-gateway.js';
 export * from './mcp/client.js';
 export * from './voice/wispr.js';
+export * from './jobs/index.js';
+export * from './healing/code-healer.js';
+export * from './healing/healing-agent.js';
+export * from './healing/installation-healer.js';

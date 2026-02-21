@@ -1,0 +1,11 @@
+{
+    "name": "@phantom-pm/chrome-extension",
+    "version": "3.1.0",
+    "description": "PHANTOM - Chrome Extension Browser Relay",
+    "private": true,
+    "scripts": {
+        "build": "echo 'No build step required for simple relay extension'"
+    },
+    "author": "PhantomPM <hello@phantom.pm>",
+    "license": "MIT"
+}

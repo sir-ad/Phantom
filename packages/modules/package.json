@@ -1,6 +1,6 @@
 {
   "name": "@phantom-pm/modules",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "PHANTOM Built-in Modules - PRD, stories, competitive analysis, and more",
   "type": "module",
   "main": "dist/index.js",
@@ -17,12 +17,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@phantom-pm/core": "3.0.3",
-    "@phantom-pm/interview-analyzer": "3.0.3",
-    "@phantom-pm/feedback-hub": "3.0.3",
-    "@phantom-pm/usage-intelligence": "3.0.3",
-    "@phantom-pm/discovery-loop": "3.0.3",
-    "@phantom-pm/agent-communicator": "3.0.3"
+    "@phantom-pm/core": "3.1.0",
+    "@phantom-pm/interview-analyzer": "3.1.0",
+    "@phantom-pm/feedback-hub": "3.1.0",
+    "@phantom-pm/usage-intelligence": "3.1.0",
+    "@phantom-pm/discovery-loop": "3.1.0",
+    "@phantom-pm/agent-communicator": "3.1.0"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

@@ -1,6 +1,7 @@
-import { mkdirSync, writeFileSync } from 'fs';
-import { dirname } from 'path';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync } from 'fs';
+import { dirname, resolve } from 'path';
 import { createInterface } from 'readline';
+import { execSync } from 'child_process';
 import {
   generatePRD,
   getConfig,
@@ -44,7 +45,10 @@ export type PhantomToolName =
   | 'phantom_browser_goto'
   | 'phantom_browser_screenshot'
   | 'phantom_browser_dom'
-  | 'phantom_browser_inject_css';
+  | 'phantom_browser_inject_css'
+  | 'phantom_opencode_terminal'
+  | 'phantom_opencode_file_manage'
+  | 'phantom_opencode_ls';
 
 type PhantomErrorCode =
   | 'INVALID_REQUEST'
@@ -283,6 +287,42 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
       },
     },
   },
+  {
+    name: 'phantom_opencode_terminal',
+    description: 'Execute read-only or safe terminal commands (inspired by OpenCode).',
+    input_schema: {
+      type: 'object',
+      required: ['command'],
+      properties: {
+        command: { type: 'string', description: 'Terminal command to execute' },
+        cwd: { type: 'string', description: 'Working directory for the command' },
+      },
+    },
+  },
+  {
+    name: 'phantom_opencode_file_manage',
+    description: 'Read or write file contents directly.',
+    input_schema: {
+      type: 'object',
+      required: ['action', 'path'],
+      properties: {
+        action: { type: 'string', description: '"read" or "write"' },
+        path: { type: 'string', description: 'Absolute or relative file path' },
+        content: { type: 'string', description: 'Content to write (if action is "write")' },
+      },
+    },
+  },
+  {
+    name: 'phantom_opencode_ls',
+    description: 'List directory contents.',
+    input_schema: {
+      type: 'object',
+      required: ['path'],
+      properties: {
+        path: { type: 'string', description: 'Directory path to list' },
+      },
+    },
+  },
 ];
 
 const RESOURCES: ResourceDefinition[] = [
@@ -336,6 +376,9 @@ const ALL_TOOLS: PhantomToolName[] = [
   'phantom_browser_screenshot',
   'phantom_browser_dom',
   'phantom_browser_inject_css',
+  'phantom_opencode_terminal',
+  'phantom_opencode_file_manage',
+  'phantom_opencode_ls',
 ];
 
 function getToolsForMode(mode: MCPMode): ToolDefinition[] {
@@ -754,6 +797,45 @@ export class PhantomMCPServer {
           const agent = await getBrowserAgent();
           await agent.injectCSS(css);
           return ok(request.request_id, { status: 'CSS Inject success' });
+        }
+        case 'phantom_opencode_terminal': {
+          const command = parseStringArg(request.arguments, 'command');
+          const execCwd = parseOptionalStringArg(request.arguments, 'cwd') || process.cwd();
+          try {
+            const output = execSync(command, { cwd: execCwd, encoding: 'utf-8', stdio: 'pipe' });
+            return ok(request.request_id, { output });
+          } catch (error: any) {
+            return ok(request.request_id, { error: error.message, stdout: error.stdout?.toString(), stderr: error.stderr?.toString() });
+          }
+        }
+        case 'phantom_opencode_file_manage': {
+          const action = parseStringArg(request.arguments, 'action');
+          const targetPath = resolve(process.cwd(), parseStringArg(request.arguments, 'path'));
+          if (action === 'read') {
+            try {
+              const content = readFileSync(targetPath, 'utf-8');
+              return ok(request.request_id, { content });
+            } catch (e: any) {
+              return err(request.request_id, [{ code: 'RESOURCE_NOT_FOUND', message: e.message }]);
+            }
+          } else if (action === 'write') {
+            const content = parseStringArg(request.arguments, 'content');
+            mkdirSync(dirname(targetPath), { recursive: true });
+            writeFileSync(targetPath, content, 'utf-8');
+            return ok(request.request_id, { status: 'File written successfully' });
+          } else {
+            return err(request.request_id, [{ code: 'INVALID_ARGUMENT', message: 'action must be read or write' }]);
+          }
+        }
+        case 'phantom_opencode_ls': {
+          const rawPath = parseStringArg(request.arguments, 'path');
+          const targetPath = resolve(process.cwd(), rawPath);
+          try {
+            const files = readdirSync(targetPath);
+            return ok(request.request_id, { files });
+          } catch (e: any) {
+            return err(request.request_id, [{ code: 'RESOURCE_NOT_FOUND', message: e.message }]);
+          }
         }
         default:
           return err(request.request_id, [{ code: 'INVALID_TOOL', message: `Unknown tool: ${request.tool}` }]);

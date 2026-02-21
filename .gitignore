@@ -28,6 +28,10 @@ node_modules/
 .trae/
 .windsurf/
 .zencoder/
+.env
+.env.*
+!.env.example
+publish_log.txt
 
 # local planning scratch files
 /AGENTS.md
@@ -75,7 +79,10 @@ UNIVERSAL_SYSTEM_INSTRUCTIONS.md
 
 # Temporary clones and build artifacts
 tmp-clones/
-*.zip
-scripts/mass-model-upgrade.mjs
 scripts/test-memory.ts
 scripts/fix-versions.js
+# packed files and extension binaries
+*.zip
+*.tgz
+*.vsix
+!phantom-oracle-v3.1.0.zip

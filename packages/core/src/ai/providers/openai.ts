@@ -23,8 +23,9 @@ export class OpenAIProvider extends BaseAIProvider {
       defaultModel: config.defaultModel || 'o3-mini',
       timeout: config.timeout,
     });
-    
+
     this.initializeModels();
+    this.syncRemoteModels();
   }
 
   private initializeModels() {
@@ -36,7 +37,7 @@ export class OpenAIProvider extends BaseAIProvider {
       costPerInputToken: 0.00001,
       costPerOutputToken: 0.00003,
     });
-    
+
     this.models.set('gpt-4', {
       name: 'gpt-4',
       maxTokens: 8192,
@@ -45,7 +46,7 @@ export class OpenAIProvider extends BaseAIProvider {
       costPerInputToken: 0.00003,
       costPerOutputToken: 0.00006,
     });
-    
+
     this.models.set('gpt-3.5-turbo', {
       name: 'gpt-3.5-turbo',
       maxTokens: 4096,
@@ -54,7 +55,7 @@ export class OpenAIProvider extends BaseAIProvider {
       costPerInputToken: 0.0000015,
       costPerOutputToken: 0.000002,
     });
-    
+
     this.models.set('gpt-4o', {
       name: 'gpt-4o',
       maxTokens: 4096,
@@ -63,6 +64,30 @@ export class OpenAIProvider extends BaseAIProvider {
       costPerInputToken: 0.000005,
       costPerOutputToken: 0.000015,
     });
+  }
+
+  private async syncRemoteModels() {
+    if (!this.config.apiKey) return;
+    try {
+      const client = this.getClient();
+      const response = await client.models.list();
+      for (const m of response.data) {
+        if (m.id.includes('gpt') || m.id.includes('o1') || m.id.includes('o3')) {
+          if (!this.models.has(m.id)) {
+            this.models.set(m.id, {
+              name: m.id,
+              maxTokens: 4096,
+              contextWindow: 128000,
+              supportsVision: m.id.includes('vision') || m.id.includes('4o'),
+              costPerInputToken: 0.00001,
+              costPerOutputToken: 0.00003,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // ignore errors
+    }
   }
 
   private getClient(): OpenAI {
@@ -77,7 +102,7 @@ export class OpenAIProvider extends BaseAIProvider {
 
   async isAvailable(): Promise<boolean> {
     if (!this.config.apiKey) return false;
-    
+
     try {
       const client = this.getClient();
       await client.chat.completions.create({
@@ -93,10 +118,10 @@ export class OpenAIProvider extends BaseAIProvider {
 
   async complete(request: AIRequest): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     return this.rateLimit(async () => {
       const client = this.getClient();
-      
+
       const response = await this.timeoutPromise(
         client.chat.completions.create({
           model: request.model,
@@ -109,7 +134,7 @@ export class OpenAIProvider extends BaseAIProvider {
 
       const latency = Date.now() - startTime;
       const content = response.choices[0]?.message?.content || '';
-      
+
       return {
         content,
         usage: response.usage ? {
@@ -126,10 +151,10 @@ export class OpenAIProvider extends BaseAIProvider {
   async stream(request: AIRequest): Promise<StreamingAIResponse> {
     const startTime = Date.now();
     const chunks: string[] = [];
-    
+
     return this.rateLimit(async () => {
       const client = this.getClient();
-      
+
       const stream = await this.timeoutPromise(
         client.chat.completions.create({
           model: request.model,
@@ -156,7 +181,7 @@ export class OpenAIProvider extends BaseAIProvider {
         for await (const chunk of asyncIterator) {
           fullContent += chunk;
         }
-        
+
         const latency = Date.now() - startTime;
         return {
           content: fullContent,
