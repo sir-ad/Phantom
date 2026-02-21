@@ -25,7 +25,7 @@ test('cli --help exits cleanly', () => {
 test('cli --version exits cleanly', () => {
   const result = runCli(['--version']);
   assert.equal(result.status, 0, `expected exit code 0, got ${result.status}\n${result.stderr}`);
-  assert.match(result.stdout, /1\.0\.0/);
+  assert.match(result.stdout, /3\.1\.0/);
 });
 
 test('cli doctor command exits cleanly', () => {
