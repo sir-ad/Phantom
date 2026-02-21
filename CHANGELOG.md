@@ -8,12 +8,12 @@ All notable changes to the Phantom OS project will be documented in this file.
 - **AI Routing Engine:** Completely overhauled routing logic with provider fallback chains.
 - **Settings UI:** Improved settings management with real-time validation.
 - **Chrome Extension:** Restored source, bumped to v3.1.0, and bundled as release artifact.
-- **Connected Context (Phase 3):** Integrated Figma and External Link tracking for real-time design and web context grounding.
+- **UX Hardening:** Implemented "The Awakening" phase, including a new Onboarding Wizard, thematic error handling with retry logic, and an adaptive responsive AppShell for mobile devices.
 - **Stability:** Final stable v3.1.0 release.
 
 ### 🛠️ fixed
-- feat(core): fix AI routing + settings UI + provider fallback chain
-- Cleaned up legacy binaries and redundant artifacts from repository root.
+- **Settings Trigger:** Resolved a critical bug where the Settings overlay could not be opened from the Navigator panel.
+- **Clean Repository:** Removed legacy binaries and redundant artifacts from the repository root.
 
 
 ## [3.0.0] - 2026-02-20

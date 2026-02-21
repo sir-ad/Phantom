@@ -26,13 +26,33 @@ interface PhantomConfig {
 
 export default function ConfigPage() {
     const [config, setConfig] = useState<PhantomConfig | null>(null);
+    const [ollamaStatus, setOllamaStatus] = useState<{ online: boolean; models: string[] }>({ online: false, models: [] });
+    const [detectingOllama, setDetectingOllama] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchConfig();
+        detectOllama();
     }, []);
+
+    const detectOllama = async () => {
+        setDetectingOllama(true);
+        try {
+            const res = await fetch('/api/models/ollama');
+            const data = await res.json();
+            if (res.ok) {
+                setOllamaStatus({ online: true, models: data.models || [] });
+            } else {
+                setOllamaStatus({ online: false, models: [] });
+            }
+        } catch {
+            setOllamaStatus({ online: false, models: [] });
+        } finally {
+            setDetectingOllama(false);
+        }
+    };
 
     const fetchConfig = async () => {
         try {
@@ -139,11 +159,40 @@ export default function ConfigPage() {
                 {/* Subsystems */}
                 <Card className="bg-black border-green-900/40 text-green-500">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Subsystems</CardTitle>
+                        <CardTitle className="flex items-center justify-between">
+                            <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Subsystems</div>
+                            {ollamaStatus.online ? (
+                                <span className="text-[10px] bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-500/30 animate-pulse">
+                                    OLLAMA ONLINE
+                                </span>
+                            ) : (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={detectOllama}
+                                    className="h-6 text-[10px] text-green-800 hover:text-green-500 hover:bg-green-900/20"
+                                    disabled={detectingOllama}
+                                >
+                                    {detectingOllama ? 'SCANNING...' : 'DETECT LOCAL AI'}
+                                </Button>
+                            )}
+                        </CardTitle>
                         <CardDescription className="text-green-800">Toggle core engine features.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                                <Label className={ollamaStatus.online ? "text-green-400" : ""}>Ollama Bridge (Local-First)</Label>
+                                <p className="text-xs text-green-700">
+                                    {ollamaStatus.online
+                                        ? `Connected to local intelligence (${ollamaStatus.models.length} models found)`
+                                        : "Local AI not detected. Start Ollama to run without API keys."}
+                                </p>
+                            </div>
+                            <div className={cn("h-2 w-2 rounded-full", ollamaStatus.online ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-900")} />
+                        </div>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-green-900/20">
                             <div className="space-y-0.5">
                                 <Label>Crystal Memory</Label>
                                 <p className="text-xs text-green-700">Enable explicit markdown-based memory (.phantom/memory/)</p>
